@@ -213,6 +213,13 @@ body{
    text-wrap: wrap;
 }
 
+.text-decoration {
+  background-image: url("Images/hero-section/text-decoration.svg");
+  background-repeat: no-repeat;
+  background-position: 0% 100%;
+  background-size: 115%;
+}
+
 .hero-travel{
     font-family: "Volkhov";
     font-weight: 700;
