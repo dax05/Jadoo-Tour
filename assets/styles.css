@@ -145,21 +145,43 @@ body{
 
 }
 
-.hero-img{
-    position: relative;
-
+.hero-img {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.img1{
-    position: relative;
-    /* border: 1px dash red; */
+.hero-img::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -45%);
+  width: 90%;
+  height: 90%;
+  background: radial-gradient(
+    circle,
+    rgba(223, 105, 81, 0.28) 0%,
+    rgba(241, 165, 1, 0.15) 45%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  filter: blur(40px);
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
 }
 
-.ladki{
-    /* position: absolute; */
-    width: 100%;
-    /* left: 10%; */
-    z-index: 5;
+.img1 {
+  position: relative;
+  z-index: 2; 
+}
+
+.ladki {
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.08));
 }
 
 /* .img4{
@@ -274,33 +296,62 @@ body{
     text-wrap: wrap;
 }
 
-.button2{
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    
+.button2 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
 }
 
-.play-demo{
-    border-radius: 100%;
-    border: none;
-    width: 52px;
-    height: 52px;
-    top: 696px;
-    left: 362px;
-    opacity: 1;
-    color: white;
-    background-color: rgba(223, 105, 81, 1);
-
+.play-demo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  width: 52px;
+  height: 52px;
+  color: #fff;
+  background-color: rgba(223, 105, 81, 1);
+  box-shadow: 0px 15px 30px rgba(223, 105, 81, 0.35);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  animation: pulse-shadow 2.5s infinite;
 }
 
-.playdemotxt{
-    font-family: Poppins;
-    font-weight: 400;
-    font-size: 17px;
-    line-height: 100%;
-    letter-spacing: 0%;
-    color: rgba(104, 109, 119, 1);
+.play-demo i {
+  font-size: 15px;
+  margin-left: 2px; /* Centers the triangular play icon visually */
+}
+
+.button2:hover .play-demo {
+  transform: scale(1.1);
+  box-shadow: 0px 20px 35px rgba(223, 105, 81, 0.55);
+}
+
+.playdemotxt {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 100%;
+  color: rgba(104, 109, 119, 1);
+  transition: color 0.3s ease-in-out;
+}
+
+.button2:hover .playdemotxt {
+  color: rgba(223, 105, 81, 1);
+}
+
+@keyframes pulse-shadow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(223, 105, 81, 0.45), 0 15px 30px rgba(223, 105, 81, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(223, 105, 81, 0), 0 15px 30px rgba(223, 105, 81, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(223, 105, 81, 0), 0 15px 30px rgba(223, 105, 81, 0.35);
+  }
 }
 
 .service-section{
@@ -1073,6 +1124,7 @@ body{
     }
 }
 
+/* ----------- DARK MODE --------- */
 
 
 
