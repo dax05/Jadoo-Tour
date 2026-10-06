@@ -803,49 +803,86 @@ body{
     } 
 }
 
-.logosection{
-    
-    /* border: 1px solid red; */
-    display : flex;
-    width : 100%;
+.logosection {
+  width: 100%;
+  overflow: hidden;
+  padding: 50px 0;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.logocon{
-    align-items:center;
-    display:flex;
-    justify-content: space-between;
-    width: 100%;
-    gap: clamp(20px, 2vw, 40px);
-    overflow-x: auto;
-
-
+.logosection::before,
+.logosection::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
 }
 
-.logoitem{
-    display: flex;
-    flex: 0 0 20%;
-    width: 20%;
-    align-items: center;
-
+.logosection::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bgwhite), transparent);
 }
 
-@media (max-width: 768px) {
-    .logoitem {
-        flex: 0 0 30%;
-    }
+.logosection::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bgwhite), transparent);
 }
 
-@media (max-width: 480px) {
-    .logoitem {
-        flex: 0 0 45%;
-    }
+.logotrack {
+  display: flex;
+  width: max-content;
+  animation: scroll-logos 25s linear infinite;
 }
 
-.logoitem img{
-    width: 100%;
-    height: auto;
-    display: block;
+.logotrack:hover {
+  animation-play-state: paused;
+}
 
+.logocon {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: clamp(40px, 6vw, 90px);
+  padding-right: clamp(40px, 6vw, 90px);
+  flex-shrink: 0;
+}
+
+.logoitem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(120px, 14vw, 170px);
+  cursor: pointer;
+}
+
+.logoitem img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  filter: grayscale(100%);
+  opacity: 0.55;
+  transition: all 0.35s ease-in-out;
+}
+
+.logoitem:hover img {
+  filter: grayscale(0%);
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+@keyframes scroll-logos {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .subsection{
