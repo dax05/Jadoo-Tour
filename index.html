@@ -24,16 +24,26 @@
       <img src="assets/Images/hero-section/hero-right-decor.svg" class="pilabg">
     </div>
 
+    <!-- Background Backdrop Overlay -->
+    <div class="nav-backdrop" id="nav-backdrop"></div>
+
     <!-- NAVIGATION SECTION -->
-    <nav class="navibar">
+    <nav class="navibar" id="navibar">
 
       <div class="navimg">
-
         <img src="assets/Images/navigation-section/Logo.svg" class="Top-Logo" alt="Jadoo Logo">
       </div>
-      <div class="linkcon">
-        <ul class="Links-Container">
 
+      <div class="linkcon" id="nav-drawer">
+        <!-- Close button  -->
+        <div class="drawer-header">
+          <img src="assets/Images/navigation-section/Logo.svg" class="Top-Logo drawer-logo" alt="Jadoo Logo">
+          <button class="close-drawer" id="close-drawer" aria-label="Close menu">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <ul class="Links-Container">
           <li class="link-items"><a href="#" class="links">Destinations</a></li>
           <li class="link-items"><a href="#" class="links">Hotels</a></li>
           <li class="link-items"><a href="#" class="links">Flights</a></li>
@@ -41,18 +51,25 @@
           <li class="link-items"><a href="#" class="links">Login</a></li>
           <button class="signupbtn"> Sign up </button>
 
-          <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
+          <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
             <i class="fa-solid fa-moon"></i>
           </button>
 
+
           <select name="Language" id="lang" class="ddown">
-            <option value="Engish">EN</option>
+            <option value="English">EN</option>
             <option value="UKeng">UK</option>
             <option value="USeng">US</option>
           </select>
         </ul>
       </div>
 
+      <!-- Mobile -->
+      <button class="burger" id="burger-menu" aria-label="Toggle navigation">
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+      </button>
 
     </nav>
     <section class="hero-section">
@@ -282,25 +299,25 @@
       </div>
     </section>
     <section class="logosection">
-  <div class="logotrack">
-    <!-- initial group -->
-    <div class="logocon">
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-1-axon.png" alt="Axon"></div>
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-2-expedia.png" alt="Expedia"></div>
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-3-jetstar.png" alt="Jetstar"></div>
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-4-qantas.png" alt="Qantas"></div>
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-5-alitalia.png" alt="Alitalia"></div>
-    </div>
-      <!-- for infinity loop -->
-    <div class="logocon" aria-hidden="true">
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-1-axon.png" alt="Axon"></div>
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-2-expedia.png" alt="Expedia"></div>
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-3-jetstar.png" alt="Jetstar"></div>
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-4-qantas.png" alt="Qantas"></div>
-      <div class="logoitem"><img src="assets/Images/logo-section/logo-5-alitalia.png" alt="Alitalia"></div>
-    </div>
-  </div>
-</section>
+      <div class="logotrack">
+        <!-- initial group -->
+        <div class="logocon">
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-1-axon.png" alt="Axon"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-2-expedia.png" alt="Expedia"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-3-jetstar.png" alt="Jetstar"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-4-qantas.png" alt="Qantas"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-5-alitalia.png" alt="Alitalia"></div>
+        </div>
+        <!-- for infinity loop -->
+        <div class="logocon" aria-hidden="true">
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-1-axon.png" alt="Axon"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-2-expedia.png" alt="Expedia"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-3-jetstar.png" alt="Jetstar"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-4-qantas.png" alt="Qantas"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-5-alitalia.png" alt="Alitalia"></div>
+        </div>
+      </div>
+    </section>
 
     <section class="subsection">
       <div class="subbg">
@@ -404,6 +421,6 @@
   </div>
 
 </body>
-  <script src="script.js"></script>
+<script src="script.js"></script>
 
 </html>

@@ -65,67 +65,190 @@ body{
     background-color: var(--bgwhite);
 }
 
-.navibar{
-    height: 20%;
-    display: flex;
-    justify-content: space-evenly;
-    /* margin-block: 10%; */
-    align-items:center;
-    width: 100%;
-    /* border: 1px solid rebeccapurple; */
-    /* margin: 0px 100px; */
-    background-color: none;
-    z-index: 1;
-}
-.navimg{
-    margin-block: 3%;
-    width: 10%;
+.navibar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+  background-color: transparent;
+  z-index: 999;
+  transition: all 0.35s ease-in-out;
 }
 
-.Top-Logo{
- 
-    height: 100%;
+/* Scrolled state with white background & soft shadow */
+.navibar.scrolled {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 12px 24px;
+  border-radius: 0 0 16px 16px;
 }
 
-.linkcon{
-    height: 100%;
-    width: 70%;
-    /* border: 1px solid red; */
-    padding: 0;
+body.dark-mode .navibar.scrolled {
+  background-color: rgba(15, 20, 34, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-.Links-Container{
-    height: 100%;
-    display: flex;
-    list-style: none;
-    
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
+.navimg {
+  width: auto;
+  display: flex;
+  align-items: center;
 }
 
-.signupbtn{
-    border: .1rem solid var(--navlinks);
-    background: transparent;
-    height: 100%;
-    font-size: 1rem;
-    font-family: 'Poppins';
-    color: var(--navlinks);
-    border-radius: 0.3rem;
-    padding: 2px 20px;
+.Top-Logo {
+  height: 34px;
+  width: auto;
+  display: block;
 }
 
-.ddown{
-    height: 100%;
-    font-size: 1rem;
-    border: none;
-    color: var(--navlinks);
-    background-color: transparent;
+.linkcon {
+  display: flex;
+  align-items: center;
 }
 
-.links{
-    text-decoration: none;
-    color: var(--navlinks);
+.drawer-header {
+  display: none; /* Hidden on desktop */
+}
+
+.Links-Container {
+  display: flex;
+  list-style: none;
+  gap: clamp(16px, 2.5vw, 40px);
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==========================================================================
+   HOVER & ACTIVE TRANSITIONS
+   ========================================================================== */
+
+.links {
+  position: relative;
+  text-decoration: none;
+  color: var(--navlinks);
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.links:hover {
+  color: #df6951;
+  transform: translateY(-2px);
+}
+
+/* Subtle animated underline on link hover */
+.links::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #df6951;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.links:hover::after {
+  width: 100%;
+}
+
+/* Sign Up Button Hover */
+.signupbtn {
+  border: 1px solid var(--navlinks);
+  background: transparent;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: var(--navlinks);
+  border-radius: 6px;
+  padding: 8px 22px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.signupbtn:hover {
+  background-color: #df6951;
+  border-color: #df6951;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(223, 105, 81, 0.35);
+}
+
+/* Language Selector */
+.ddown {
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  color: var(--navlinks);
+  background-color: transparent;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  outline: none;
+}
+
+.ddown:hover {
+  color: #df6951;
+}
+
+/* Backdrop Overlay */
+.nav-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* background-color: rgba(0, 0, 0, 0.45); */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  z-index: 998;
+}
+
+.nav-backdrop.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+body.overflow-hidden {
+  overflow: hidden;
+}
+.burger {
+  display: none; /* Hide by default on desktop */
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 100;
+}
+
+.burger-line {
+  width: 100%;
+  height: 3px;
+  background-color: var(--navlinks);
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+}
+
+.burger.is-active .burger-line:nth-child(1) {
+  transform: translateY(8.5px) rotate(45deg);
+}
+
+.burger.is-active .burger-line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.burger.is-active .burger-line:nth-child(3) {
+  transform: translateY(-8.5px) rotate(-45deg);
 }
 
 .hero-section{
@@ -1122,44 +1245,135 @@ body{
         text-align: left;
         flex-direction: column;
     }
-    .Links-Container{
-        flex-wrap: wrap;
-    }
 
     .hero-buttonss{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 28px;
-}
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 28px;
+    }
 }
 
 @media (max-width: 768px) {
-    .navibar{
-        height: 10%;
-        flex-direction: column;
-        align-items: center ;
+    .navibar {
+        display: flex;
+        flex-direction: row; /* Logo and hamburger stay on the same line */
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
     }
 
-    .navimg{
-        display: flex;
-        justify-content: center;
+    .navimg {
+        width: auto;
         padding: 0;
     }
 
-    .linkcon{
-        width: 100%;
-    }
-
-    .hero-section{
+    .hero-section {
         flex-direction: column-reverse;
-
     }
 
-    .hero-best, .hero-travel, .hero-built{
+    .hero-best, .hero-travel, .hero-built {
         text-align: center;
     }
 }
+
+
+@media (max-width: 768px) {
+  /* 1. Navbar layout on mobile */
+  .navibar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+  }
+
+  /* 2. Move Hamburger to the LEFT side */
+  .burger {
+    display: flex;
+    order: -1; /* Puts the hamburger on the far left */
+  }
+
+  /* 3. Sliding Drawer coming from the LEFT */
+  .linkcon {
+    position: fixed;
+    top: 0;
+    left: 0; /* Positioned on the left */
+    right: auto;
+    width: min(80vw, 320px);
+    height: 100vh;
+    background-color: var(--bgwhite);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 30px 24px;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15); /* Shadow cast to the right */
+    transform: translateX(-100%); /* Hidden off-screen to the left */
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    overflow-y: auto;
+  }
+
+  /* When opened: slides in from the left */
+  .linkcon.is-active {
+    transform: translateX(0);
+  }
+
+  body.dark-mode .linkcon {
+    background-color: #171e31;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Drawer Top Header (Logo on left, Close X on right) */
+  .drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(132, 130, 154, 0.2);
+  }
+
+  .close-drawer {
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--navlinks);
+    transition: color 0.25s ease, transform 0.25s ease;
+  }
+
+  .close-drawer:hover {
+    color: #df6951;
+    transform: rotate(90deg);
+  }
+
+  /* Vertical link stack */
+  .Links-Container {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 20px;
+  }
+
+  .link-items {
+    width: 100%;
+  }
+
+  .links {
+    display: block;
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 6px 0;
+  }
+
+  .signupbtn {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+  }
+}
+
 
 /* ----------- DARK MODE --------- */
 
