@@ -49,8 +49,21 @@
           <li class="link-items"><a href="#" class="links">Hotels</a></li>
           <li class="link-items"><a href="#" class="links">Flights</a></li>
           <li class="link-items"><a href="#" class="links">Bookings</a></li>
-          <li class="link-items"><a href="auth.html?mode=login" class="links">Login</a></li>
-          <a href="auth.html?mode=signup" class="signupbtn"> Sign up </a>
+          <!-- Guest Auth Links (when logged out) -->
+          <li class="link-items auth-guest-item"><a href="auth.html?mode=login" class="links">Login</a></li>
+          <a href="auth.html?mode=signup" class="signupbtn auth-guest-item"> Sign up </a>
+
+          <!-- User Profile & Logout (when logged in) -->
+          <li class="link-items auth-user-item" id="nav-user-item" style="display: none;">
+            <div class="nav-user-profile">
+              <span class="nav-user-avatar" id="nav-user-avatar">J</span>
+              <span class="nav-user-name" id="nav-user-name">Hi, Traveler</span>
+            </div>
+          </li>
+          <button type="button" class="nav-logout-btn auth-user-item" id="nav-logout-btn" style="display: none;" title="Log out">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Log out</span>
+          </button>
 
           <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
             <i class="fa-solid fa-moon"></i>

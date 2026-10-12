@@ -281,7 +281,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ------------------------------------------------------------------------
-  // 7. Form Submission Handler
+  // Helper: Registered Users Store in localStorage
+  // ------------------------------------------------------------------------
+  function getRegisteredUsers() {
+    try {
+      return JSON.parse(localStorage.getItem("jadoo_users")) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveRegisteredUser(newUser) {
+    const users = getRegisteredUsers();
+    users.push(newUser);
+    localStorage.setItem("jadoo_users", JSON.stringify(users));
+  }
+
+  // ------------------------------------------------------------------------
+  // 7. Form Submission Handler (LocalStorage Integration)
   // ------------------------------------------------------------------------
   if (authForm) {
     authForm.addEventListener("submit", (e) => {
@@ -302,36 +319,112 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Simulate Authentication API Call
+      // Processing Auth Request
       authSubmitBtn.classList.add("is-loading");
 
       setTimeout(() => {
-        authSubmitBtn.classList.remove("is-loading");
-
-        const userEmail = emailInput.value.trim();
-        const userName = currentMode === "signup" ? nameInput.value.trim() : userEmail.split("@")[0];
-
-        // Store active session in localStorage
-        localStorage.setItem(
-          "jadoo_user",
-          JSON.stringify({
-            name: userName,
-            email: userEmail,
-            loggedInAt: new Date().toISOString()
-          })
-        );
+        const userEmail = emailInput.value.trim().toLowerCase();
+        const users = getRegisteredUsers();
 
         if (currentMode === "signup") {
-          showAlert(`Welcome aboard, ${userName}! Account created successfully. Redirecting...`, "success");
-        } else {
-          showAlert(`Welcome back, ${userName}! Redirecting to home...`, "success");
-        }
+          const userName = nameInput.value.trim();
+          const userPassword = passwordInput.value;
 
-        // Redirect back to main page after 1.5 seconds
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 1500);
-      }, 900);
+          // Check if email already registered
+          const existingUser = users.find((u) => u.email.toLowerCase() === userEmail);
+          if (existingUser) {
+            authSubmitBtn.classList.remove("is-loading");
+            setFieldError(emailInput, "email-error", "An account with this email already exists.");
+            showAlert("An account with this email already exists. Please log in.", "error");
+            return;
+          }
+
+          // Register new user
+          saveRegisteredUser({
+            name: userName,
+            email: userEmail,
+            password: userPassword,
+            registeredAt: new Date().toISOString()
+          });
+
+          // Set active session in localStorage
+          localStorage.setItem(
+            "jadoo_user",
+            JSON.stringify({
+              name: userName,
+              email: userEmail,
+              loggedInAt: new Date().toISOString()
+            })
+          );
+
+          authSubmitBtn.classList.remove("is-loading");
+          showAlert(`Welcome aboard, ${userName}! Account created successfully. Redirecting...`, "success");
+
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1400);
+
+        } else {
+          // Log In Mode
+          const userPassword = passwordInput.value;
+          const foundUser = users.find((u) => u.email.toLowerCase() === userEmail);
+
+          if (foundUser) {
+            // Verify password
+            if (foundUser.password !== userPassword) {
+              authSubmitBtn.classList.remove("is-loading");
+              setFieldError(passwordInput, "password-error", "Incorrect password. Please try again.");
+              showAlert("Incorrect password. Please verify your credentials.", "error");
+              return;
+            }
+
+            const userName = foundUser.name;
+            localStorage.setItem(
+              "jadoo_user",
+              JSON.stringify({
+                name: userName,
+                email: userEmail,
+                loggedInAt: new Date().toISOString()
+              })
+            );
+
+            authSubmitBtn.classList.remove("is-loading");
+            showAlert(`Welcome back, ${userName}! Redirecting to home...`, "success");
+
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 1400);
+
+          } else {
+            // For new users logging in directly, gracefully create session and register
+            const rawName = userEmail.split("@")[0].replace(/[._-]/g, " ");
+            const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+            saveRegisteredUser({
+              name: formattedName,
+              email: userEmail,
+              password: userPassword,
+              registeredAt: new Date().toISOString()
+            });
+
+            localStorage.setItem(
+              "jadoo_user",
+              JSON.stringify({
+                name: formattedName,
+                email: userEmail,
+                loggedInAt: new Date().toISOString()
+              })
+            );
+
+            authSubmitBtn.classList.remove("is-loading");
+            showAlert(`Welcome back, ${formattedName}! Redirecting to home...`, "success");
+
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 1400);
+          }
+        }
+      }, 700);
     });
   }
 

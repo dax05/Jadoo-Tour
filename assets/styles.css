@@ -182,6 +182,77 @@ body.dark-mode .navibar.scrolled {
   box-shadow: 0 8px 20px rgba(223, 105, 81, 0.35);
 }
 
+/* Navbar User Profile & Logout */
+.nav-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px 4px 5px;
+  border-radius: 30px;
+  background-color: rgba(223, 105, 81, 0.08);
+  border: 1px solid rgba(223, 105, 81, 0.15);
+  transition: all 0.25s ease;
+}
+
+.nav-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #df6951 0%, #f1826c 100%);
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(223, 105, 81, 0.3);
+  text-transform: uppercase;
+}
+
+.nav-user-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 0.938rem;
+  color: var(--navlinks);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #84829a;
+  background: transparent;
+  border: 1px solid rgba(132, 130, 154, 0.3);
+  border-radius: 6px;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nav-logout-btn i {
+  font-size: 0.875rem;
+  transition: transform 0.25s ease;
+}
+
+.nav-logout-btn:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.06);
+  transform: translateY(-1px);
+}
+
+.nav-logout-btn:hover i {
+  transform: translateX(3px);
+}
+
 /* Language Selector */
 .ddown {
   font-size: 1rem;
