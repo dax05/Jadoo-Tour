@@ -229,7 +229,7 @@ body.dark-mode .progress-fill {
 
 body.dark-mode .step-shadow {
   opacity: 0.28;
-  filter: drop-s
+  filter: drop-shadow(0 0 50px rgba(99, 102, 241, 0.35));
 }
 
 body.dark-mode .test-card-main {
@@ -284,4 +284,25 @@ body.dark-mode .test-arrow {
 body.dark-mode .test-arrow:hover {
   color: #f8fafc;
   background-color: #242e47;
+}
+
+/* Navbar User Profile (Dark Mode) */
+body.dark-mode .nav-user-profile {
+  background-color: rgba(23, 30, 49, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .nav-user-name {
+  color: #f8fafc;
+}
+
+body.dark-mode .nav-logout-btn {
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+body.dark-mode .nav-logout-btn:hover {
+  color: #f87171;
+  border-color: #f87171;
+  background-color: rgba(239, 68, 68, 0.15);
 }

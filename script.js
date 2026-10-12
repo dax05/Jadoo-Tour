@@ -184,3 +184,68 @@ document.querySelectorAll(".test-dot").forEach((dot) => {
     if (!isNaN(idx)) updateTestimonial(idx);
   });
 });
+
+// ==========================================
+// 6. LOCALSTORAGE AUTH SYNC WITH NAVBAR
+// ==========================================
+function syncNavbarAuth() {
+  const savedUserJson = localStorage.getItem("jadoo_user");
+  const guestElements = document.querySelectorAll(".auth-guest-item");
+  const userElements = document.querySelectorAll(".auth-user-item");
+  const userNameEl = document.getElementById("nav-user-name");
+  const userAvatarEl = document.getElementById("nav-user-avatar");
+  const logoutBtn = document.getElementById("nav-logout-btn");
+
+  if (savedUserJson) {
+    try {
+      const user = JSON.parse(savedUserJson);
+      const displayName = user.name || (user.email ? user.email.split("@")[0] : "Traveler");
+      const initials = displayName.charAt(0).toUpperCase();
+
+      if (userNameEl) userNameEl.textContent = `Hi, ${displayName}`;
+      if (userAvatarEl) userAvatarEl.textContent = initials;
+
+      // Hide guest links (Login & Sign up)
+      guestElements.forEach((el) => {
+        el.style.display = "none";
+      });
+
+      // Show user profile & logout
+      userElements.forEach((el) => {
+        el.style.display = el.tagName === "BUTTON" ? "inline-flex" : "block";
+      });
+    } catch {
+      showGuestNavbar();
+    }
+  } else {
+    showGuestNavbar();
+  }
+
+  function showGuestNavbar() {
+    guestElements.forEach((el) => {
+      el.style.display = "";
+    });
+    userElements.forEach((el) => {
+      el.style.display = "none";
+    });
+  }
+
+  // Bind logout listener once
+  if (logoutBtn && !logoutBtn.dataset.listenerAttached) {
+    logoutBtn.dataset.listenerAttached = "true";
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("jadoo_user");
+      syncNavbarAuth();
+    });
+  }
+}
+
+// Initial sync on page load
+syncNavbarAuth();
+
+// Cross-tab synchronization
+window.addEventListener("storage", (e) => {
+  if (e.key === "jadoo_user") {
+    syncNavbarAuth();
+  }
+});
