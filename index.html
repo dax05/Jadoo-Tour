@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Travel Agency Landing Page</title>
+  <link rel="icon" type="image/png" href="assets/Images/jadoo-favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -48,8 +49,8 @@
           <li class="link-items"><a href="#" class="links">Hotels</a></li>
           <li class="link-items"><a href="#" class="links">Flights</a></li>
           <li class="link-items"><a href="#" class="links">Bookings</a></li>
-          <li class="link-items"><a href="#" class="links">Login</a></li>
-          <button class="signupbtn"> Sign up </button>
+          <li class="link-items"><a href="auth.html?mode=login" class="links">Login</a></li>
+          <a href="auth.html?mode=signup" class="signupbtn"> Sign up </a>
 
           <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
             <i class="fa-solid fa-moon"></i>
@@ -125,6 +126,10 @@
     </section>
 
     <section class="service-section">
+      <!-- Decorative 4-plus grid pattern in background -->
+      <div class="category-pattern">
+        <img src="assets/Images/service-section/category-patt.png" alt="">
+      </div>
 
       <div class="service-header">
         <p class="service-category">CATEGORY</p>
@@ -133,32 +138,51 @@
 
       <div class="service-cards">
 
-        <article class="service-card">
-          <img src="assets/Images/service-section/category-1-satellite-dish.svg" class="weather" alt="" />
-          <h3 class="card-h">Calculated Weather</h3>
-          <p class="card-p">Built Wicket longer <br> admire do barton <br> vanity itself do in it.</p>
-        </article>
+        <div class="service-card-item">
+          <article class="service-card">
+            <img src="assets/Images/service-section/category-1-satellite-dish.svg" class="weather" alt="Calculated Weather" />
+            <h3 class="card-h">Calculated Weather</h3>
+            <p class="card-p">Built Wicket longer admire do barton vanity itself do in it.</p>
+          </article>
+          <div class="category-rectangle">
+            <img src="assets/Images/service-section/category-rectangle.png" alt="">
+          </div>
+        </div>
 
-        <article class="service-card">
-          <img src="assets/Images/service-section/category-2-plane.svg" class="pplane" alt="" />
-          <h3 class="card-h">Best Flights</h3>
-          <p class="card-p">Engrossed listening. <br>Park gate sell they <br>west hard for the.</p>
-        </article>
+        <div class="service-card-item">
+          <article class="service-card">
+            <img src="assets/Images/service-section/category-2-plane.svg" class="pplane" alt="Best Flights" />
+            <h3 class="card-h">Best Flights</h3>
+            <p class="card-p">Engrossed listening. Park gate sell they west hard for the.</p>
+          </article>
+          <div class="category-rectangle">
+            <img src="assets/Images/service-section/category-rectangle.png" alt="">
+          </div>
+        </div>
 
-        <article class="service-card">
-          <img src="assets/Images/service-section/category-3-mic.svg" class="mic" alt="" />
-          <h3 class="card-h">Local Events</h3>
-          <p class="card-p">Barton vanity itself do <br> in it. Preferd to men it <br> engrossed listening. </p>
-        </article>
+        <div class="service-card-item">
+          <article class="service-card">
+            <img src="assets/Images/service-section/category-3-mic.svg" class="mic" alt="Local Events" />
+            <h3 class="card-h">Local Events</h3>
+            <p class="card-p">Barton vanity itself do in it. Preferd to men it engrossed listening.</p>
+          </article>
+          <div class="category-rectangle">
+            <img src="assets/Images/service-section/category-rectangle.png" alt="">
+          </div>
+        </div>
 
-        <article class="service-card">
-          <img src="assets/Images/service-section/category-4-gear.svg" class="sett" alt="" />
-          <h3 class="card-h">Customization</h3>
-          <p class="card-p">We deliver outsourced <br>aviation services for <br>military customers </p>
-        </article>
+        <div class="service-card-item">
+          <article class="service-card">
+            <img src="assets/Images/service-section/category-4-gear.svg" class="sett" alt="Customization" />
+            <h3 class="card-h">Customization</h3>
+            <p class="card-p">We deliver outsourced aviation services for military customers</p>
+          </article>
+          <div class="category-rectangle">
+            <img src="assets/Images/service-section/category-rectangle.png" alt="">
+          </div>
+        </div>
 
       </div>
-
     </section>
 
 
@@ -258,63 +282,111 @@
       </div>
 
       <div class="bookright">
-        <article class="bookcard">
-          <div class="greeceimg">
-            <img src="assets/Images/book-section/card-trip-greece.jpeg" class="book-img" alt="">
-          </div>
-          <div class="bookcarddet">
-            <p class="trip-name">Trip To Greece</p>
-            <p class="trip-info">14-29 June | by Robbin joseph</p>
-            <div class="bookactions">
-              <button><i class="fa-regular fa-paper-plane"></i></button>
-              <button><i class="fa-solid fa-leaf"></i></button>
-              <button><i class="fa-solid fa-map-location-dot"></i></button>
-            </div>
-            <div class="tripgoing">
-              <div class="tripbuilding">
-                <i class="fa-regular fa-building"></i>
-                <p class="tripeople">24 people going</p>
-              </div>
-              <button class="tripheart">
-                <i class="fa-regular fa-heart"></i>
-              </button>
-            </div>
+        <div class="bookcard-wrapper">
 
-        </article>
+          <!-- Main Card: Trip to Greece -->
+          <article class="bookcard">
+            <div class="greeceimg">
+              <img src="assets/Images/book-section/card-trip-greece.jpeg" class="book-img" alt="Trip To Greece">
+            </div>
+            <div class="bookcarddet">
+              <p class="trip-name">Trip To Greece</p>
+              <p class="trip-info">14-29 June | by Robbin joseph</p>
+              <div class="bookactions">
+                <button type="button" aria-label="Share trip"><i class="fa-solid fa-leaf"></i></button>
+                <button type="button" aria-label="Trip map"><i class="fa-solid fa-map-location-dot"></i></button>
+                <button type="button" aria-label="Send trip"><i class="fa-regular fa-paper-plane"></i></button>
+              </div>
+              <div class="tripgoing">
+                <div class="tripbuilding">
+                  <i class="fa-regular fa-building"></i>
+                  <p class="tripeople">24 people going</p>
+                </div>
+                <button type="button" class="tripheart" aria-label="Favorite trip">
+                  <i class="fa-regular fa-heart"></i>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <div class="bookcard-float">
+            <div class="float-card-head">
+              <div class="float-card-img">
+                <img src="assets/Images/book-section/mini-card-trip-rome.png" alt="Trip to Rome">
+              </div>
+              <div class="float-card-content">
+                <span class="float-status">Ongoing</span>
+                <h4 class="float-title">Trip to Rome</h4>
+                <div class="float-progress">
+                  <div class="progress-info">
+                    <span class="progress-pct">40%</span>
+                    <span class="progress-label">completed</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" style="width: 40%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-shadow"></div>
+
+        </div>
       </div>
     </section>
 
     <section class="testimonial">
+      <!-- Left Column: Heading & Pagination Dots -->
       <div class="testleft">
         <div class="testheader">
           <p class="test-p">TESTIMONIALS</p>
-          <h2 class="test-h">What people say<br>
-            about Us.</h2>
+          <h2 class="test-h">What people say<br>about Us.</h2>
         </div>
 
+        <!-- Pagination Dots -->
+        <div class="test-dots" id="test-dots">
+          <button type="button" class="test-dot active" data-index="0" aria-label="Testimonial 1"></button>
+          <button type="button" class="test-dot" data-index="1" aria-label="Testimonial 2"></button>
+          <button type="button" class="test-dot" data-index="2" aria-label="Testimonial 3"></button>
+        </div>
       </div>
 
+      <!-- Right Column: Stacked Cards & Navigation Chevrons -->
       <div class="testright">
+        <div class="test-card-wrapper">
 
-      </div>
-    </section>
-    <section class="logosection">
-      <div class="logotrack">
-        <!-- initial group -->
-        <div class="logocon">
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-1-axon.png" alt="Axon"></div>
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-2-expedia.png" alt="Expedia"></div>
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-3-jetstar.png" alt="Jetstar"></div>
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-4-qantas.png" alt="Qantas"></div>
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-5-alitalia.png" alt="Alitalia"></div>
-        </div>
-        <!-- for infinity loop -->
-        <div class="logocon" aria-hidden="true">
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-1-axon.png" alt="Axon"></div>
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-2-expedia.png" alt="Expedia"></div>
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-3-jetstar.png" alt="Jetstar"></div>
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-4-qantas.png" alt="Qantas"></div>
-          <div class="logoitem"><img src="assets/Images/logo-section/logo-5-alitalia.png" alt="Alitalia"></div>
+          <!-- Stacked Background Card (Figma Layer Effect) -->
+          <div class="test-card test-card-back" id="test-back-card" aria-hidden="true">
+            <div class="test-card-content">
+              <p class="test-quote" id="test-back-quote">“Jadoo made our corporate retreat to Europe completely stress-free. Every detail from booking to flights was seamless!”</p>
+              <h4 class="test-name" id="test-back-name">Chris Thomas</h4>
+              <p class="test-location" id="test-back-location">CEO of Red Button</p>
+            </div>
+          </div>
+
+          <!-- Main Active Card (Foreground) -->
+          <div class="test-card test-card-main" id="test-main-card">
+            <div class="test-avatar">
+              <img src="assets/Images/testimonial-section/author-mike.jpg" id="test-main-avatar" alt="Mike Taylor">
+            </div>
+            <div class="test-card-content">
+              <p class="test-quote" id="test-main-quote">“On the Windows talking painted pasture yet its express parties use. Sure last upon he same as knew next. Of believed or diverted no.”</p>
+              <h4 class="test-name" id="test-main-name">Mike Taylor</h4>
+              <p class="test-location" id="test-main-location">Lahore, Pakistan</p>
+            </div>
+          </div>
+
+          <!-- Vertical Navigation Arrows -->
+          <div class="test-nav-arrows">
+            <button type="button" class="test-arrow prev-arrow" id="test-prev" aria-label="Previous Testimonial">
+              <i class="fa-solid fa-chevron-up"></i>
+            </button>
+            <button type="button" class="test-arrow next-arrow" id="test-next" aria-label="Next Testimonial">
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </div>
+
         </div>
       </div>
     </section>

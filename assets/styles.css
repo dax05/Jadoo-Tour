@@ -159,6 +159,9 @@ body.dark-mode .navibar.scrolled {
 
 /* Sign Up Button Hover */
 .signupbtn {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
   border: 1px solid var(--navlinks);
   background: transparent;
   font-size: 1rem;
@@ -202,9 +205,11 @@ body.dark-mode .navibar.scrolled {
   left: 0;
   width: 100vw;
   height: 100vh;
-  /* background-color: rgba(0, 0, 0, 0.45); */
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.35s ease, visibility 0.35s ease;
   z-index: 998;
 }
@@ -212,6 +217,7 @@ body.dark-mode .navibar.scrolled {
 .nav-backdrop.is-active {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 body.overflow-hidden {
@@ -477,99 +483,125 @@ body.overflow-hidden {
   }
 }
 
-.service-section{
-    /* border: 1px solid red; */
+.service-section {
+  position: relative;
+  padding: 60px 0;
+  margin-top: 20px;
 }
 
-.service-header{
-    text-align: center;
+.category-pattern {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  z-index: 0;
+  max-width: 120px;
+  pointer-events: none;
+  transition: all 0.3s ease;
 }
 
-.service-cards{
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    /* border: 1px solid darkgreen; */
-    padding: clamp(20px, 2vw, 40px);
+.category-pattern img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
-@media (max-width: 768px) {
-    .service-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.service-header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 1;
 }
 
-@media (max-width: 480px) {
-    .service-cards {
-        grid-template-columns: 1fr;
-    }
+.service-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 36px;
+  padding: clamp(20px, 2vw, 40px);
+  position: relative;
+  z-index: 1;
 }
 
-
-.service-card{
-    /* display: flex;
-    flex-direction: column; */
-    padding: 40px 20px;
-    border-radius: 36px;
-    
+.service-card-item {
+  position: relative;
+  display: flex;
+  justify-content: center;
 }
 
-.card-h{
-    font-family: "Open Sans";
-    font-weight: 600;
-    font-size: 1.25rem;
-    line-height: 100%;
-    letter-spacing: 0%;
-    text-align: center;
-    color: rgba(30, 29, 76, 1);
+.service-card {
+  position: relative;
+  width: 100%;
+  background-color: var(--bgwhite);
+  padding: 45px 25px;
+  border-radius: 36px;
+  text-align: center;
+  z-index: 2;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.35s ease;
 }
 
-.card-p{
-    font-family: Poppins;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 26px;
-    letter-spacing: 0%;
-    text-align: center;
-    color: rgba(94, 98, 130, 1);
+.category-rectangle {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 95px;
+  height: 95px;
+  z-index: 1;
+  opacity: 0;
+  transform: translate(0, 0) scale(0.85);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
 }
 
-.weather{
-    display: block;
-    height: auto;
-    object-fit: cover;
-    max-width: 75px;
-    max-height: 50px;
-    margin: 0 auto 35px;
+.category-rectangle img {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.pplane{
-    display: block;
-    height: auto;
-    object-fit: cover;
-    max-width: 100%;
-    max-height: 50px; 
-    margin: 0 auto 35px;
-    /* rotate: 31.84deg;    */
+.service-card-item:hover .service-card,
+.service-card-item.active .service-card {
+  transform: translateY(-8px);
+  background-color: #ffffff;
+  box-shadow: 0px 42px 34px rgba(89, 86, 233, 0.05),
+              0px 15px 30px rgba(0, 0, 0, 0.06);
 }
 
-.mic{
-    display: block;
-    height: auto;
-    object-fit: cover;
-    max-width: 75px;
-    max-height: 50px;
-    margin: 0 auto 35px;
-
+.service-card-item:hover .category-rectangle,
+.service-card-item.active .category-rectangle {
+  opacity: 1;
+  transform: translate(-24px, 24px) scale(1);
 }
 
-.sett{
-    display: block;
-    height: auto;
-    object-fit: cover;
-    max-width: 75px;
-    max-height: 50px;
-    margin: 0 auto 35px;
+.card-h {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 120%;
+  color: rgba(30, 29, 76, 1);
+  margin-bottom: 15px;
+}
+
+.card-p {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 26px;
+  color: rgba(94, 98, 130, 1);
+  max-width: 195px;
+  margin: 0 auto;
+}
+
+.weather,
+.pplane,
+.mic,
+.sett {
+  display: block;
+  height: 52px;
+  max-width: 75px;
+  object-fit: contain;
+  margin: 0 auto 30px;
 }
 
 .destination-section{
@@ -698,12 +730,6 @@ body.overflow-hidden {
     }
 }
 
-@media (max-width: 480px) {
-    .dest-cards {
-        grid-template-columns: 1fr;
-    }
-}
-
 .book-section{
     /* border: 1px solid red; */
     display: flex;
@@ -742,96 +768,327 @@ body.overflow-hidden {
     text-wrap: nowrap;
 }
 
-.bookright{
-    flex: 1;
-    height: 100%;
+.bookright {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
 }
 
-.bookcard{
-    width: 78%;
-    height: 100%;
-    box-shadow: -10px 20px 20px -20px black;
-    
-    border-radius: 24px;
+/* Card cluster wrapper to anchor absolute elements */
+.bookcard-wrapper {
+  position: relative;
+  width: clamp(280px, 85%, 370px);
+  margin: 0 auto;
+  z-index: 1;
 }
 
-.greeceimg{
-    border-radius: 10px;
-    padding: clamp(0.875rem, 1vw, 1.25rem);
-}
-.greeceimg img{
-    width: 100%;
-    border-radius: 10px;
-}
-
-.bookcarddet{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    padding-inline: 20px;
-    height: 50%;
-    line-height: 3rem;
+/* Main Card (Trip to Greece) */
+.bookcard {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: clamp(18px, 2vw, 26px);
+  padding: clamp(14px, 1.5vw, 20px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.07);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
-.trip-name{
-    font-family: "Poppins";
-    font-weight: 400;
-    font-size: clamp(0.875rem, 1.25vw, 1.125rem);
-    line-height: 125%;
-    letter-spacing: 1.5%;
-    color: black;
+.bookcard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.1);
 }
 
-.bookactions{
-    display: flex;
-    gap: 5%;
-    justify-self: space-between;
+.greeceimg {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: clamp(12px, 1.5vw, 18px);
 }
 
-.bookactions button{
-    padding: 2%;
-    background-color: rgba(245, 245, 245, 1);
-    border-radius: 100%;
-    align-items: center;
-    
+.greeceimg .book-img {
+  width: 100%;
+  height: clamp(150px, 18vw, 195px);
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+  transition: transform 0.4s ease;
 }
 
-.bookactions i{
-    color: rgba(132, 130, 154, 1);
-    font-size: clamp(0.875rem, 1.25vw, 1.125rem);
+.bookcard:hover .greeceimg .book-img {
+  transform: scale(1.03);
 }
 
-.tripgoing{
-    display: flex;
-    justify-content: space-between;
-    
+.bookcarddet {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.2vw, 15px);
 }
 
-.tripbuilding{
-    display: flex;
-    align-items: center;
+.trip-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+  line-height: 125%;
+  letter-spacing: 0.015em;
+  color: #080809;
 }
 
-.tripbuilding i{
-    color: rgba(132, 130, 154, 1);
-    font-size: clamp(0.875rem, 1.25vw, 1.125rem);
-
+.trip-info {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: clamp(0.813rem, 1vw, 0.938rem);
+  line-height: 125%;
+  color: #84829a;
 }
 
-.tripheart i{
-    color: rgba(65, 82, 202, 1);
-    font-size: clamp(0.875rem, 1.25vw, 1.125rem);
+.bookactions {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.2vw, 16px);
+  margin: 4px 0;
 }
 
-.trip-info, .tripeople{
-    font-family: "Poppins";
-    font-weight: 400;
-    font-size: clamp(0.77rem, 1.1vw, 1rem);
-    line-height: 125%;
-    letter-spacing: -0.5%;
-    color: rgba(132, 130, 154, 1);
-    line-height: 2rem;
+.bookactions button {
+  width: clamp(34px, 3vw, 40px);
+  height: clamp(34px, 3vw, 40px);
+  border-radius: 50%;
+  background-color: #f5f5f7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #84829a;
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  transition: all 0.25s ease;
+}
 
+.bookactions button:hover {
+  background-color: #df6951;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(223, 105, 81, 0.3);
+}
+
+.tripgoing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.tripbuilding {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tripbuilding i {
+  color: #84829a;
+  font-size: clamp(0.875rem, 1.1vw, 1.1rem);
+}
+
+.tripeople {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: clamp(0.813rem, 1vw, 0.938rem);
+  color: #84829a;
+}
+
+.tripheart {
+  font-size: clamp(1.1rem, 1.2vw, 1.25rem);
+  color: #4152ca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.tripheart:hover {
+  transform: scale(1.2);
+  color: #df6951;
+}
+
+.bookcard-float {
+  position: absolute;
+  bottom: clamp(10px, 6%, 35px);
+  right: clamp(-35px, -8%, -15px);
+  width: clamp(230px, 75%, 265px);
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: clamp(12px, 1.4vw, 18px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12),
+              0 6px 15px rgba(0, 0, 0, 0.05);
+  z-index: 3;
+  animation: badgeFloat 4.5s ease-in-out infinite;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bookcard-float:hover {
+  animation-play-state: paused;
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 26px 55px rgba(0, 0, 0, 0.18);
+}
+
+.float-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(10px, 1.2vw, 14px);
+}
+
+.float-card-img {
+  width: clamp(44px, 4vw, 50px);
+  height: clamp(44px, 4vw, 50px);
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.float-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.float-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.float-status {
+  display: inline-block;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(0.7rem, 0.85vw, 0.813rem);
+  font-weight: 500;
+  color: #84829a;
+  margin-bottom: 2px;
+}
+
+.float-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(0.875rem, 1.1vw, 1.063rem);
+  font-weight: 600;
+  color: #080809;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.float-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress-info {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(0.7rem, 0.85vw, 0.813rem);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #080809;
+}
+
+.progress-pct {
+  color: #8a79df;
+  font-weight: 600;
+}
+
+.progress-label {
+  color: #84829a;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background-color: #f5f5f7;
+  border-radius: 30px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8a79df, #6d58c8);
+  border-radius: 30px;
+  position: relative;
+  animation: progressFill 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Shimmer pulse highlight on progress bar */
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: progressShimmer 2.5s infinite;
+}
+
+/* ==========================================================================
+   AMBIENT BLUE BLUR SHADOW (.step-shadow)
+   ========================================================================== */
+
+.step-shadow {
+  position: absolute;
+  top: -20%;
+  right: -25%;
+  width: clamp(340px, 45vw, 540px);
+  height: clamp(340px, 45vw, 540px);
+  background-image: url('Images/book-section/step-shadow.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.45;
+  z-index: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 40px rgba(89, 177, 230, 0.25));
+}
+
+/* ==========================================================================
+   KEYFRAME ANIMATIONS
+   ========================================================================== */
+
+@keyframes badgeFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 40%;
+  }
+}
+
+@keyframes progressShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 
@@ -906,24 +1163,248 @@ body.overflow-hidden {
     background-color: rgba(0, 99, 128, 1);
 }
 
-.testimonial{
-    margin-block: 2%;
-    /* border: 1px solid red; */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: clamp(2.5rem, 8vw, 7.5rem);
+.testimonial {
+  margin-block: clamp(40px, 6vw, 90px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(2rem, 5vw, 5rem);
+  position: relative;
 }
 
-@media (max-width: 768px) {
-    .testimonial {
-        flex-direction: column;
-    }
+.testleft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-    .testleft,
-    .testright {
-        width: 100%;
-    } 
+.testheader {
+  width: 100%;
+}
+
+.test-p {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.875rem, 1.25vw, 1.125rem);
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: left;
+  color: rgba(94, 98, 130, 1);
+  padding-block: clamp(10px, 1.5vw, 20px);
+  text-transform: uppercase;
+}
+
+.test-h {
+  font-family: 'Volkhov', serif;
+  font-weight: 700;
+  font-size: clamp(1.75rem, 3.8vw, 3.125rem);
+  line-height: 120%;
+  text-align: left;
+  text-transform: capitalize;
+  color: rgba(20, 24, 62, 1);
+}
+
+/* Pagination Dots */
+.test-dots {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: clamp(24px, 4vw, 55px);
+}
+
+.test-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #e5e5e5;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.test-dot.active {
+  background-color: #39425d;
+  transform: scale(1.15);
+}
+
+.test-dot:hover:not(.active) {
+  background-color: #c4c4c4;
+}
+
+/* Right Column: Stacked Cards Container */
+.testright {
+  flex: 1.1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  min-height: clamp(300px, 34vw, 360px);
+}
+
+.test-card-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: clamp(340px, 88%, 510px);
+  margin-right: clamp(40px, 5vw, 70px); /* Leave room for vertical chevrons */
+}
+
+/* Base Card Style */
+.test-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: clamp(24px, 3vw, 36px) clamp(24px, 3.5vw, 42px);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s ease,
+              box-shadow 0.4s ease;
+}
+
+/* Main Active Card (Front) */
+.test-card-main {
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08),
+              0 4px 15px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.test-card-main.animating {
+  animation: cardFadeSwap 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Circular Floating Avatar on Top-Left Corner */
+.test-avatar {
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: clamp(56px, 6vw, 68px);
+  height: clamp(56px, 6vw, 68px);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border: 3px solid #ffffff;
+  background-color: #ffffff;
+  z-index: 3;
+}
+
+.test-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Card Content & Typography */
+.test-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.test-quote {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: clamp(0.875rem, 1.1vw, 1rem);
+  line-height: 180%;
+  color: #5e6282;
+  margin-bottom: clamp(20px, 2.5vw, 34px);
+}
+
+.test-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+  line-height: 125%;
+  color: #5e6282;
+  margin-bottom: 5px;
+}
+
+.test-location {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: clamp(0.775rem, 0.95vw, 0.875rem);
+  color: #84829a;
+}
+
+/* Stacked Background Card (Underneath) */
+.test-card-back {
+  position: absolute;
+  top: clamp(45px, 6vw, 65px);
+  left: clamp(35px, 4vw, 50px);
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.65);
+  border: 2px solid #eae9e9;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.test-card-back .test-quote {
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.test-card-back .test-name {
+  color: #84829a;
+}
+
+.test-card-back .test-location {
+  color: #9fa1b5;
+}
+
+/* Vertical Navigation Arrows */
+.test-nav-arrows {
+  position: absolute;
+  top: 50%;
+  right: clamp(-55px, -6vw, -45px);
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 4;
+}
+
+.test-arrow {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #bcb8ce;
+  font-size: 16px;
+  transition: all 0.25s ease;
+}
+
+.test-arrow:hover {
+  color: #39425d;
+  background-color: rgba(245, 245, 247, 0.9);
+  transform: scale(1.15);
+}
+
+.test-arrow:active {
+  transform: scale(0.95);
+}
+
+/* Card Transition Animation */
+@keyframes cardFadeSwap {
+  0% {
+    opacity: 0.4;
+    transform: translateY(8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .logosection {
@@ -1210,76 +1691,43 @@ body.overflow-hidden {
 }
 
 
+/* ==========================================================================
+   TABLET LANDSCAPE & MEDIUM SCREENS (<= 992px)
+   ========================================================================== */
+@media (max-width: 992px) {
+  .service-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 36px 24px;
+    padding: 20px 15px;
+  }
+
+  .service-card {
+    padding: 35px 20px;
+  }
+
+  .category-rectangle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .service-card-item:hover .category-rectangle,
+  .service-card-item.active .category-rectangle {
+    transform: translate(-15px, 15px) scale(1);
+  }
+
+  .category-pattern {
+    max-width: 80px;
+    top: 5px;
+    right: 15px;
+    opacity: 0.7;
+  }
+}
+
+/* ==========================================================================
+   TABLET & MOBILE NAVIGATION (<= 768px)
+   ========================================================================== */
 @media (max-width: 768px) {
-    .footersection {
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .footelem{
-        width: 100%;
-    } 
-
-    .footelemstore-con{
-        justify-content: space-evenly;
-    }
-
-    .footelem {
-        text-align:center;
-    }
-
-    .blckstore{
-        justify-content: center;
-    }
-
-    .hero-buttonss{
-    justify-content: space-evenly;
-    width: 100%;
-}
-
-}
-
-@media (max-width: 480px) {
-    .footcenter{
-        text-align: left;
-        flex-direction: column;
-    }
-
-    .hero-buttonss{
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        margin-top: 28px;
-    }
-}
-
-@media (max-width: 768px) {
-    .navibar {
-        display: flex;
-        flex-direction: row; /* Logo and hamburger stay on the same line */
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 0;
-    }
-
-    .navimg {
-        width: auto;
-        padding: 0;
-    }
-
-    .hero-section {
-        flex-direction: column-reverse;
-    }
-
-    .hero-best, .hero-travel, .hero-built {
-        text-align: center;
-    }
-}
-
-
-@media (max-width: 768px) {
-  /* 1. Navbar layout on mobile */
+  /* 1. Navbar layout */
   .navibar {
     display: flex;
     flex-direction: row;
@@ -1288,17 +1736,22 @@ body.overflow-hidden {
     padding: 15px 0;
   }
 
-  /* 2. Move Hamburger to the LEFT side */
-  .burger {
-    display: flex;
-    order: -1; /* Puts the hamburger on the far left */
+  .navimg {
+    width: auto;
+    padding: 0;
   }
 
-  /* 3. Sliding Drawer coming from the LEFT */
+  /* 2. Hamburger on the left side */
+  .burger {
+    display: flex;
+    order: -1;
+  }
+
+  /* 3. Off-canvas drawer sliding from the left */
   .linkcon {
     position: fixed;
     top: 0;
-    left: 0; /* Positioned on the left */
+    left: 0;
     right: auto;
     width: min(80vw, 320px);
     height: 100vh;
@@ -1306,14 +1759,13 @@ body.overflow-hidden {
     flex-direction: column;
     align-items: flex-start;
     padding: 30px 24px;
-    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15); /* Shadow cast to the right */
-    transform: translateX(-100%); /* Hidden off-screen to the left */
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+    transform: translateX(-100%);
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 999;
     overflow-y: auto;
   }
 
-  /* When opened: slides in from the left */
   .linkcon.is-active {
     transform: translateX(0);
   }
@@ -1323,7 +1775,6 @@ body.overflow-hidden {
     box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
   }
 
-  /* Drawer Top Header (Logo on left, Close X on right) */
   .drawer-header {
     display: flex;
     justify-content: space-between;
@@ -1348,7 +1799,6 @@ body.overflow-hidden {
     transform: rotate(90deg);
   }
 
-  /* Vertical link stack */
   .Links-Container {
     flex-direction: column;
     align-items: flex-start;
@@ -1372,14 +1822,192 @@ body.overflow-hidden {
     text-align: center;
     margin-top: 10px;
   }
+
+  /* 4. Hero section */
+  .hero-section {
+    flex-direction: column-reverse;
+  }
+
+  .hero-best, .hero-travel, .hero-built {
+    text-align: center;
+  }
+
+  /* 5. Services section */
+  .service-section {
+    padding: 40px 0;
+  }
+
+  .service-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 30px;
+    padding: 20px 10px;
+  }
+
+  .service-card {
+    padding: 35px 20px;
+  }
+
+  .category-pattern {
+    max-width: 90px;
+    top: 5px;
+    right: 10px;
+  }
+
+  /* 6. Destinations section */
+  .dest-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* 7. Booking section */
+  .book-section {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .bookleft,
+  .bookright {
+    width: 100%;
+  }
+
+  .bookcard-wrapper {
+    margin: 20px auto 40px;
+  }
+
+  .step-shadow {
+    width: 380px;
+    height: 380px;
+    top: -15%;
+    right: -10%;
+    opacity: 0.38;
+  }
+
+  /* 8. Testimonials section */
+  .testimonial {
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .testleft,
+  .testright {
+    width: 100%;
+  }
+
+  .test-dots {
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .test-card-wrapper {
+    margin-right: 0;
+    max-width: 440px;
+    margin-inline: auto;
+  }
+
+  .test-nav-arrows {
+    right: -35px;
+  }
+
+  /* 9. Footer section */
+  .footersection {
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footelem {
+    width: 100%;
+    text-align: center;
+  }
+
+  .footelemstore-con {
+    justify-content: space-evenly;
+  }
+
+  .blckstore {
+    justify-content: center;
+  }
+
+  .hero-buttonss {
+    justify-content: space-evenly;
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   MOBILE PHONES (<= 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .hero-buttonss {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 28px;
+  }
+
+  .service-cards {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .dest-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .footcenter {
+    text-align: left;
+    flex-direction: column;
+  }
+
+  .bookcard-wrapper {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .bookcard-float {
+    right: 0;
+    bottom: -22px;
+    width: clamp(210px, 85%, 245px);
+    padding: 10px 14px;
+  }
+
+  .step-shadow {
+    width: 290px;
+    height: 290px;
+    right: -5%;
+    top: -10%;
+    opacity: 0.3;
+  }
+
+  .test-card-wrapper {
+    max-width: 100%;
+    margin-inline: 0;
+  }
+
+  .test-avatar {
+    top: -24px;
+    left: -12px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .test-card-back {
+    top: 30px;
+    left: 20px;
+  }
+
+  .test-nav-arrows {
+    position: relative;
+    top: unset;
+    right: unset;
+    transform: none;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 55px;
+    gap: 24px;
+  }
 }
 
 
+
 /* ----------- DARK MODE --------- */
-
-
-
-
-
-
 

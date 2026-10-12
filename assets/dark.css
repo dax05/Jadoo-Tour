@@ -1,0 +1,287 @@
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme Toggle Button in Header */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--navlinks);
+  color: var(--navlinks);
+  cursor: pointer;
+  background: transparent;
+  font-size: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  color: #df6951;
+  border-color: #df6951;
+}
+
+/* Base Dark Theme Colors */
+body.dark-mode {
+  --bgwhite: #0f1422;
+  --navlinks: #e2e8f0;
+  background-color: #0f1422;
+  color: #a0aec0;
+}
+
+/* Dim top-right yellow hero decor blob in dark mode */
+body.dark-mode .img4 {
+  opacity: 0.12;
+}
+
+/* Headings in Dark Mode */
+body.dark-mode .hero-travel,
+body.dark-mode .dest-main,
+body.dark-mode .service-tagline,
+body.dark-mode .book-h,
+body.dark-mode .test-h,
+body.dark-mode .card-h,
+body.dark-mode .footelem-h,
+body.dark-mode .footsup h3,
+body.dark-mode .trip-name {
+  color: #f8fafc;
+}
+
+/* Body / Secondary Text in Dark Mode */
+body.dark-mode .hero-built,
+body.dark-mode .card-p,
+body.dark-mode .dest-subhead,
+body.dark-mode .service-category,
+body.dark-mode .book-p,
+body.dark-mode .test-p,
+body.dark-mode .stepcon-p,
+body.dark-mode .trip-info,
+body.dark-mode .tripeople,
+body.dark-mode .footelem-p,
+body.dark-mode .footsub p,
+body.dark-mode .footelemdisc p {
+  color: #94a3b8;
+}
+
+body.dark-mode .stepcon-h {
+  color: #cbd5e1;
+}
+
+/* Navbar in Dark Mode */
+body.dark-mode .links,
+body.dark-mode .ddown {
+  color: #e2e8f0;
+}
+
+body.dark-mode .ddown option {
+  background-color: #0f1422;
+  color: #e2e8f0;
+}
+
+body.dark-mode .signupbtn {
+  border-color: #e2e8f0;
+  color: #e2e8f0;
+}
+
+body.dark-mode .signupbtn:hover {
+  background-color: #df6951;
+  border-color: #df6951;
+  color: #fff;
+}
+
+/* Service Cards in Dark Mode */
+body.dark-mode .service-card {
+  background-color: #171e31;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* Destination Cards in Dark Mode */
+body.dark-mode .d-card-ut {
+  background-color: #171e31;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .ct-name,
+body.dark-mode .ct-price,
+body.dark-mode .dest-dz {
+  background-color: transparent;
+  color: #e2e8f0;
+}
+
+/* Booking Card in Dark Mode */
+body.dark-mode .bookcard {
+  background-color: #171e31;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .bookactions button {
+  background-color: #242e47;
+}
+
+body.dark-mode .bookactions i {
+  color: #94a3b8;
+}
+
+/* Newsletter Subscription in Dark Mode */
+body.dark-mode .subbg {
+  background-color: #1a2238;
+}
+
+body.dark-mode .subcon p {
+  color: #f8fafc;
+}
+
+body.dark-mode .subinfo input {
+  background-color: #0f1422;
+  color: #fff;
+  border: 1px solid #2d3748;
+}
+
+body.dark-mode .subinfo input::placeholder {
+  color: #718096;
+}
+
+/* Footer & App Store Badges in Dark Mode */
+body.dark-mode .soc-button {
+  background-color: #171e31;
+  color: #e2e8f0;
+}
+
+body.dark-mode .blckstore {
+  background-color: #171e31;
+  border: 1px solid #2d3748;
+}
+
+body.dark-mode .hero-img::before {
+  background: radial-gradient(
+    circle,
+    rgba(223, 105, 81, 0.35) 0%,
+    rgba(241, 165, 1, 0.18) 45%,
+    transparent 70%
+  );
+  filter: blur(50px);
+}
+
+body.dark-mode .logosection::before {
+  background: linear-gradient(to right, #0f1422, transparent);
+}
+
+body.dark-mode .logosection::after {
+  background: linear-gradient(to left, #0f1422, transparent);
+}
+
+body.dark-mode .logoitem img {
+  filter: grayscale(100%) brightness(1.2);
+  opacity: 0.45;
+}
+
+body.dark-mode .logoitem:hover img {
+  filter: grayscale(0%) brightness(1);
+  opacity: 1;
+}
+
+body.dark-mode .burger-line {
+  background-color: #f8fafc;
+}
+
+body.dark-mode .service-card {
+  background-color: #171e31;
+  box-shadow: none;
+}
+
+body.dark-mode .service-card-item:hover .service-card,
+body.dark-mode .service-card-item.active .service-card {
+  background-color: #1c253d;
+  box-shadow: 0px 30px 45px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .category-pattern {
+  opacity: 0.25;
+}
+
+body.dark-mode .bookcard-float {
+  background-color: rgba(23, 30, 49, 0.95);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5),
+              0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .float-title,
+body.dark-mode .progress-info {
+  color: #f8fafc;
+}
+
+body.dark-mode .float-status,
+body.dark-mode .progress-label {
+  color: #94a3b8;
+}
+
+body.dark-mode .progress-track {
+  background-color: #242e47;
+}
+
+body.dark-mode .progress-fill {
+  background: linear-gradient(90deg, #a78bfa, #8b5cf6);
+}
+
+body.dark-mode .step-shadow {
+  opacity: 0.28;
+  filter: drop-s
+}
+
+body.dark-mode .test-card-main {
+  background-color: #171e31;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .test-card-back {
+  background-color: rgba(23, 30, 49, 0.45);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .test-avatar {
+  border-color: #171e31;
+  background-color: #171e31;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .test-quote {
+  color: #cbd5e1;
+}
+
+body.dark-mode .test-name {
+  color: #f8fafc;
+}
+
+body.dark-mode .test-location {
+  color: #94a3b8;
+}
+
+body.dark-mode .test-card-back .test-name {
+  color: #64748b;
+}
+
+body.dark-mode .test-card-back .test-location {
+  color: #475569;
+}
+
+body.dark-mode .test-dot {
+  background-color: #334155;
+}
+
+body.dark-mode .test-dot.active {
+  background-color: #df6951;
+}
+
+body.dark-mode .test-arrow {
+  color: #64748b;
+}
+
+body.dark-mode .test-arrow:hover {
+  color: #f8fafc;
+  background-color: #242e47;
+}
