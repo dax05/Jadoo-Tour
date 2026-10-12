@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadoo — Login & Sign Up</title>
+  <link rel="icon" type="image/png" href="assets/Images/jadoo-favicon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap"
+    rel="stylesheet">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/dark.css">
+  <link rel="stylesheet" href="assets/auth.css">
+</head>
+
+<body class="auth-body">
+
+  <!-- Decorative Background Glow & Blobs -->
+  <div class="auth-bg-blob">
+    <img src="assets/Images/hero-section/hero-right-decor.svg" alt="" class="auth-blob-img">
+  </div>
+  <div class="auth-radial-glow"></div>
+
+  <!-- Flying Airplanes -->
+  <div class="auth-plane auth-plane-left">
+    <img src="assets/Images/hero-section/hero-plane-left.svg" alt="">
+  </div>
+  <div class="auth-plane auth-plane-right">
+    <img src="assets/Images/hero-section/hero-plane-right.svg" alt="">
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="auth-topbar">
+    <a href="index.html" class="auth-back-btn" id="auth-back-btn" aria-label="Back to Jadoo Home">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span>Back to Jadoo</span>
+    </a>
+
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </header>
+
+  <!-- Main Auth Card Container -->
+  <main class="auth-main">
+    <section class="auth-card" id="auth-card">
+
+      <!-- Branding Header -->
+      <div class="auth-brand">
+        <a href="index.html" class="auth-logo-link">
+          <img src="assets/Images/navigation-section/Logo.svg" alt="Jadoo" class="Top-Logo auth-logo">
+        </a>
+        <h1 class="auth-title" id="auth-title">Welcome back!</h1>
+        <p class="auth-subtitle" id="auth-subtitle">Log in to manage your bookings and explore the world</p>
+      </div>
+
+      <!-- Tab Pill Switcher -->
+      <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+        <button type="button" class="auth-tab active" id="tab-login" role="tab" aria-selected="true" data-mode="login">
+          Log In
+        </button>
+        <button type="button" class="auth-tab" id="tab-signup" role="tab" aria-selected="false" data-mode="signup">
+          Sign Up
+        </button>
+        <span class="auth-tab-slider" id="tab-slider"></span>
+      </div>
+
+      <!-- Feedback Banner (Success / Info Toast) -->
+      <div class="auth-alert" id="auth-alert" role="alert" aria-live="polite">
+        <i class="fa-solid fa-circle-check alert-icon"></i>
+        <span class="alert-text" id="alert-text"></span>
+      </div>
+
+      <!-- Authentication Form -->
+      <form class="auth-form" id="auth-form" novalidate autocomplete="on">
+
+        <!-- Full Name Group (Signup only) -->
+        <div class="auth-group auth-group-toggleable" id="group-name">
+          <label for="name" class="auth-label">Full Name</label>
+          <div class="auth-input-wrapper">
+            <i class="fa-regular fa-user auth-field-icon"></i>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              class="auth-input"
+              placeholder="e.g. John Doe"
+              autocomplete="name"
+            />
+          </div>
+          <span class="auth-error-msg" id="name-error"></span>
+        </div>
+
+        <!-- Email Address Group -->
+        <div class="auth-group" id="group-email">
+          <label for="email" class="auth-label">Email Address</label>
+          <div class="auth-input-wrapper">
+            <i class="fa-regular fa-envelope auth-field-icon"></i>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="auth-input"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+          <span class="auth-error-msg" id="email-error"></span>
+        </div>
+
+        <!-- Password Group -->
+        <div class="auth-group" id="group-password">
+          <label for="password" class="auth-label">Password</label>
+          <div class="auth-input-wrapper">
+            <i class="fa-solid fa-lock auth-field-icon"></i>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="auth-input"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            />
+            <button type="button" class="auth-eye-btn" id="toggle-password" aria-label="Toggle password visibility">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+          <span class="auth-error-msg" id="password-error"></span>
+        </div>
+
+        <!-- Confirm Password Group (Signup only) -->
+        <div class="auth-group auth-group-toggleable" id="group-confirm">
+          <label for="confirm-password" class="auth-label">Confirm Password</label>
+          <div class="auth-input-wrapper">
+            <i class="fa-solid fa-shield-halved auth-field-icon"></i>
+            <input
+              type="password"
+              id="confirm-password"
+              name="confirm-password"
+              class="auth-input"
+              placeholder="Re-enter password"
+              autocomplete="new-password"
+            />
+            <button type="button" class="auth-eye-btn" id="toggle-confirm" aria-label="Toggle confirm password visibility">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+          <span class="auth-error-msg" id="confirm-error"></span>
+        </div>
+
+        <!-- Form Helper Row (Remember Me & Forgot Password) -->
+        <div class="auth-helpers" id="auth-helpers">
+          <label class="auth-checkbox-label">
+            <input type="checkbox" id="remember-me" name="remember" class="auth-checkbox">
+            <span class="auth-checkbox-custom"></span>
+            <span class="auth-checkbox-text">Remember me</span>
+          </label>
+          <a href="#" class="auth-forgot-link" id="auth-forgot-link">Forgot Password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="auth-submit-btn" id="auth-submit-btn">
+          <span id="submit-text">Log In</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+      </form>
+
+      <!-- Social Login Divider -->
+      <div class="auth-divider">
+        <span>or continue with</span>
+      </div>
+
+      <!-- Social Login Buttons -->
+      <div class="auth-socials">
+        <button type="button" class="auth-social-btn" aria-label="Sign in with Google">
+          <i class="fa-brands fa-google"></i>
+          <span>Google</span>
+        </button>
+        <button type="button" class="auth-social-btn" aria-label="Sign in with Apple">
+          <i class="fa-brands fa-apple"></i>
+          <span>Apple</span>
+        </button>
+        <button type="button" class="auth-social-btn" aria-label="Sign in with Facebook">
+          <i class="fa-brands fa-facebook-f"></i>
+          <span>Facebook</span>
+        </button>
+      </div>
+
+      <!-- Bottom Switch Prompt -->
+      <div class="auth-footer-prompt">
+        <span id="prompt-text">Don't have an account?</span>
+        <button type="button" class="auth-inline-switch" id="auth-inline-switch">Sign Up</button>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="auth-page-footer">
+    <p>© 2026 Jadoo. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="auth.js"></script>
+</body>
+
+</html>

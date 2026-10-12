@@ -7,7 +7,18 @@ const navBackdrop = document.getElementById("nav-backdrop");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const logoImages = document.querySelectorAll(".Top-Logo");
 
-// 
+// Sticky navbar on scroll
+if (navbar) {
+  window.addEventListener("scroll", () => {
+    if (window.scrollY >= 50) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
+  });
+}
+
+// Mobile drawer navigation
 function openMenu() {
   if (burgerMenu) burgerMenu.classList.add("is-active");
   if (navDrawer) navDrawer.classList.add("is-active");
@@ -79,3 +90,97 @@ if (themeToggleBtn) {
     updateLogo(isDark);
   });
 }
+
+
+const testimonialList = [
+  {
+    quote: "“On the Windows talking painted pasture yet its express parties use. Sure last upon he same as knew next. Of believed or diverted no.”",
+    name: "Mike Taylor",
+    location: "Lahore, Pakistan",
+    avatar: "assets/Images/testimonial-section/author-mike.jpg"
+  },
+  {
+    quote: "“Jadoo made our corporate retreat to Europe completely stress-free. Every detail from booking to flights was seamless!”",
+    name: "Chris Thomas",
+    location: "CEO of Red Button",
+    avatar: "assets/Images/testimonial-section/author-chris.jpg"
+  },
+  {
+    quote: "“After going through a number of sites, I had to settle for Jadoo because honestly it was a no brainer trying anyone else.”",
+    name: "Sarah Connor",
+    location: "Globetrotter & Travel Blogger",
+    avatar: "assets/Images/testimonial-section/author-sarah.jpg"
+  }
+];
+
+let currentTestimonialIdx = 0;
+
+function updateTestimonial(index) {
+  const total = testimonialList.length;
+  currentTestimonialIdx = (index + total) % total;
+  const nextIdx = (currentTestimonialIdx + 1) % total;
+
+  const current = testimonialList[currentTestimonialIdx];
+  const next = testimonialList[nextIdx];
+
+  // Foreground Card Elements
+  const mainCard = document.getElementById("test-main-card");
+  const mainAvatar = document.getElementById("test-main-avatar");
+  const mainQuote = document.getElementById("test-main-quote");
+  const mainName = document.getElementById("test-main-name");
+  const mainLocation = document.getElementById("test-main-location");
+
+  // Background Card Elements
+  const backQuote = document.getElementById("test-back-quote");
+  const backName = document.getElementById("test-back-name");
+  const backLocation = document.getElementById("test-back-location");
+
+  if (mainCard) {
+    mainCard.classList.remove("animating");
+    void mainCard.offsetWidth; // Trigger reflow
+    mainCard.classList.add("animating");
+  }
+
+  if (mainAvatar) {
+    mainAvatar.src = current.avatar;
+    mainAvatar.alt = current.name;
+  }
+  if (mainQuote) mainQuote.textContent = current.quote;
+  if (mainName) mainName.textContent = current.name;
+  if (mainLocation) mainLocation.textContent = current.location;
+
+  // Update background stacked card
+  if (backQuote) backQuote.textContent = next.quote;
+  if (backName) backName.textContent = next.name;
+  if (backLocation) backLocation.textContent = next.location;
+
+  // Update pagination dots
+  const dots = document.querySelectorAll(".test-dot");
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle("active", idx === currentTestimonialIdx);
+  });
+}
+
+// Navigation button listeners
+const prevBtn = document.getElementById("test-prev");
+const nextBtn = document.getElementById("test-next");
+
+if (prevBtn) {
+  prevBtn.addEventListener("click", () => {
+    updateTestimonial(currentTestimonialIdx - 1);
+  });
+}
+
+if (nextBtn) {
+  nextBtn.addEventListener("click", () => {
+    updateTestimonial(currentTestimonialIdx + 1);
+  });
+}
+
+// Pagination dot listeners
+document.querySelectorAll(".test-dot").forEach((dot) => {
+  dot.addEventListener("click", (e) => {
+    const idx = parseInt(e.target.dataset.index, 10);
+    if (!isNaN(idx)) updateTestimonial(idx);
+  });
+});
