@@ -1,0 +1,10 @@
+node_modules/
+dist/
+server/dist/
+.env
+REQUIRED_INPUTS.txt
+*.log
+*.map
+scratch/
+.DS_Store
+Thumbs.db
