@@ -1,0 +1,50 @@
+================================================================================
+          JADOO TRAVEL — BACKEND & DATABASE CONFIGURATION INPUTS (TEMPLATE)
+================================================================================
+
+Please copy this file to REQUIRED_INPUTS.txt and fill in your actual credentials.
+The Express server will automatically read values from REQUIRED_INPUTS.txt (or from 
+server/.env). You can either provide a single connection string (DATABASE_URL) 
+OR provide the individual DB parameters.
+
+--------------------------------------------------------------------------------
+1. POSTGRESQL DATABASE CREDENTIALS (REQUIRED)
+--------------------------------------------------------------------------------
+
+Option A: Complete Connection String (Recommended if using Neon, Supabase, Render, etc.)
+Format: postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DATABASE_NAME>?sslmode=require
+DATABASE_URL=
+
+Option B: Individual Parameters (Used if DATABASE_URL is left blank)
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password_here
+DB_NAME=jadoo_travel_db
+DB_SSL=false
+
+--------------------------------------------------------------------------------
+2. SERVER APPLICATION SETTINGS
+--------------------------------------------------------------------------------
+PORT=5000
+NODE_ENV=development
+CLIENT_URL=http://localhost:8080
+JWT_SECRET=your_jwt_secret_key_here
+JWT_EXPIRES_IN=7d
+
+--------------------------------------------------------------------------------
+3. INSTRUCTIONS TO SET UP YOUR POSTGRES DATABASE (If you haven't created it yet)
+--------------------------------------------------------------------------------
+If you have PostgreSQL installed locally on your computer:
+1. Open pgAdmin, or run 'psql -U postgres' in your terminal.
+2. Run this command to create the database:
+   CREATE DATABASE jadoo_travel_db;
+3. Replace 'your_postgres_password_here' above with your actual postgres password.
+4. Run the automated table creation and seed script:
+   npm run db:setup
+
+If you prefer a 100% FREE cloud PostgreSQL database (Zero install on your PC):
+1. Go to https://neon.tech or https://supabase.com
+2. Create a free project and copy the connection string.
+3. Paste it into 'DATABASE_URL' above.
+4. Run: npm run db:setup
