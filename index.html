@@ -4,14 +4,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Travel Agency Landing Page</title>
+  <title>Jadoo — Best Destinations & Travel Booking Agency</title>
+  <meta name="description" content="Discover top travel destinations around the world with Jadoo. Seamless flight bookings, corporate retreats, and hotel packages.">
   <link rel="icon" type="image/png" href="assets/Images/jadoo-favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600;700&family=Roboto:wght@400&family=Volkhov:wght@700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
   <link rel="stylesheet" href="assets/styles.css">
   <link rel="stylesheet" href="assets/dark.css">
@@ -25,11 +27,11 @@
       <img src="assets/Images/hero-section/hero-right-decor.svg" class="pilabg">
     </div>
 
-    <!-- Background Backdrop Overlay -->
-    <div class="nav-backdrop" id="nav-backdrop"></div>
-
     <!-- NAVIGATION SECTION -->
     <nav class="navibar" id="navibar">
+
+      <!-- Background Backdrop Overlay -->
+      <div class="nav-backdrop" id="nav-backdrop"></div>
 
       <div class="navimg">
         <img src="assets/Images/navigation-section/Logo.svg" class="Top-Logo" alt="Jadoo Logo">
@@ -45,40 +47,39 @@
         </div>
 
         <ul class="Links-Container">
-          <li class="link-items"><a href="#" class="links">Destinations</a></li>
-          <li class="link-items"><a href="#" class="links">Hotels</a></li>
-          <li class="link-items"><a href="#" class="links">Flights</a></li>
-          <li class="link-items"><a href="#" class="links">Bookings</a></li>
+          <li class="link-items"><a href="#destinations" class="links">Destinations</a></li>
+          <li class="link-items"><a href="#services" class="links">Services</a></li>
+          <li class="link-items"><a href="#bookings" class="links">Bookings</a></li>
+          <li class="link-items"><a href="#testimonials" class="links">Testimonials</a></li>
+
           <!-- Guest Auth Links (when logged out) -->
           <li class="link-items auth-guest-item"><a href="auth.html?mode=login" class="links">Login</a></li>
-          <a href="auth.html?mode=signup" class="signupbtn auth-guest-item"> Sign up </a>
+          <li class="link-items auth-guest-item"><a href="auth.html?mode=signup" class="signupbtn"> Sign up </a></li>
 
           <!-- User Profile & Logout (when logged in) -->
           <li class="link-items auth-user-item" id="nav-user-item" style="display: none;">
-            <div class="nav-user-profile">
+            <a href="profile.html" class="nav-user-profile" title="View Travel Profile & Account">
               <span class="nav-user-avatar" id="nav-user-avatar">J</span>
               <span class="nav-user-name" id="nav-user-name">Hi, Traveler</span>
-            </div>
+            </a>
           </li>
-          <button type="button" class="nav-logout-btn auth-user-item" id="nav-logout-btn" style="display: none;" title="Log out">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            <span>Log out</span>
-          </button>
+          <li class="link-items auth-user-item" id="nav-logout-li" style="display: none;">
+            <button type="button" class="nav-logout-btn" id="nav-logout-btn"
+              title="Log out">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Log out</span>
+            </button>
+          </li>
 
-          <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
-            <i class="fa-solid fa-moon"></i>
-          </button>
-
-
-          <select name="Language" id="lang" class="ddown">
-            <option value="English">EN</option>
-            <option value="UKeng">UK</option>
-            <option value="USeng">US</option>
-          </select>
+          <li class="drawer-utils">
+            <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
+              <i class="fa-solid fa-moon"></i>
+            </button>
+          </li>
         </ul>
       </div>
 
-      <!-- Mobile -->
+      <!-- Mobile Burger Button -->
       <button class="burger" id="burger-menu" aria-label="Toggle navigation">
         <span class="burger-line"></span>
         <span class="burger-line"></span>
@@ -105,14 +106,12 @@
           </div>
 
           <div class="hero-buttonss">
-            <div class="button1">
-              <button class="findbtn">Find Out More</button>
-            </div>
+            <a href="#destinations" class="findbtn" id="hero-find-btn">Find Out More</a>
 
-            <div class="button2">
-              <button class="play-demo"><i class="fa-solid fa-play"></i></button>
-              <p class="playdemotxt"> Play Demo </p>
-            </div>
+            <a href="#testimonials" class="button2" id="hero-play-btn" aria-label="Explore testimonials and reviews">
+              <span class="play-demo"><i class="fa-solid fa-play"></i></span>
+              <span class="playdemotxt">Play Demo</span>
+            </a>
           </div>
 
         </div>
@@ -121,7 +120,7 @@
         <div class="hero-img">
 
           <div class="img1">
-            <img src="assets/Images/hero-section/hero-image.png" class="ladki">
+            <img src="assets/Images/hero-section/hero-image.png" class="hero-main-img ladki" alt="Traveler exploring world destinations">
           </div>
 
           <div class="img2">
@@ -138,7 +137,7 @@
       </div>
     </section>
 
-    <section class="service-section">
+    <section class="service-section" id="services">
       <!-- Decorative 4-plus grid pattern in background -->
       <div class="category-pattern">
         <img src="assets/Images/service-section/category-patt.png" alt="">
@@ -153,7 +152,8 @@
 
         <div class="service-card-item">
           <article class="service-card">
-            <img src="assets/Images/service-section/category-1-satellite-dish.svg" class="weather" alt="Calculated Weather" />
+            <img src="assets/Images/service-section/category-1-satellite-dish.svg" class="weather"
+              alt="Calculated Weather" />
             <h3 class="card-h">Calculated Weather</h3>
             <p class="card-p">Built Wicket longer admire do barton vanity itself do in it.</p>
           </article>
@@ -199,7 +199,7 @@
     </section>
 
 
-    <section class="destination-section">
+    <section class="destination-section" id="destinations">
       <div class="dest-header">
         <p class="dest-subhead">Top Selling</p>
         <h2 class="dest-main">Top Destination</h2>
@@ -207,46 +207,174 @@
 
       <div class="dest-cards">
 
-        <article class="destcards">
-          <img src="assets/Images/destination-section/destination-1-rome.png" class="dest-img" alt="">
-          <div class="d-card-ut">
-            <span class="ct-name">Rome</span>
-            <span class="ct-price">$4.2K</span>
-            <p class="dest-dz"> 12 Days Trip</p>
-            <i class="fa-solid fa-paper-plane"></i>
+        <article class="destcards static-destcard" data-dest-id="static-rome" tabindex="0" role="button" aria-label="View details for Rome, Italy">
+          <div class="dest-img-wrap">
+            <img src="assets/Images/destination-section/destination-1-rome.png" class="dest-img" alt="Rome, Italy">
           </div>
-
+          <div class="d-card-ut">
+            <div class="d-card-row">
+              <span class="ct-name">Rome, Italy</span>
+              <span class="ct-price">$5.42k</span>
+            </div>
+            <div class="d-card-sub">
+              <i class="fa-solid fa-location-arrow"></i>
+              <p class="dest-dz">10 Days Trip</p>
+            </div>
+            <div class="dest-card-actions">
+              <button type="button" class="dest-book-btn" data-dest-id="static-rome" data-title="Rome, Italy">
+                <span>Book This Trip</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
         </article>
 
-        <article class="destcards">
-          <img src="assets/Images/destination-section/destination-2-london.jpg" class="dest-img" alt="">
-          <div class="d-card-ut">
-            <span class="ct-name">London, UK</span>
-            <span class="ct-price">$4.2K</span>
-            <p class="dest-dz"> 12 Days Trip</p>
-            <i class="fa-solid fa-paper-plane"></i>
+        <article class="destcards static-destcard" data-dest-id="static-london" tabindex="0" role="button" aria-label="View details for London, UK">
+          <div class="dest-img-wrap">
+            <img src="assets/Images/destination-section/destination-2-london.jpg" class="dest-img" alt="London, UK">
           </div>
-
+          <div class="d-card-ut">
+            <div class="d-card-row">
+              <span class="ct-name">London, UK</span>
+              <span class="ct-price">$4.2k</span>
+            </div>
+            <div class="d-card-sub">
+              <i class="fa-solid fa-location-arrow"></i>
+              <p class="dest-dz">12 Days Trip</p>
+            </div>
+            <div class="dest-card-actions">
+              <button type="button" class="dest-book-btn" data-dest-id="static-london" data-title="London, UK">
+                <span>Book This Trip</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
         </article>
 
-        <article class="destcards">
-          <img src="assets/Images/destination-section/destination-3-europe.png" class="dest-img" alt="">
-          <div class="d-card-ut">
-            <span class="ct-name">Full Europe</span>
-            <span class="ct-price">$15K</span>
-            <p class="dest-dz"> 28 Days Trip</p>
-            <i class="fa-solid fa-paper-plane"></i>
-
+        <article class="destcards static-destcard" data-dest-id="static-europe" tabindex="0" role="button" aria-label="View details for Full Europe">
+          <div class="dest-img-wrap">
+            <img src="assets/Images/destination-section/destination-3-europe.png" class="dest-img" alt="Full Europe">
           </div>
-
-
+          <div class="d-card-ut">
+            <div class="d-card-row">
+              <span class="ct-name">Full Europe</span>
+              <span class="ct-price">$15k</span>
+            </div>
+            <div class="d-card-sub">
+              <i class="fa-solid fa-location-arrow"></i>
+              <p class="dest-dz">28 Days Trip</p>
+            </div>
+            <div class="dest-card-actions">
+              <button type="button" class="dest-book-btn" data-dest-id="static-europe" data-title="Full Europe">
+                <span>Book This Trip</span>
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
         </article>
 
       </div>
 
+      <!-- Explore More Destinations CTA -->
+      <div class="dest-actions">
+        <button type="button" class="explore-dest-btn" id="explore-dest-btn" aria-expanded="false" aria-controls="destination-explorer">
+          <i class="fa-solid fa-compass"></i>
+          <span>Explore Destination</span>
+          <i class="fa-solid fa-arrow-down-long explore-chevron"></i>
+        </button>
+      </div>
+
+      <!-- Dynamic Destination Explorer Panel -->
+      <div class="destination-explorer" id="destination-explorer" style="display: none;">
+        <div class="explorer-header">
+          <div class="explorer-badge">
+            <i class="fa-solid fa-earth-americas"></i>
+            <span>Live World Explorer</span>
+          </div>
+          <h3 class="explorer-title">Find Your Next Adventure</h3>
+          <p class="explorer-subtitle">Search live destinations across the globe, discover real photography, trip estimates, and detailed guides powered by free live API.</p>
+        </div>
+
+        <!-- Search Bar and Category Filters -->
+        <div class="explorer-search-wrapper">
+          <form class="dest-search-form" id="dest-search-form" role="search">
+            <div class="dest-search-box">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input 
+                type="text" 
+                id="dest-search-input" 
+                class="dest-search-input" 
+                placeholder="Search any destination, city, or country (e.g. Tokyo, Paris, Bali, Cairo)..." 
+                autocomplete="off"
+                aria-label="Search destinations"
+              />
+              <button type="button" id="dest-search-clear" class="search-clear-btn" aria-label="Clear search" style="display: none;">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              <button type="submit" class="search-submit-btn" aria-label="Search">
+                <span>Search</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </form>
+
+          <div class="dest-filter-bar">
+            <span class="filter-label"><i class="fa-solid fa-filter"></i> Trending:</span>
+            <div class="filter-pills-list">
+              <button type="button" class="dest-filter-pill active" data-category="all">All</button>
+              <button type="button" class="dest-filter-pill" data-category="europe">Europe</button>
+              <button type="button" class="dest-filter-pill" data-category="asia">Asia</button>
+              <button type="button" class="dest-filter-pill" data-category="americas">Americas</button>
+              <button type="button" class="dest-filter-pill" data-category="africa">Africa</button>
+              <button type="button" class="dest-filter-pill" data-category="oceania">Oceania</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status / Results Summary & View Switcher Toggle -->
+        <div class="dest-status-row">
+          <div class="dest-status-indicator">
+            <span class="status-pulse-dot"></span>
+            <span class="dest-status-text" id="dest-status-text">Showing 8 featured destinations around the world</span>
+          </div>
+
+          <!-- Grid vs World Map View Switcher -->
+          <div class="dest-view-switcher" role="group" aria-label="View toggle">
+            <button type="button" class="view-switch-btn active" id="dest-view-grid-btn" aria-pressed="true">
+              <i class="fa-solid fa-grip"></i>
+              <span>Grid View</span>
+            </button>
+            <button type="button" class="view-switch-btn" id="dest-view-map-btn" aria-pressed="false">
+              <i class="fa-solid fa-map-location-dot"></i>
+              <span>World Map</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Cards Grid (Initial 8 or Search Results) -->
+        <div class="dest-dynamic-grid" id="dest-dynamic-grid">
+          <!-- Populated by DestinationExplorerController -->
+        </div>
+
+        <!-- Interactive Leaflet World Map Container (Shown when Map View is selected) -->
+        <div class="dest-map-container" id="dest-map-container" style="display: none;">
+          <div class="dest-map-toolbar">
+            <div class="map-status-pill">
+              <span class="map-live-dot"></span>
+              <span>Interactive World Explorer • Click any pin for instant details & booking</span>
+            </div>
+            <button type="button" class="dest-map-fit-btn" id="dest-map-fit-btn" title="Fit map view to all destinations">
+              <i class="fa-solid fa-expand"></i>
+              <span>Fit All Pins</span>
+            </button>
+          </div>
+          <div class="dest-leaflet-map" id="dest-leaflet-map"></div>
+        </div>
+      </div>
+
     </section>
 
-    <section class="book-section">
+    <section class="book-section" id="bookings">
       <div class="bookleft">
         <div class="bookheader">
           <p class="book-p">Easy and Fast</p>
@@ -349,7 +477,7 @@
       </div>
     </section>
 
-    <section class="testimonial">
+    <section class="testimonial" id="testimonials">
       <!-- Left Column: Heading & Pagination Dots -->
       <div class="testleft">
         <div class="testheader">
@@ -363,6 +491,14 @@
           <button type="button" class="test-dot" data-index="1" aria-label="Testimonial 2"></button>
           <button type="button" class="test-dot" data-index="2" aria-label="Testimonial 3"></button>
         </div>
+
+        <!-- Add Testimonial Trigger -->
+        <div class="test-action-wrap">
+          <button type="button" class="btn-share-testimonial" id="btn-open-testimonial-modal">
+            <i class="fa-solid fa-feather-pointed"></i>
+            <span>Share Your Experience</span>
+          </button>
+        </div>
       </div>
 
       <!-- Right Column: Stacked Cards & Navigation Chevrons -->
@@ -372,7 +508,8 @@
           <!-- Stacked Background Card (Figma Layer Effect) -->
           <div class="test-card test-card-back" id="test-back-card" aria-hidden="true">
             <div class="test-card-content">
-              <p class="test-quote" id="test-back-quote">“Jadoo made our corporate retreat to Europe completely stress-free. Every detail from booking to flights was seamless!”</p>
+              <p class="test-quote" id="test-back-quote">“Jadoo made our corporate retreat to Europe completely
+                stress-free. Every detail from booking to flights was seamless!”</p>
               <h4 class="test-name" id="test-back-name">Chris Thomas</h4>
               <p class="test-location" id="test-back-location">CEO of Red Button</p>
             </div>
@@ -384,7 +521,15 @@
               <img src="assets/Images/testimonial-section/author-mike.jpg" id="test-main-avatar" alt="Mike Taylor">
             </div>
             <div class="test-card-content">
-              <p class="test-quote" id="test-main-quote">“On the Windows talking painted pasture yet its express parties use. Sure last upon he same as knew next. Of believed or diverted no.”</p>
+              <div class="test-rating" id="test-main-rating">
+                <i class="fa-solid fa-star star-gold"></i>
+                <i class="fa-solid fa-star star-gold"></i>
+                <i class="fa-solid fa-star star-gold"></i>
+                <i class="fa-solid fa-star star-gold"></i>
+                <i class="fa-solid fa-star star-gold"></i>
+              </div>
+              <p class="test-quote" id="test-main-quote">“On the Windows talking painted pasture yet its express parties
+                use. Sure last upon he same as knew next. Of believed or diverted no.”</p>
               <h4 class="test-name" id="test-main-name">Mike Taylor</h4>
               <p class="test-location" id="test-main-location">Lahore, Pakistan</p>
             </div>
@@ -401,111 +546,937 @@
           </div>
 
         </div>
+    </section>
+
+    <!-- PARTNER LOGOS MARQUEE -->
+    <section class="logosection" aria-label="Our Travel Partners">
+      <div class="logotrack">
+        <div class="logocon">
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-1-axon.png" alt="Axon"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-2-expedia.png" alt="Expedia"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-3-jetstar.png" alt="Jetstar"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-4-qantas.png" alt="Qantas"></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-5-alitalia.png" alt="Alitalia"></div>
+        </div>
+        <div class="logocon" aria-hidden="true">
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-1-axon.png" alt=""></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-2-expedia.png" alt=""></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-3-jetstar.png" alt=""></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-4-qantas.png" alt=""></div>
+          <div class="logoitem"><img src="assets/Images/logo-section/logo-5-alitalia.png" alt=""></div>
+        </div>
       </div>
     </section>
 
-    <section class="subsection">
+    <section class="subsection" id="newsletter">
       <div class="subbg">
         <div class="subcon">
           <p>Subscribe to get information, latest news and other <br>
             interesting offers about Jadoo</p>
-          <div class="subinfo">
-            <input type="text" placeholder="Your Email">
-            <button>Subscribe</button>
-          </div>
+          <form class="subinfo" id="newsletter-form">
+            <input type="email" id="newsletter-email" placeholder="Your Email" required autocomplete="email" aria-label="Enter your email address">
+            <button type="submit" id="newsletter-btn">Subscribe</button>
+          </form>
+          <p class="newsletter-status" id="newsletter-status"></p>
         </div>
       </div>
-
     </section>
 
-    <section class="footersection">
+    <footer class="footersection">
       <div class="footelem footleft">
-        <div class="footelem-h">
-          <p>Jadoo</p>
-        </div>
+        <a href="index.html" class="foot-logo-link">
+          <span class="footelem-h">Jadoo.</span>
+        </a>
         <div class="footelem-p">
           <p>
-            Book your trip in minutes, get full <br>
-            control for much longer.
+            Book your trip in minutes, get full control for much longer.
           </p>
         </div>
       </div>
 
       <div class="footelem footcenter">
-
         <div class="foot3sec">
           <div class="footsup">
-            <h3> Company </h3>
+            <h3>Company</h3>
           </div>
           <div class="footsub">
-            <p> About </p>
-            <p> Careers </p>
-            <p> Contact </p>
+            <a href="#about" class="foot-link">About</a>
+            <a href="#careers" class="foot-link">Careers</a>
+            <a href="#mobile" class="foot-link">Mobile</a>
           </div>
         </div>
         <div class="foot3sec">
           <div class="footsup">
-            <h3> Contact </h3>
+            <h3>Contact</h3>
           </div>
           <div class="footsub">
-            <p>Help/FAQ</p>
-            <p>Press</p>
-            <p>Affilates</p>
+            <a href="#help" class="foot-link">Help/FAQ</a>
+            <a href="#press" class="foot-link">Press</a>
+            <a href="#affiliates" class="foot-link">Affiliates</a>
           </div>
         </div>
         <div class="foot3sec">
           <div class="footsup">
-            <h3> More </h3>
+            <h3>More</h3>
           </div>
           <div class="footsub">
-            <p>Airlinefees</p>
-            <p>Airline</p>
-            <p>Low fare tips</p>
+            <a href="#airlinefees" class="foot-link">Airlinefees</a>
+            <a href="#airline" class="foot-link">Airline</a>
+            <a href="#lowfaretips" class="foot-link">Low fare tips</a>
           </div>
         </div>
       </div>
 
       <div class="footelem footright">
         <div class="footelemlogo-con">
-          <button class="soc-button">
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="soc-button soc-fb"
+            aria-label="Facebook">
             <i class="fa-brands fa-facebook-f"></i>
-          </button>
-          <button class="soc-button">
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="soc-button soc-ig"
+            aria-label="Instagram">
             <i class="fa-brands fa-instagram"></i>
-          </button>
-          <button class="soc-button">
+          </a>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="soc-button soc-tw"
+            aria-label="Twitter">
             <i class="fa-brands fa-twitter"></i>
-          </button>
+          </a>
         </div>
         <div class="footelemdisc">
-          <p> Discover our app</p>
+          <p>Discover our app</p>
         </div>
         <div class="footelemstore-con">
-          <div class="blckstore">
-            <div class="sticon">
-              <i class="fa-brands fa-google-play"></i>
-            </div>
-            <div class="stxt">
-              <div class="gp1"><b>GET IT ON</b></div>
-              <div class="gp2">GOOGLE PLAY</div>
+          <a href="#" class="store-badge" aria-label="Get it on Google Play">
+            <img src="assets/Images/footer-section/play-store.png" alt="Google Play">
+          </a>
+          <a href="#" class="store-badge" aria-label="Available on the Apple Store">
+            <img src="assets/Images/footer-section/apple-store.png" alt="Apple Store">
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Copyright Bar -->
+    <div class="footer-copyright">
+      <p>All rights reserved@jadoo.co</p>
+    </div>
+
+  </div>
+
+  <!-- DESTINATION DETAILS POPUP MODAL -->
+  <div id="dest-details-modal" class="jadoo-modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-dest-title">
+    <div class="jadoo-modal-backdrop" data-close-modal></div>
+    <div class="jadoo-modal-content dest-details-dialog">
+      <button type="button" class="modal-close-btn" data-close-modal aria-label="Close dialog">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-hero-cover">
+        <img id="modal-dest-img" src="" alt="Destination cover" class="modal-cover-img" />
+        <div class="modal-cover-gradient"></div>
+        <div class="modal-hero-badges">
+          <span class="modal-rating-badge" id="modal-dest-rating"><i class="fa-solid fa-star"></i> 4.9</span>
+          <span class="modal-duration-badge" id="modal-dest-duration"><i class="fa-solid fa-location-arrow"></i> 10 Days</span>
+        </div>
+      </div>
+
+      <div class="modal-body-content">
+        <div class="modal-header-row">
+          <div>
+            <h3 class="modal-title" id="modal-dest-title">Rome, Italy</h3>
+            <p class="modal-subtitle" id="modal-dest-subtitle"><i class="fa-solid fa-location-dot"></i> Italy</p>
+          </div>
+          <div class="modal-price-box">
+            <span class="price-label">Starting From</span>
+            <span class="price-value" id="modal-dest-price">$5.42k</span>
+            <span class="price-unit">per traveler</span>
+          </div>
+        </div>
+
+        <div class="modal-description-box">
+          <h4>Trip Overview & Highlights</h4>
+          <p id="modal-dest-desc">Explore world-renowned historic sites, rich culture, and breathtaking travel moments.</p>
+        </div>
+
+        <div class="modal-perks-grid">
+          <div class="perk-item">
+            <div class="perk-icon"><i class="fa-solid fa-plane-departure"></i></div>
+            <div class="perk-info">
+              <strong>Flight Assistance</strong>
+              <p>Flexible routes & upgrades</p>
             </div>
           </div>
-          <div class="blckstore">
-            <div class="sticon">
-              <i class="fa-brands fa-apple"></i>
+          <div class="perk-item">
+            <div class="perk-icon"><i class="fa-solid fa-hotel"></i></div>
+            <div class="perk-info">
+              <strong>Premium Stays</strong>
+              <p>4 & 5-Star verified hotels</p>
             </div>
-            <div class="stxt">
-              <div class="ap1"><b>Available on the</b></div>
-              <div class="ap2"><b>Apple Store</b></div>
+          </div>
+          <div class="perk-item">
+            <div class="perk-icon"><i class="fa-solid fa-compass"></i></div>
+            <div class="perk-info">
+              <strong>Guided Excursions</strong>
+              <p>Local certified guides</p>
+            </div>
+          </div>
+          <div class="perk-item">
+            <div class="perk-icon"><i class="fa-solid fa-utensils"></i></div>
+            <div class="perk-info">
+              <strong>Dining Experiences</strong>
+              <p>Daily breakfast & food tours</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions-footer">
+          <button type="button" class="modal-fav-btn" id="modal-fav-toggle" aria-label="Toggle wishlist">
+            <i class="fa-regular fa-heart"></i>
+            <span>Add to Wishlist</span>
+          </button>
+          <button type="button" class="modal-book-cta" id="modal-book-cta">
+            <span>Book This Destination</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESTINATION BOOKING FORM POPUP MODAL -->
+  <div id="dest-booking-modal" class="jadoo-modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="booking-dest-name">
+    <div class="jadoo-modal-backdrop" data-close-modal></div>
+    <div class="jadoo-modal-content dest-booking-dialog">
+      <button type="button" class="modal-close-btn" data-close-modal aria-label="Close booking dialog">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Booking Form View -->
+      <div id="booking-form-screen" class="booking-screen active">
+        <div class="booking-dest-banner">
+          <img id="booking-banner-img" src="" alt="Destination" class="booking-banner-thumb" />
+          <div class="booking-banner-info">
+            <span class="booking-tag">Direct Package Booking</span>
+            <h3 id="booking-dest-name">Rome, Italy</h3>
+            <div class="booking-banner-meta">
+              <span id="booking-banner-duration"><i class="fa-solid fa-clock"></i> 10 Days Trip</span>
+              <span id="booking-banner-base-price"><i class="fa-solid fa-tag"></i> $5,420 base</span>
+            </div>
+          </div>
+        </div>
+
+        <form id="destination-booking-form" class="booking-form" novalidate>
+          <div class="form-section-header">
+            <i class="fa-solid fa-user-tag"></i>
+            <span>1. Lead Traveler Details</span>
+          </div>
+
+          <div class="booking-form-grid">
+            <div class="booking-field">
+              <label for="book-name">Full Name *</label>
+              <input type="text" id="book-name" required placeholder="e.g. Sarah Jenkins" autocomplete="name" />
+              <span class="field-error" id="book-name-error"></span>
+            </div>
+            <div class="booking-field">
+              <label for="book-email">Email Address *</label>
+              <input type="email" id="book-email" required placeholder="e.g. sarah@example.com" autocomplete="email" />
+              <span class="field-error" id="book-email-error"></span>
+            </div>
+            <div class="booking-field">
+              <label for="book-phone">Phone Number *</label>
+              <input type="tel" id="book-phone" required placeholder="e.g. +1 (555) 345-6789" autocomplete="tel" maxlength="25" />
+              <span class="field-error" id="book-phone-error"></span>
+            </div>
+            <div class="booking-field">
+              <label for="book-date">Departure Date *</label>
+              <input type="date" id="book-date" required />
+              <span class="field-error" id="book-date-error"></span>
+            </div>
+          </div>
+
+          <div class="form-section-header">
+            <i class="fa-solid fa-people-group"></i>
+            <span>2. Travelers & Experience Tier</span>
+          </div>
+
+          <div class="booking-form-grid">
+            <div class="booking-field">
+              <label>Adults (12+ yrs)</label>
+              <div class="number-counter">
+                <button type="button" class="counter-btn" id="btn-adults-minus" aria-label="Decrease adults">−</button>
+                <input type="number" id="book-adults" value="1" min="1" max="10" readonly aria-label="Adult count" />
+                <button type="button" class="counter-btn" id="btn-adults-plus" aria-label="Increase adults">+</button>
+              </div>
+            </div>
+            <div class="booking-field">
+              <label>Children (2-11 yrs)</label>
+              <div class="number-counter">
+                <button type="button" class="counter-btn" id="btn-children-minus" aria-label="Decrease children">−</button>
+                <input type="number" id="book-children" value="0" min="0" max="6" readonly aria-label="Children count" />
+                <button type="button" class="counter-btn" id="btn-children-plus" aria-label="Increase children">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-field full-width">
+            <label>Select Experience Tier</label>
+            <div class="package-tiers-container">
+              <label class="package-tier-card active">
+                <input type="radio" name="package-tier" value="standard" checked />
+                <div class="tier-card-body">
+                  <div class="tier-head">
+                    <strong>Standard</strong>
+                    <span class="tier-badge">Included</span>
+                  </div>
+                  <p>4-star hotel stay, airport coach & guided city tour</p>
+                </div>
+              </label>
+
+              <label class="package-tier-card">
+                <input type="radio" name="package-tier" value="deluxe" />
+                <div class="tier-card-body">
+                  <div class="tier-head">
+                    <strong>Deluxe (+20%)</strong>
+                    <span class="tier-badge popular">Popular</span>
+                  </div>
+                  <p>Private transfers, ocean/city view room & fast-track passes</p>
+                </div>
+              </label>
+
+              <label class="package-tier-card">
+                <input type="radio" name="package-tier" value="luxury" />
+                <div class="tier-card-body">
+                  <div class="tier-head">
+                    <strong>VIP Luxury (+40%)</strong>
+                    <span class="tier-badge luxury">All-Inclusive</span>
+                  </div>
+                  <p>5-star suites, private chauffeur & all excursions covered</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="booking-field full-width">
+            <label for="book-notes">Special Requests & Dietary Requirements (Optional)</label>
+            <textarea id="book-notes" rows="2" placeholder="e.g. Honeymoon suite, vegetarian meals, airport wheelchair assistance..."></textarea>
+          </div>
+
+          <!-- Promo Code Section -->
+          <div class="booking-field full-width">
+            <label for="book-promo">VIP Promo / Voucher Code</label>
+            <div class="booking-promo-row">
+              <input type="text" id="book-promo" placeholder="Enter code (e.g. EXPLORE15)" maxlength="20" autocomplete="off" />
+              <button type="button" class="btn-apply-promo" id="btn-apply-promo">
+                <i class="fa-solid fa-tag"></i> Apply
+              </button>
+            </div>
+            <div id="promo-applied-badge" class="promo-discount-badge" style="display: none;"></div>
+          </div>
+
+          <!-- Live Price Breakdown -->
+          <div class="booking-price-summary">
+            <div class="price-calc-row">
+              <span id="price-calc-breakdown">1 Adult × $5,420</span>
+              <span id="price-calc-subtotal">$5,420</span>
+            </div>
+            <div class="price-calc-row discount-row" id="price-discount-row" style="display: none;">
+              <span id="price-calc-discount-label"><i class="fa-solid fa-gift"></i> Promo Discount (15%)</span>
+              <span id="price-calc-discount" class="discount-value">-$0</span>
+            </div>
+            <div class="price-calc-row tax-row">
+              <span>Taxes, Regulatory & Booking Surcharges</span>
+              <span id="price-calc-tax">$150</span>
+            </div>
+            <div class="price-calc-divider"></div>
+            <div class="price-calc-row total-row">
+              <strong>Total Trip Estimate</strong>
+              <strong class="total-amount" id="price-calc-total">$5,570</strong>
+            </div>
+          </div>
+
+          <div class="booking-form-footer">
+            <button type="button" class="btn-back-details" id="btn-back-details">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Back to Details</span>
+            </button>
+            <button type="submit" class="btn-confirm-booking" id="btn-submit-booking">
+              <span>Confirm Reservation</span>
+              <i class="fa-solid fa-circle-check"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Booking Confirmation Screen -->
+      <div id="booking-success-screen" class="booking-screen" style="display: none;">
+        <div class="success-icon-wrap">
+          <div class="success-checkmark-circle">
+            <i class="fa-solid fa-check"></i>
+          </div>
+        </div>
+        <h3 class="success-title">Booking Confirmed!</h3>
+        <p class="success-subtitle">Pack your bags! Your dream vacation package has been successfully reserved.</p>
+
+        <div class="receipt-card">
+          <div class="receipt-header">
+            <div>
+              <span class="receipt-label">Booking Reference</span>
+              <strong class="receipt-code" id="receipt-booking-id">#JAD-74892</strong>
+            </div>
+            <span class="receipt-status-badge"><i class="fa-solid fa-circle-check"></i> Confirmed</span>
+          </div>
+          <div class="receipt-details-list">
+            <div class="receipt-row">
+              <span>Destination</span>
+              <strong id="receipt-dest-name">Rome, Italy</strong>
+            </div>
+            <div class="receipt-row">
+              <span>Primary Traveler</span>
+              <strong id="receipt-traveler-name">Sarah Jenkins</strong>
+            </div>
+            <div class="receipt-row">
+              <span>Contact Phone</span>
+              <strong id="receipt-traveler-phone">+1 (555) 749-2810</strong>
+            </div>
+            <div class="receipt-row">
+              <span>Contact Email</span>
+              <strong id="receipt-traveler-email">sarah.jenkins@example.com</strong>
+            </div>
+            <div class="receipt-row">
+              <span>Departure Date</span>
+              <strong id="receipt-travel-date">Nov 15, 2026</strong>
+            </div>
+            <div class="receipt-row">
+              <span>Travelers & Tier</span>
+              <strong id="receipt-guests">1 Adult (Standard)</strong>
+            </div>
+            <div class="receipt-row discount-receipt-row" id="receipt-discount-row" style="display: none;">
+              <span>Promo Discount Applied</span>
+              <strong id="receipt-discount-val" style="color: #059669;">-15% (EXPLORE15)</strong>
+            </div>
+            <div class="receipt-row total">
+              <span>Total Amount</span>
+              <strong class="receipt-total" id="receipt-total-price">$5,570</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="success-actions">
+          <button type="button" class="btn-success-done" data-close-modal>
+            <i class="fa-solid fa-check"></i>
+            <span>Done</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- User Travel Portal Slide-Out Drawer Overlay -->
+  <div class="user-drawer-overlay" id="user-travel-drawer-overlay" aria-hidden="true">
+    <aside class="user-drawer" id="user-travel-drawer" role="dialog" aria-labelledby="drawer-title" aria-modal="true">
+      <div class="drawer-header-bar">
+        <div class="drawer-brand-block">
+          <div class="drawer-avatar-icon">
+            <i class="fa-solid fa-compass"></i>
+          </div>
+          <div>
+            <h3 class="drawer-title" id="drawer-title">Personal Travel Portal</h3>
+            <p class="drawer-subtitle">Your Saved Wishlist & Confirmed Trips</p>
+          </div>
+        </div>
+        <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="Close Travel Portal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="drawer-tab-nav" role="tablist">
+        <button type="button" class="drawer-tab-btn active" id="drawer-tab-wishlist" role="tab" aria-selected="true" aria-controls="drawer-view-wishlist">
+          <i class="fa-solid fa-heart"></i>
+          <span>Saved Wishlist</span>
+          <span class="drawer-tab-count" id="drawer-wishlist-count">0</span>
+        </button>
+        <button type="button" class="drawer-tab-btn" id="drawer-tab-bookings" role="tab" aria-selected="false" aria-controls="drawer-view-bookings">
+          <i class="fa-solid fa-suitcase-rolling"></i>
+          <span>My Bookings</span>
+          <span class="drawer-tab-count" id="drawer-bookings-count">0</span>
+        </button>
+      </div>
+
+      <!-- Drawer Content Panels -->
+      <div class="drawer-body">
+        <!-- Wishlist View Panel -->
+        <section class="drawer-view-panel" id="drawer-view-wishlist" role="tabpanel" aria-labelledby="drawer-tab-wishlist">
+          <div class="drawer-view-subhead">
+            <span>Places you love & want to visit</span>
+            <button type="button" class="drawer-clear-link" id="drawer-clear-wishlist" style="display: none;">
+              <i class="fa-solid fa-trash-can"></i> Clear All
+            </button>
+          </div>
+          <div class="drawer-cards-list" id="drawer-wishlist-list">
+            <!-- Dynamic Wishlist Cards -->
+          </div>
+        </section>
+
+        <!-- Bookings View Panel -->
+        <section class="drawer-view-panel" id="drawer-view-bookings" role="tabpanel" aria-labelledby="drawer-tab-bookings" style="display: none;">
+          <div class="drawer-view-subhead">
+            <span>Your confirmed flight & hotel reservation packages</span>
+          </div>
+          <div class="drawer-cards-list" id="drawer-bookings-list">
+            <!-- Dynamic Booking Cards -->
+          </div>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Boarding Pass / E-Ticket Modal -->
+  <div class="bp-modal-backdrop" id="boarding-pass-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="bp-modal-title">
+    <div class="bp-modal-dialog">
+      <div class="bp-modal-actions-top">
+        <span class="bp-modal-hint"><i class="fa-solid fa-circle-check"></i> Official Travel Voucher & Boarding Pass</span>
+        <button type="button" class="bp-modal-close" data-close-bp aria-label="Close ticket">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Realistic Boarding Pass Container -->
+      <div class="boarding-pass-card" id="printable-boarding-pass">
+        <!-- Main Flight Coupon (Left) -->
+        <div class="bp-coupon-main">
+          <div class="bp-card-header">
+            <div class="bp-airline-logo">
+              <img src="assets/Images/navigation-section/Logo.svg" alt="Jadoo Airlines" class="bp-logo-img" />
+              <span class="bp-flight-class">FIRST CLASS & LUXURY EXPEDITION</span>
+            </div>
+            <div class="bp-status-badge confirmed" id="bp-status-badge">
+              <i class="fa-solid fa-circle-check"></i> CONFIRMED
+            </div>
+          </div>
+
+          <div class="bp-route-row">
+            <div class="bp-city-block">
+              <span class="bp-code">ORIGIN</span>
+              <strong class="bp-city-name">Home City</strong>
+              <span class="bp-flight-tag">Direct Charter</span>
+            </div>
+            <div class="bp-route-decor">
+              <i class="fa-solid fa-plane-departure"></i>
+              <div class="bp-flight-line"></div>
+              <span class="bp-duration-tag" id="bp-duration">VIP Trip</span>
+            </div>
+            <div class="bp-city-block right">
+              <span class="bp-code">DEST</span>
+              <strong class="bp-city-name" id="bp-dest-title">Rome, Italy</strong>
+              <span class="bp-flight-tag">Arrival</span>
+            </div>
+          </div>
+
+          <div class="bp-details-grid">
+            <div class="bp-detail-item">
+              <span class="bp-item-label">PASSENGER NAME</span>
+              <strong class="bp-item-val" id="bp-passenger-name">Sarah Jenkins</strong>
+            </div>
+            <div class="bp-detail-item">
+              <span class="bp-item-label">BOOKING REFERENCE</span>
+              <strong class="bp-item-val code" id="bp-booking-ref">#JAD-74892</strong>
+            </div>
+            <div class="bp-detail-item">
+              <span class="bp-item-label">DEPARTURE DATE</span>
+              <strong class="bp-item-val" id="bp-departure-date">Nov 15, 2026</strong>
+            </div>
+            <div class="bp-detail-item">
+              <span class="bp-item-label">PACKAGE TIER</span>
+              <strong class="bp-item-val" id="bp-package-tier">DELUXE PACKAGE</strong>
+            </div>
+            <div class="bp-detail-item">
+              <span class="bp-item-label">TRAVELERS</span>
+              <strong class="bp-item-val" id="bp-guests">2 Adults</strong>
+            </div>
+            <div class="bp-detail-item">
+              <span class="bp-item-label">TOTAL PAID</span>
+              <strong class="bp-item-val price" id="bp-total-price">$5,570 USD</strong>
+            </div>
+            <div class="bp-detail-item">
+              <span class="bp-item-label">CONTACT PHONE</span>
+              <strong class="bp-item-val" id="bp-passenger-phone">+1 (555) 749-2810</strong>
+            </div>
+          </div>
+
+          <div class="bp-footer-perks">
+            <span><i class="fa-solid fa-champagne-glasses"></i> Airport Lounge Access</span>
+            <span><i class="fa-solid fa-van-shuttle"></i> Private Transfer</span>
+            <span><i class="fa-solid fa-shield-halved"></i> 100% Insured</span>
+          </div>
+        </div>
+
+        <!-- Perforated Divider -->
+        <div class="bp-perforation">
+          <div class="bp-cutout top"></div>
+          <div class="bp-dash-line"></div>
+          <div class="bp-cutout bottom"></div>
+        </div>
+
+        <!-- Boarding Stub (Right) -->
+        <div class="bp-stub">
+          <div class="bp-stub-head">
+            <span class="bp-stub-label">GATE PASS</span>
+            <span class="bp-seat-tag">GATE A1 • SEAT 02A</span>
+          </div>
+
+          <!-- Dynamic SVG QR Code Representation -->
+          <div class="bp-qr-code-wrap">
+            <svg class="bp-qr-svg" viewBox="0 0 100 100" width="100" height="100">
+              <rect width="100" height="100" fill="#ffffff"/>
+              <!-- Position markers -->
+              <rect x="6" y="6" width="26" height="26" fill="#14183e"/>
+              <rect x="10" y="10" width="18" height="18" fill="#ffffff"/>
+              <rect x="14" y="14" width="10" height="10" fill="#df6951"/>
+              
+              <rect x="68" y="6" width="26" height="26" fill="#14183e"/>
+              <rect x="72" y="10" width="18" height="18" fill="#ffffff"/>
+              <rect x="76" y="14" width="10" height="10" fill="#df6951"/>
+              
+              <rect x="6" y="68" width="26" height="26" fill="#14183e"/>
+              <rect x="10" y="72" width="18" height="18" fill="#ffffff"/>
+              <rect x="14" y="76" width="10" height="10" fill="#df6951"/>
+              
+              <!-- Data matrix dots -->
+              <rect x="38" y="8" width="8" height="8" fill="#14183e"/>
+              <rect x="52" y="14" width="8" height="8" fill="#14183e"/>
+              <rect x="42" y="24" width="12" height="6" fill="#df6951"/>
+              <rect x="10" y="40" width="12" height="6" fill="#14183e"/>
+              <rect x="28" y="44" width="8" height="14" fill="#14183e"/>
+              <rect x="42" y="38" width="16" height="16" fill="#14183e"/>
+              <rect x="64" y="40" width="10" height="8" fill="#df6951"/>
+              <rect x="80" y="44" width="12" height="14" fill="#14183e"/>
+              <rect x="42" y="62" width="8" height="14" fill="#14183e"/>
+              <rect x="56" y="68" width="14" height="8" fill="#df6951"/>
+              <rect x="76" y="70" width="14" height="14" fill="#14183e"/>
+              <rect x="40" y="82" width="18" height="8" fill="#14183e"/>
+            </svg>
+          </div>
+
+          <div class="bp-barcode">
+            <span class="barcode-line w1"></span><span class="barcode-line w3"></span><span class="barcode-line w2"></span>
+            <span class="barcode-line w1"></span><span class="barcode-line w4"></span><span class="barcode-line w2"></span>
+            <span class="barcode-line w3"></span><span class="barcode-line w1"></span><span class="barcode-line w2"></span>
+            <span class="barcode-line w4"></span><span class="barcode-line w1"></span><span class="barcode-line w3"></span>
+          </div>
+
+          <button type="button" class="bp-print-btn" id="bp-print-btn">
+            <i class="fa-solid fa-print"></i>
+            <span>Print E-Ticket</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TESTIMONIAL SUBMISSION MODAL ================= -->
+  <div class="profile-modal-overlay" id="testimonial-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="testimonial-modal-title">
+    <div class="profile-modal-card testimonial-modal-card">
+      <div class="profile-modal-header">
+        <h3 class="profile-modal-title" id="testimonial-modal-title">
+          <i class="fa-solid fa-feather-pointed"></i>
+          <span>Share Your Travel Experience</span>
+        </h3>
+        <button type="button" class="profile-modal-close" data-close-testimonial-modal aria-label="Close review dialog">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="form-add-testimonial" class="testimonial-form">
+        <div class="test-form-body">
+          <p class="test-form-intro">
+            Inspire millions of globetrotters by sharing your authentic journey with Jadoo!
+          </p>
+
+          <!-- Star Rating Widget -->
+          <div class="test-field-group">
+            <label class="test-field-label">Overall Vacation Rating</label>
+            <div class="test-star-picker" id="test-star-picker">
+              <button type="button" class="test-star-item active" data-value="1" aria-label="1 star"><i class="fa-solid fa-star"></i></button>
+              <button type="button" class="test-star-item active" data-value="2" aria-label="2 stars"><i class="fa-solid fa-star"></i></button>
+              <button type="button" class="test-star-item active" data-value="3" aria-label="3 stars"><i class="fa-solid fa-star"></i></button>
+              <button type="button" class="test-star-item active" data-value="4" aria-label="4 stars"><i class="fa-solid fa-star"></i></button>
+              <button type="button" class="test-star-item active" data-value="5" aria-label="5 stars"><i class="fa-solid fa-star"></i></button>
+            </div>
+          </div>
+
+          <div class="test-grid-2col">
+            <div class="test-field-group">
+              <label for="test-input-name" class="test-field-label">Your Name</label>
+              <input type="text" id="test-input-name" class="profile-input" required placeholder="e.g. Elena Rostova">
+            </div>
+
+            <div class="test-field-group">
+              <label for="test-input-location" class="test-field-label">Title / Location</label>
+              <input type="text" id="test-input-location" class="profile-input" required placeholder="e.g. Solo Explorer, Madrid">
+            </div>
+          </div>
+
+          <div class="test-field-group">
+            <label for="test-input-dest" class="test-field-label">Destination Traveled To (Optional)</label>
+            <input type="text" id="test-input-dest" class="profile-input" placeholder="e.g. Trip to Greece, Rome, or London">
+          </div>
+
+          <!-- Avatar Choice -->
+          <div class="test-field-group">
+            <label class="test-field-label">Choose Traveler Avatar</label>
+            <div class="test-avatars-row">
+              <div class="test-avatar-choice selected" data-avatar-src="assets/Images/testimonial-section/author-sarah.jpg">
+                <img src="assets/Images/testimonial-section/author-sarah.jpg" alt="Sarah avatar">
+              </div>
+              <div class="test-avatar-choice" data-avatar-src="assets/Images/testimonial-section/author-chris.jpg">
+                <img src="assets/Images/testimonial-section/author-chris.jpg" alt="Chris avatar">
+              </div>
+              <div class="test-avatar-choice" data-avatar-src="assets/Images/testimonial-section/author-mike.jpg">
+                <img src="assets/Images/testimonial-section/author-mike.jpg" alt="Mike avatar">
+              </div>
+            </div>
+          </div>
+
+          <!-- Review Quote -->
+          <div class="test-field-group">
+            <div class="test-label-row">
+              <label for="test-input-quote" class="test-field-label">Your Review & Feedback</label>
+              <span class="test-char-counter" id="test-quote-counter">0/280</span>
+            </div>
+            <textarea id="test-input-quote" class="profile-textarea" rows="3" maxlength="280" required placeholder="Describe your travel highlights, memorable moments, and experience with Jadoo's booking service..."></textarea>
+          </div>
+        </div>
+
+        <div class="test-form-footer">
+          <button type="button" class="profile-btn-outline" data-close-testimonial-modal>
+            Cancel
+          </button>
+          <button type="submit" class="profile-btn-primary">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>Publish Testimonial</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= AUTH REQUIRED MIDDLEWARE MODAL ================= -->
+  <div class="profile-modal-overlay auth-required-overlay" id="auth-required-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <div class="profile-modal-card auth-required-card">
+      <button type="button" class="auth-required-close" data-close-auth-modal aria-label="Close dialog">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="auth-required-body">
+        <div class="auth-lock-badge">
+          <div class="lock-glow"></div>
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+
+        <h3 class="auth-required-title" id="auth-modal-title">Authentication Required</h3>
+        <p class="auth-required-text" id="auth-modal-msg">
+          You must be logged in to access your booked trips and flight reservations. Please log in or sign up for a free Jadoo account.
+        </p>
+
+        <div class="auth-required-options">
+          <a href="auth.html?mode=login" class="auth-modal-btn btn-signin" id="auth-modal-login-btn">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            <span>Log In to Continue</span>
+          </a>
+          <a href="auth.html?mode=signup" class="auth-modal-btn btn-signup" id="auth-modal-signup-btn">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Create Free Account</span>
+          </a>
+        </div>
+
+        <button type="button" class="auth-required-cancel" data-close-auth-modal>
+          <span>Cancel and return to browsing</span>
+        </button>
+      </div>
+    </div>
+  <!-- ================= WELCOME TO JADOO EMAIL MODAL ================= -->
+  <div class="profile-modal-overlay welcome-email-overlay" id="welcome-email-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="welcome-email-subject">
+    <div class="profile-modal-card welcome-email-card">
+      <button type="button" class="welcome-email-close" data-close-welcome-modal aria-label="Close Email Preview">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Email Envelope Simulation Header -->
+      <div class="email-envelope-top">
+        <div class="email-envelope-icon-wrap">
+          <div class="envelope-glow"></div>
+          <i class="fa-solid fa-envelope-circle-check"></i>
+        </div>
+        <div class="email-envelope-meta">
+          <div class="email-delivery-row">
+            <span class="email-delivery-badge live" id="welcome-api-badge">
+              <i class="fa-solid fa-paper-plane"></i> Delivered to Inbox
+            </span>
+            <span class="email-delivery-time"><i class="fa-regular fa-clock"></i> Just now</span>
+          </div>
+          <h3 class="welcome-email-subject" id="welcome-email-subject">
+            Welcome to Jadoo — Your Journey Begins Here! 🌍✈️
+          </h3>
+          <div class="email-headers-box">
+            <div class="email-header-line">
+              <span class="header-label">From:</span>
+              <span class="header-val"><strong>Jadoo Concierge</strong> &lt;concierge@jadoo.travel&gt;</span>
+            </div>
+            <div class="email-header-line">
+              <span class="header-label">To:</span>
+              <span class="header-val" id="welcome-recipient-email">you@example.com</span>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
+      <!-- Diagnostic Alert Banner for Live Delivery Issues -->
+      <div class="welcome-delivery-alert" id="welcome-delivery-alert" style="display: none;">
+        <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="alert-content">
+          <h4 class="alert-title" id="welcome-alert-title">EmailJS Error: Template ID Not Found</h4>
+          <p class="alert-msg" id="welcome-alert-msg">
+            EmailJS rejected the dispatch because template <code>template_sibcqgl</code> was not found on their server.
+          </p>
+          <div class="alert-tips">
+            <strong>Quick Checklist to Fix in EmailJS:</strong>
+            <ol>
+              <li>Go to <a href="https://dashboard.emailjs.com/admin/templates" target="_blank" rel="noopener noreferrer">EmailJS &gt; Email Templates</a>.</li>
+              <li>Make sure you opened your template and clicked the green <strong>"Save"</strong> button in the top-right corner. (Unsaved drafts do not exist on EmailJS servers).</li>
+              <li>Check your template's <strong>Settings</strong> tab and verify <strong>"To Email"</strong> is set to <code>{{to_email}}</code> (otherwise emails will not reach subscribers).</li>
+              <li>Confirm the template ID or copy the new ID into the settings drawer below.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rendered HTML Email Content Body -->
+      <div class="email-letter-body">
+        <div class="email-brand-banner">
+          <img src="assets/Images/navigation-section/Logo.svg" alt="Jadoo Logo" class="email-logo">
+          <span class="email-tagline">Premium Global Travel & Curated Escapes</span>
+        </div>
+
+        <div class="email-content-wrapper">
+          <h2 class="email-salutation">
+            Welcome aboard, <span id="welcome-recipient-name">Explorer</span>! ✈️✨
+          </h2>
+
+          <p class="email-text">
+            Thank you for subscribing to Jadoo! The world is packed with breathtaking horizons, ancient alleys, and serene sunsets waiting just for you. Whether you’re dreaming of gliding through the Venetian canals, exploring ancient monuments in Rome, or taking flight across Europe, we’re honoured to accompany you on your travel journey.
+          </p>
+
+          <!-- Exclusive Welcome Gift Voucher -->
+          <div class="email-gift-voucher">
+            <div class="gift-voucher-left">
+              <div class="gift-badge"><i class="fa-solid fa-gift"></i> VIP TRAVELER VOUCHER</div>
+              <h4 class="gift-title">15% OFF Your First Vacation Booking</h4>
+              <p class="gift-desc">Valid for all Standard, Deluxe, and Luxury holiday flight packages.</p>
+            </div>
+            <div class="gift-voucher-right">
+              <span class="voucher-code-label">PROMO CODE</span>
+              <div class="voucher-code-box">
+                <code id="welcome-promo-code">EXPLORE15</code>
+                <button type="button" class="btn-copy-promo" id="btn-copy-promo" title="Copy Promo Code">
+                  <i class="fa-regular fa-copy"></i>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Highlights -->
+          <div class="email-features-grid">
+            <div class="email-feature-card">
+              <i class="fa-solid fa-compass"></i>
+              <div>
+                <h5>Curated Itineraries</h5>
+                <p>Tailor-made destinations designed by master travel specialists.</p>
+              </div>
+            </div>
+            <div class="email-feature-card">
+              <i class="fa-solid fa-shield-halved"></i>
+              <div>
+                <h5>Best Price Guarantee</h5>
+                <p>Transparent pricing with zero surprise booking fees.</p>
+              </div>
+            </div>
+            <div class="email-feature-card">
+              <i class="fa-solid fa-headset"></i>
+              <div>
+                <h5>24/7 VIP Concierge</h5>
+                <p>Dedicated travel support for electronic passes, re-scheduling, and advice.</p>
+              </div>
+            </div>
+          </div>
+
+          <p class="email-signoff">
+            Pack your curiosity — your next great adventure begins now!<br>
+            <strong>The Jadoo Travel Concierge Team</strong>
+          </p>
+        </div>
+
+        <!-- Modal Actions Footer -->
+        <div class="email-modal-footer">
+          <button type="button" class="profile-btn-primary" id="btn-welcome-explore">
+            <i class="fa-solid fa-earth-americas"></i>
+            <span>Explore Trending Destinations</span>
+          </button>
+          <button type="button" class="btn-toggle-api" id="btn-toggle-email-api">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Connect Real Inbox API (EmailJS / Web3Forms)</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+        </div>
+
+        <!-- Collapsible API Configuration Settings -->
+        <div class="email-api-config-panel" id="email-api-config-panel" style="display: none;">
+          <div class="api-panel-header">
+            <h4><i class="fa-solid fa-plug-circle-bolt"></i> Real Inbox Delivery Setup (Optional)</h4>
+            <p>To receive this exact email in your real Gmail or Outlook inbox, connect your free <a href="https://www.emailjs.com/" target="_blank" rel="noopener noreferrer">EmailJS</a> or <a href="https://web3forms.com/" target="_blank" rel="noopener noreferrer">Web3Forms</a> account (takes &lt;60s):</p>
+          </div>
+
+          <div class="api-fields-grid">
+            <div class="api-field">
+              <label for="api-emailjs-service">EmailJS Service ID</label>
+              <input type="text" id="api-emailjs-service" placeholder="e.g. service_jadoo" />
+            </div>
+            <div class="api-field">
+              <label for="api-emailjs-template">EmailJS Template ID</label>
+              <input type="text" id="api-emailjs-template" placeholder="e.g. jadoo_template" />
+            </div>
+            <div class="api-field">
+              <label for="api-emailjs-public">EmailJS Public Key</label>
+              <input type="text" id="api-emailjs-public" placeholder="e.g. user_xxx or public_xxx" />
+            </div>
+            <div class="api-field">
+              <label for="api-web3forms-key">Or Web3Forms Access Key</label>
+              <input type="text" id="api-web3forms-key" placeholder="e.g. a1b2c3d4-e5f6-..." />
+            </div>
+          </div>
+
+          <div class="api-panel-actions">
+            <button type="button" class="btn-save-api" id="btn-save-email-api">
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Save & Connect API</span>
+            </button>
+            <button type="button" class="btn-test-api" id="btn-test-email-api">
+              <i class="fa-solid fa-vial-circle-check"></i>
+              <span>Test EmailJS Connection</span>
+            </button>
+            <span class="api-test-status" id="api-test-status"></span>
+            <span class="api-help-text">Credentials are securely saved in your browser's localStorage.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
 
 </body>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="script.js"></script>
 
 </html>
