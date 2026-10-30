@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadoo — My Travel Profile & Portal</title>
+  <link rel="icon" type="image/png" href="assets/Images/jadoo-favicon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600;700&family=Volkhov:wght@700&display=swap"
+    rel="stylesheet">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/dark.css">
+  <link rel="stylesheet" href="assets/profile.css">
+</head>
+
+<body class="profile-body">
+
+  <!-- Ambient Decorative Background Blobs & Glows -->
+  <div class="profile-bg-decor-1"></div>
+  <div class="profile-bg-decor-2"></div>
+  <div class="profile-bg-plane-left">
+    <img src="assets/Images/hero-section/hero-plane-left.svg" alt="" aria-hidden="true">
+  </div>
+  <div class="profile-bg-plane-right">
+    <img src="assets/Images/hero-section/hero-plane-right.svg" alt="" aria-hidden="true">
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="profile-header">
+    <div class="profile-header-container">
+      <div class="profile-brand">
+        <a href="index.html" class="profile-logo-link" title="Jadoo Home">
+          <img src="assets/Images/navigation-section/Logo.svg" alt="Jadoo Logo" class="profile-logo-img">
+        </a>
+      </div>
+
+      <nav class="profile-header-nav">
+        <a href="index.html" class="profile-nav-link">
+          <i class="fa-solid fa-house"></i>
+          <span>Home</span>
+        </a>
+        <a href="index.html#destinations" class="profile-nav-link">
+          <i class="fa-solid fa-compass"></i>
+          <span>Explore Destinations</span>
+        </a>
+
+        <!-- Dark/Light Theme Toggle -->
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme" title="Toggle Dark/Light Mode">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <!-- Auth Actions (Log In for Guest, Log Out for Authenticated) -->
+        <a href="auth.html?mode=login&returnUrl=profile.html" class="profile-nav-login" id="profile-nav-login" title="Sign into your verified account" style="display: none;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span>Log In</span>
+        </a>
+        <button type="button" class="profile-nav-logout profile-logout-action" id="profile-nav-logout" title="Sign out of account">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Log Out</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Profile Content Container -->
+  <main class="profile-main-container">
+
+    <!-- Guest Mode Notice Banner (conditionally displayed) -->
+    <div class="profile-guest-notice" id="profile-guest-notice" style="display: none;">
+      <div class="notice-icon"><i class="fa-solid fa-circle-info"></i></div>
+      <div class="notice-text">
+        <strong>Traveler Guest Preview:</strong> You are currently viewing profile features in guest mode. 
+        <a href="auth.html?mode=login" class="notice-link">Log in</a> or 
+        <a href="auth.html?mode=signup" class="notice-link">Sign up</a> to permanently sync your reservations and earn Jadoo loyalty miles!
+      </div>
+    </div>
+
+    <!-- Hero Profile Identity & Stats Card -->
+    <section class="profile-hero-card" aria-label="User Profile Overview">
+      <div class="profile-identity-col">
+        <!-- Interactive Avatar with Selector -->
+        <div class="profile-avatar-wrapper" id="profile-avatar-display" data-avatar="avatar-1">
+          <span class="profile-avatar-text" id="profile-avatar-text">S</span>
+          <button type="button" class="profile-avatar-edit-btn" id="btn-change-avatar" title="Change Profile Avatar" aria-label="Change Avatar">
+            <i class="fa-solid fa-camera"></i>
+          </button>
+        </div>
+
+        <div class="profile-identity-meta">
+          <div class="profile-name-row">
+            <h1 class="profile-name-heading" id="profile-name-heading">Sarah Jenkins</h1>
+            <span class="profile-badge-verified" title="Verified Traveler Profile">
+              <i class="fa-solid fa-circle-check"></i> Verified
+            </span>
+          </div>
+          <p class="profile-email-sub" id="profile-email-sub">
+            <i class="fa-regular fa-envelope"></i> sarah.jenkins@example.com
+          </p>
+          <div class="profile-badges-row">
+            <span class="profile-tier-badge" id="profile-loyalty-badge">
+              <i class="fa-solid fa-crown"></i> Gold Adventurer
+            </span>
+            <span class="profile-member-date" id="profile-member-since">
+              <i class="fa-regular fa-calendar-check"></i> Member since 2024
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Travel Statistics -->
+      <div class="profile-stats-grid">
+        <div class="profile-stat-box">
+          <div class="stat-icon stat-icon-trips">
+            <i class="fa-solid fa-suitcase-rolling"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-trips-count">0</span>
+            <span class="stat-label">Booked Trips</span>
+          </div>
+        </div>
+
+        <div class="profile-stat-box">
+          <div class="stat-icon stat-icon-wishlist">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-wishlist-count">0</span>
+            <span class="stat-label">Saved Wishlist</span>
+          </div>
+        </div>
+
+        <div class="profile-stat-box">
+          <div class="stat-icon stat-icon-points">
+            <i class="fa-solid fa-coins"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value" id="stat-points-count">1,250</span>
+            <span class="stat-label">Jadoo Points</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile Portal Section Tabs Navigation -->
+    <nav class="profile-tabs-wrapper" aria-label="Profile Tabs">
+      <div class="profile-tabs-list" role="tablist">
+        <button type="button" class="profile-nav-tab active" data-tab="details" role="tab" aria-selected="true" id="tab-btn-details">
+          <i class="fa-regular fa-id-card"></i>
+          <span>Personal Details</span>
+        </button>
+
+        <button type="button" class="profile-nav-tab" data-tab="preferences" role="tab" aria-selected="false" id="tab-btn-preferences">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Travel Preferences</span>
+        </button>
+
+        <button type="button" class="profile-nav-tab" data-tab="bookings" role="tab" aria-selected="false" id="tab-btn-bookings">
+          <i class="fa-solid fa-plane-departure"></i>
+          <span>My Bookings</span>
+        </button>
+
+        <button type="button" class="profile-nav-tab" data-tab="wishlist" role="tab" aria-selected="false" id="tab-btn-wishlist">
+          <i class="fa-regular fa-heart"></i>
+          <span>Saved Wishlist</span>
+        </button>
+
+        <button type="button" class="profile-nav-tab" data-tab="security" role="tab" aria-selected="false" id="tab-btn-security">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Security</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Tab Panels Container -->
+    <div class="profile-panels-container">
+
+      <!-- ================= 1. PERSONAL DETAILS PANEL ================= -->
+      <section class="profile-tab-panel" id="tab-panel-details" role="tabpanel" aria-labelledby="tab-btn-details">
+        <div class="profile-card">
+          <div class="panel-section-header">
+            <div>
+              <h2 class="panel-heading">Personal Information</h2>
+              <p class="panel-subheading">Manage your personal identification details used for flight bookings and passenger tickets.</p>
+            </div>
+          </div>
+
+          <form id="form-profile-details" class="profile-form-grid" novalidate>
+            <div class="form-group">
+              <label for="input-profile-name" class="profile-label">
+                <i class="fa-regular fa-user"></i> Full Legal Name
+              </label>
+              <input type="text" id="input-profile-name" class="profile-input" required placeholder="e.g. Sarah Jenkins">
+            </div>
+
+            <div class="form-group">
+              <label for="input-profile-email" class="profile-label">
+                <i class="fa-regular fa-envelope"></i> Email Address
+              </label>
+              <input type="email" id="input-profile-email" class="profile-input" required placeholder="sarah.jenkins@example.com">
+            </div>
+
+            <div class="form-group">
+              <label for="input-profile-phone" class="profile-label">
+                <i class="fa-solid fa-phone"></i> Mobile Phone Number
+              </label>
+              <input type="tel" id="input-profile-phone" class="profile-input" placeholder="+1 (555) 000-0000" maxlength="25">
+              <span class="field-error" id="input-profile-phone-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="input-profile-airport" class="profile-label">
+                <i class="fa-solid fa-plane"></i> Preferred Departure Airport
+              </label>
+              <input type="text" id="input-profile-airport" class="profile-input" placeholder="e.g. JFK — John F. Kennedy, New York">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="input-profile-bio" class="profile-label">
+                <i class="fa-regular fa-comment-dots"></i> Traveler Bio / Vacation Style
+              </label>
+              <textarea id="input-profile-bio" class="profile-textarea" rows="3" placeholder="Tell us about your favorite travel adventures, travel bucket list, or vacation dreams..."></textarea>
+            </div>
+
+            <div class="form-actions full-width">
+              <button type="submit" class="profile-btn-primary">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Save Personal Details</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ================= 2. TRAVEL PREFERENCES PANEL ================= -->
+      <section class="profile-tab-panel" id="tab-panel-preferences" role="tabpanel" aria-labelledby="tab-btn-preferences" style="display: none;">
+        <div class="profile-card">
+          <div class="panel-section-header">
+            <div>
+              <h2 class="panel-heading">Travel & In-Flight Preferences</h2>
+              <p class="panel-subheading">Customize your travel experience, preferred currencies, meal accommodations, and travel alerts.</p>
+            </div>
+          </div>
+
+          <form id="form-profile-preferences" class="profile-form-grid">
+            <div class="form-group">
+              <label for="select-pref-currency" class="profile-label">
+                <i class="fa-solid fa-money-bill-wave"></i> Preferred Currency
+              </label>
+              <select id="select-pref-currency" class="profile-select">
+                <option value="USD">USD ($) — US Dollar</option>
+                <option value="EUR">EUR (€) — Euro</option>
+                <option value="GBP">GBP (£) — British Pound</option>
+                <option value="AUD">AUD ($) — Australian Dollar</option>
+                <option value="CAD">CAD ($) — Canadian Dollar</option>
+                <option value="JPY">JPY (¥) — Japanese Yen</option>
+                <option value="INR">INR (₹) — Indian Rupee</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="select-pref-language" class="profile-label">
+                <i class="fa-solid fa-language"></i> Preferred Language
+              </label>
+              <select id="select-pref-language" class="profile-select">
+                <option value="English">English (US/UK)</option>
+                <option value="Spanish">Español (Spanish)</option>
+                <option value="French">Français (French)</option>
+                <option value="German">Deutsch (German)</option>
+                <option value="Japanese">日本語 (Japanese)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="select-pref-meal" class="profile-label">
+                <i class="fa-solid fa-utensils"></i> In-Flight Meal Preference
+              </label>
+              <select id="select-pref-meal" class="profile-select">
+                <option value="Standard">Standard Airline Meal</option>
+                <option value="Vegetarian">Vegetarian (Lacto-Ovo)</option>
+                <option value="Vegan">Strict Vegan</option>
+                <option value="Halal">Halal Certified</option>
+                <option value="Kosher">Kosher Certified</option>
+                <option value="Gluten-Free">Gluten-Free Meal</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="select-pref-seat" class="profile-label">
+                <i class="fa-solid fa-chair"></i> Seating Preference
+              </label>
+              <select id="select-pref-seat" class="profile-select">
+                <option value="Window">Window Seat (Scenic View)</option>
+                <option value="Aisle">Aisle Seat (Easy Access)</option>
+                <option value="Extra Legroom">Extra Legroom / Front Row</option>
+              </select>
+            </div>
+
+            <div class="pref-toggles-section full-width">
+              <h3 class="pref-toggles-title">Notifications & Travel Deals</h3>
+              <div class="toggle-group">
+                <label class="toggle-switch-row" for="check-email-alerts">
+                  <input type="checkbox" id="check-email-alerts" checked>
+                  <span class="toggle-slider"></span>
+                  <div class="toggle-text">
+                    <strong>Flight & Hotel Fare Drop Alerts</strong>
+                    <p>Get notified when destinations on your wishlist drop in package price.</p>
+                  </div>
+                </label>
+
+                <label class="toggle-switch-row" for="check-sms-alerts">
+                  <input type="checkbox" id="check-sms-alerts" checked>
+                  <span class="toggle-slider"></span>
+                  <div class="toggle-text">
+                    <strong>SMS Booking Confirmations & Gate Updates</strong>
+                    <p>Receive real-time flight boarding notices and reservation updates via SMS.</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-actions full-width">
+              <button type="submit" class="profile-btn-primary">
+                <i class="fa-solid fa-check"></i>
+                <span>Save Preferences</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ================= 3. MY BOOKINGS PANEL ================= -->
+      <section class="profile-tab-panel" id="tab-panel-bookings" role="tabpanel" aria-labelledby="tab-btn-bookings" style="display: none;">
+        <div class="profile-card">
+          <div class="panel-section-header">
+            <div>
+              <h2 class="panel-heading">My Trip Bookings</h2>
+              <p class="panel-subheading">View, manage, or print digital boarding passes for your confirmed travel reservations.</p>
+            </div>
+            <a href="index.html#destinations" class="profile-btn-outline">
+              <i class="fa-solid fa-plus"></i>
+              <span>Book New Destination</span>
+            </a>
+          </div>
+
+          <!-- Dynamic Bookings List rendered by ProfileController -->
+          <div class="profile-bookings-list" id="profile-bookings-list">
+            <!-- Bookings dynamically rendered -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. SAVED WISHLIST PANEL ================= -->
+      <section class="profile-tab-panel" id="tab-panel-wishlist" role="tabpanel" aria-labelledby="tab-btn-wishlist" style="display: none;">
+        <div class="profile-card">
+          <div class="panel-section-header">
+            <div>
+              <h2 class="panel-heading">Saved Destination Wishlist</h2>
+              <p class="panel-subheading">Dream destinations and packages you've saved. Book whenever you're ready to embark!</p>
+            </div>
+            <a href="index.html#destinations" class="profile-btn-outline">
+              <i class="fa-solid fa-compass"></i>
+              <span>Explore More Destinations</span>
+            </a>
+          </div>
+
+          <!-- Dynamic Wishlist Grid rendered by ProfileController -->
+          <div class="profile-wishlist-grid" id="profile-wishlist-grid">
+            <!-- Wishlist cards dynamically rendered -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. ACCOUNT SECURITY PANEL ================= -->
+      <section class="profile-tab-panel" id="tab-panel-security" role="tabpanel" aria-labelledby="tab-btn-security" style="display: none;">
+        <div class="profile-card">
+          <div class="panel-section-header">
+            <div>
+              <h2 class="panel-heading">Account Security</h2>
+              <p class="panel-subheading">Update your password and review your account authentication settings.</p>
+            </div>
+          </div>
+
+          <div class="security-grid-layout">
+            <form id="form-profile-security" class="profile-security-form">
+              <div class="form-group">
+                <label for="input-old-password" class="profile-label">
+                  <i class="fa-solid fa-key"></i> Current Password
+                </label>
+                <input type="password" id="input-old-password" class="profile-input" placeholder="Enter current password">
+              </div>
+
+              <div class="form-group">
+                <label for="input-new-password" class="profile-label">
+                  <i class="fa-solid fa-lock"></i> New Password
+                </label>
+                <input type="password" id="input-new-password" class="profile-input" placeholder="At least 8 characters">
+              </div>
+
+              <div class="form-group">
+                <label for="input-confirm-password" class="profile-label">
+                  <i class="fa-solid fa-shield-halved"></i> Confirm New Password
+                </label>
+                <input type="password" id="input-confirm-password" class="profile-input" placeholder="Repeat new password">
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="profile-btn-primary">
+                  <i class="fa-solid fa-shield"></i>
+                  <span>Update Password</span>
+                </button>
+              </div>
+            </form>
+
+            <div class="security-info-box">
+              <h3 class="security-box-title">
+                <i class="fa-solid fa-shield-heart"></i>
+                <span>Password Best Practices</span>
+              </h3>
+              <ul class="security-checklist">
+                <li><i class="fa-solid fa-check"></i> Minimum 8 characters in length</li>
+                <li><i class="fa-solid fa-check"></i> Mix of uppercase and lowercase letters</li>
+                <li><i class="fa-solid fa-check"></i> Include at least one number and special symbol</li>
+                <li><i class="fa-solid fa-check"></i> Never share your credentials with anyone</li>
+              </ul>
+              <div class="security-tier-summary">
+                <div class="tier-icon"><i class="fa-solid fa-medal"></i></div>
+                <div>
+                  <strong>Jadoo Protected Account</strong>
+                  <p>Encrypted local storage authentication with instant revocation on logout.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ================= AVATAR SELECTION MODAL ================= -->
+  <div class="profile-modal-overlay" id="avatar-picker-modal" style="display: none;" role="dialog" aria-modal="true" aria-label="Choose Profile Avatar">
+    <div class="profile-modal-card avatar-modal-content">
+      <div class="profile-modal-header">
+        <h3 class="profile-modal-title">
+          <i class="fa-solid fa-face-smile"></i>
+          <span>Choose Your Travel Persona</span>
+        </h3>
+        <button type="button" class="profile-modal-close" data-close-avatar aria-label="Close Avatar Modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="avatar-choices-grid">
+        <div class="avatar-choice-card" data-avatar="avatar-1" title="Golden Explorer">
+          <div class="avatar-sample avatar-gradient-1">
+            <i class="fa-solid fa-sun"></i>
+          </div>
+          <span>Golden Dawn</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="avatar-2" title="Ocean Voyager">
+          <div class="avatar-sample avatar-gradient-2">
+            <i class="fa-solid fa-water"></i>
+          </div>
+          <span>Ocean Azure</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="avatar-3" title="Emerald Backpacker">
+          <div class="avatar-sample avatar-gradient-3">
+            <i class="fa-solid fa-tree"></i>
+          </div>
+          <span>Tropical Forest</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="avatar-4" title="Sunset Mountaineer">
+          <div class="avatar-sample avatar-gradient-4">
+            <i class="fa-solid fa-mountain-sun"></i>
+          </div>
+          <span>Alpine Sunset</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="avatar-5" title="Northern Aurora">
+          <div class="avatar-sample avatar-gradient-5">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <span>Aurora Glow</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="avatar-6" title="Desert Nomad">
+          <div class="avatar-sample avatar-gradient-6">
+            <i class="fa-solid fa-compass"></i>
+          </div>
+          <span>Desert Nomad</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="avatar-7" title="Lavender Starlight">
+          <div class="avatar-sample avatar-gradient-7">
+            <i class="fa-solid fa-moon"></i>
+          </div>
+          <span>Starlight Lavender</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="avatar-8" title="Obsidian Jetsetter">
+          <div class="avatar-sample avatar-gradient-8">
+            <i class="fa-solid fa-plane"></i>
+          </div>
+          <span>Midnight Jet</span>
+        </div>
+
+        <!-- Real Testimonial Portraits -->
+        <div class="avatar-choice-card" data-avatar="author-sarah" title="Explorer Sarah">
+          <div class="avatar-sample avatar-photo">
+            <img src="assets/Images/testimonial-section/author-sarah.jpg" alt="Sarah">
+          </div>
+          <span>Sarah (Traveler)</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="author-chris" title="Photographer Chris">
+          <div class="avatar-sample avatar-photo">
+            <img src="assets/Images/testimonial-section/author-chris.jpg" alt="Chris">
+          </div>
+          <span>Chris (Nomad)</span>
+        </div>
+
+        <div class="avatar-choice-card" data-avatar="author-mike" title="Adventurer Mike">
+          <div class="avatar-sample avatar-photo">
+            <img src="assets/Images/testimonial-section/author-mike.jpg" alt="Mike">
+          </div>
+          <span>Mike (Adventurer)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BOARDING PASS / E-TICKET MODAL ================= -->
+  <div class="profile-modal-overlay" id="boarding-pass-modal" style="display: none;" role="dialog" aria-modal="true" aria-label="Digital Boarding Pass">
+    <div class="profile-modal-card boarding-pass-card">
+      <div class="bp-top-notch"></div>
+      
+      <div class="bp-header">
+        <div class="bp-brand">
+          <img src="assets/Images/navigation-section/Logo.svg" alt="Jadoo Airline" class="bp-logo">
+          <span class="bp-subline">Official Travel Boarding Pass</span>
+        </div>
+        <div class="bp-status-badge confirmed" id="bp-status-badge">
+          <i class="fa-solid fa-circle-check"></i> OFFICIALLY CONFIRMED
+        </div>
+        <button type="button" class="bp-modal-close" data-close-bp aria-label="Close Boarding Pass">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="bp-body">
+        <div class="bp-flight-route">
+          <div class="bp-route-point">
+            <span class="bp-point-code">DEP</span>
+            <span class="bp-point-label">Departure</span>
+            <strong class="bp-point-value" id="bp-departure-date">2026-11-15</strong>
+          </div>
+
+          <div class="bp-route-flight">
+            <div class="bp-flight-line">
+              <i class="fa-solid fa-plane"></i>
+            </div>
+            <span class="bp-flight-tier" id="bp-package-tier">DELUXE PACKAGE</span>
+          </div>
+
+          <div class="bp-route-point right">
+            <span class="bp-point-code">DEST</span>
+            <span class="bp-point-label">Destination</span>
+            <strong class="bp-point-value" id="bp-dest-title">Trip to Greece</strong>
+          </div>
+        </div>
+
+        <div class="bp-info-grid">
+          <div class="bp-info-item">
+            <span class="bp-info-label">Passenger Name</span>
+            <strong class="bp-info-val" id="bp-passenger-name">Sarah Jenkins</strong>
+          </div>
+          <div class="bp-info-item">
+            <span class="bp-info-label">Booking Reference</span>
+            <strong class="bp-info-val bp-code" id="bp-booking-ref">JAD-948210</strong>
+          </div>
+          <div class="bp-info-item">
+            <span class="bp-info-label">Party Size</span>
+            <strong class="bp-info-val" id="bp-guests">2 Adults</strong>
+          </div>
+          <div class="bp-info-item">
+            <span class="bp-info-label">Total Amount Paid</span>
+            <strong class="bp-info-val" id="bp-total-price">$2,400 USD</strong>
+          </div>
+          <div class="bp-info-item">
+            <span class="bp-info-label">Package Duration</span>
+            <strong class="bp-info-val" id="bp-duration">Scheduled Flight & Resort</strong>
+          </div>
+          <div class="bp-info-item">
+            <span class="bp-info-label">Gate / Terminal</span>
+            <strong class="bp-info-val">Terminal 2 • Gate B14</strong>
+          </div>
+          <div class="bp-info-item">
+            <span class="bp-info-label">Contact Phone</span>
+            <strong class="bp-info-val" id="bp-passenger-phone">+1 (555) 749-2810</strong>
+          </div>
+        </div>
+
+        <!-- Stylized Barcode -->
+        <div class="bp-barcode-container">
+          <div class="bp-barcode-lines" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <span class="bp-barcode-text">ELECTRONIC TICKET • NON-TRANSFERABLE • JADOO TRAVEL EXPLORER</span>
+        </div>
+      </div>
+
+      <div class="bp-footer">
+        <button type="button" class="profile-btn-primary" id="bp-print-btn">
+          <i class="fa-solid fa-print"></i>
+          <span>Print / Save E-Ticket</span>
+        </button>
+        <button type="button" class="profile-btn-outline" data-close-bp>
+          <span>Done</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile JavaScript Bundle -->
+  <script src="profile.js"></script>
+</body>
+
+</html>
