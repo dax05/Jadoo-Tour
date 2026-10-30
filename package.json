@@ -1,0 +1,43 @@
+{
+  "name": "dax-jadoo",
+  "version": "1.0.0",
+  "description": "Modular, modern Jadoo Travel frontend architecture",
+  "main": "script.js",
+  "scripts": {
+    "build": "tsc --noEmit && node build.js",
+    "bundle": "node build.js",
+    "type-check": "tsc --noEmit",
+    "watch": "node build.js --watch",
+    "server": "tsx watch server/src/index.ts",
+    "db:setup": "tsx server/src/db/init-db.ts",
+    "test": "tsx server/tests/test-suite.ts",
+    "dev:all": "concurrently \"npm run watch\" \"npm run server\""
+  },
+  "keywords": [
+    "travel",
+    "jadoo",
+    "typescript",
+    "modular"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/pg": "^8.23.1",
+    "concurrently": "^10.0.6",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.23.1"
+  }
+}
