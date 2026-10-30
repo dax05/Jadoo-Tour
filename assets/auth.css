@@ -14,7 +14,7 @@
   position: relative;
   overflow-x: hidden;
   padding: 0;
-  margin: 0 auto;
+  margin: 0;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -445,6 +445,138 @@
   transform: translateY(0);
 }
 
+/* Password Strength Container & Dynamic Criteria */
+.password-strength-container {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  animation: strengthFadeIn 0.3s ease;
+}
+
+.password-strength-container.is-visible {
+  display: flex;
+}
+
+@keyframes strengthFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.strength-meter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.775rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.strength-meter-title {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.strength-meter-status {
+  font-weight: 600;
+  color: #94a3b8;
+  transition: color 0.3s ease;
+}
+
+.strength-meter-bar {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.strength-bar-segment {
+  flex: 1;
+  height: 5px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Strength Levels */
+.password-strength-container[data-level="weak"] .strength-meter-status {
+  color: #ef4444;
+}
+.password-strength-container[data-level="weak"] .strength-bar-segment:nth-child(1) {
+  background-color: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+.password-strength-container[data-level="fair"] .strength-meter-status {
+  color: #f59e0b;
+}
+.password-strength-container[data-level="fair"] .strength-bar-segment:nth-child(1),
+.password-strength-container[data-level="fair"] .strength-bar-segment:nth-child(2) {
+  background-color: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+}
+
+.password-strength-container[data-level="good"] .strength-meter-status {
+  color: #3b82f6;
+}
+.password-strength-container[data-level="good"] .strength-bar-segment:nth-child(1),
+.password-strength-container[data-level="good"] .strength-bar-segment:nth-child(2),
+.password-strength-container[data-level="good"] .strength-bar-segment:nth-child(3) {
+  background-color: #3b82f6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+}
+
+.password-strength-container[data-level="strong"] .strength-meter-status {
+  color: #10b981;
+}
+.password-strength-container[data-level="strong"] .strength-bar-segment {
+  background-color: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+}
+
+/* Criteria List */
+.strength-criteria-list {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.strength-criterion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-family: 'Poppins', sans-serif;
+  color: #94a3b8;
+  transition: color 0.25s ease;
+}
+
+.strength-criterion .crit-icon {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  transition: all 0.25s ease;
+}
+
+.strength-criterion.met {
+  color: #1e293b;
+}
+
+.strength-criterion.met .crit-icon {
+  color: #10b981;
+  transform: scale(1.1);
+}
+
 /* Helper Row (Remember Me & Forgot Password) */
 .auth-helpers {
   display: flex;
@@ -507,6 +639,65 @@
 .auth-forgot-link:hover {
   color: #c8533c;
   text-decoration: underline;
+}
+
+/* Demo Account Hint Widget */
+.auth-demo-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(223, 105, 81, 0.08);
+  border: 1px dashed rgba(223, 105, 81, 0.35);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: clamp(16px, 2vw, 20px);
+  font-size: clamp(0.75rem, 0.9vw, 0.813rem);
+  color: #475569;
+}
+
+.auth-demo-hint span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.auth-demo-hint code {
+  color: #df6951;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.auth-demo-btn {
+  background: #df6951;
+  color: #ffffff;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.auth-demo-btn:hover {
+  background: #c8533c;
+  transform: translateY(-1px);
+}
+
+body.dark-mode .auth-demo-hint {
+  background: rgba(223, 105, 81, 0.15);
+  border-color: rgba(223, 105, 81, 0.4);
+  color: #cbd5e1;
+}
+
+body.dark-mode .auth-demo-hint code {
+  background: rgba(30, 41, 59, 0.7);
+  color: #f1826c;
 }
 
 /* Submit Button */
@@ -678,6 +869,21 @@ body.dark-mode.auth-body {
   color: #94a3b8;
 }
 
+body.dark-mode .auth-bg-blob {
+  opacity: 0.12;
+  filter: hue-rotate(200deg) brightness(0.85);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+body.dark-mode .auth-plane {
+  opacity: 0.35;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+body.dark-mode .auth-radial-glow {
+  opacity: 0.45;
+}
+
 body.dark-mode .auth-card {
   background-color: #171e31;
   border-color: rgba(255, 255, 255, 0.08);
@@ -780,6 +986,35 @@ body.dark-mode .auth-alert.error {
   background-color: rgba(153, 27, 27, 0.2);
   color: #fca5a5;
   border-color: rgba(252, 165, 165, 0.3);
+}
+
+body.dark-mode .password-strength-container {
+  background-color: #0f1422;
+  border-color: #2d3748;
+}
+
+body.dark-mode .strength-meter-title {
+  color: #94a3b8;
+}
+
+body.dark-mode .strength-bar-segment {
+  background-color: #1e2842;
+}
+
+body.dark-mode .strength-criterion {
+  color: #64748b;
+}
+
+body.dark-mode .strength-criterion .crit-icon {
+  color: #334155;
+}
+
+body.dark-mode .strength-criterion.met {
+  color: #f1f5f9;
+}
+
+body.dark-mode .strength-criterion.met .crit-icon {
+  color: #10b981;
 }
 
 /* ==========================================================================

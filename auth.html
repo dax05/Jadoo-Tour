@@ -89,14 +89,8 @@
           <label for="name" class="auth-label">Full Name</label>
           <div class="auth-input-wrapper">
             <i class="fa-regular fa-user auth-field-icon"></i>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              class="auth-input"
-              placeholder="e.g. John Doe"
-              autocomplete="name"
-            />
+            <input type="text" id="name" name="name" class="auth-input" placeholder="e.g. John Doe"
+              autocomplete="name" />
           </div>
           <span class="auth-error-msg" id="name-error"></span>
         </div>
@@ -106,15 +100,8 @@
           <label for="email" class="auth-label">Email Address</label>
           <div class="auth-input-wrapper">
             <i class="fa-regular fa-envelope auth-field-icon"></i>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              class="auth-input"
-              placeholder="you@example.com"
-              autocomplete="email"
-              required
-            />
+            <input type="email" id="email" name="email" class="auth-input" placeholder="you@example.com"
+              autocomplete="email" required />
           </div>
           <span class="auth-error-msg" id="email-error"></span>
         </div>
@@ -124,20 +111,49 @@
           <label for="password" class="auth-label">Password</label>
           <div class="auth-input-wrapper">
             <i class="fa-solid fa-lock auth-field-icon"></i>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              class="auth-input"
-              placeholder="Enter your password"
-              autocomplete="current-password"
-              required
-            />
+            <input type="password" id="password" name="password" class="auth-input" placeholder="Enter your password"
+              autocomplete="current-password" required />
             <button type="button" class="auth-eye-btn" id="toggle-password" aria-label="Toggle password visibility">
               <i class="fa-regular fa-eye"></i>
             </button>
           </div>
           <span class="auth-error-msg" id="password-error"></span>
+
+          <!-- Real-Time Password Strength Meter & Criteria Checklist (Signup & interactive) -->
+          <div class="password-strength-container" id="password-strength-container" aria-live="polite">
+            <div class="strength-meter-header">
+              <span class="strength-meter-title">Password Strength:</span>
+              <span class="strength-meter-status" id="strength-status">Too weak</span>
+            </div>
+            <div class="strength-meter-bar" id="strength-meter-bar">
+              <span class="strength-bar-segment" data-segment="1"></span>
+              <span class="strength-bar-segment" data-segment="2"></span>
+              <span class="strength-bar-segment" data-segment="3"></span>
+              <span class="strength-bar-segment" data-segment="4"></span>
+            </div>
+            <ul class="strength-criteria-list" id="strength-criteria-list">
+              <li class="strength-criterion" id="crit-length">
+                <i class="fa-solid fa-circle-xmark crit-icon"></i>
+                <span class="crit-text">At least 8 characters</span>
+              </li>
+              <li class="strength-criterion" id="crit-uppercase">
+                <i class="fa-solid fa-circle-xmark crit-icon"></i>
+                <span class="crit-text">At least 1 uppercase letter (A-Z)</span>
+              </li>
+              <li class="strength-criterion" id="crit-lowercase">
+                <i class="fa-solid fa-circle-xmark crit-icon"></i>
+                <span class="crit-text">At least 1 lowercase letter (a-z)</span>
+              </li>
+              <li class="strength-criterion" id="crit-number">
+                <i class="fa-solid fa-circle-xmark crit-icon"></i>
+                <span class="crit-text">At least 1 number (0-9)</span>
+              </li>
+              <li class="strength-criterion" id="crit-special">
+                <i class="fa-solid fa-circle-xmark crit-icon"></i>
+                <span class="crit-text">At least 1 special character (!@#$%^&*)</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <!-- Confirm Password Group (Signup only) -->
@@ -145,15 +161,10 @@
           <label for="confirm-password" class="auth-label">Confirm Password</label>
           <div class="auth-input-wrapper">
             <i class="fa-solid fa-shield-halved auth-field-icon"></i>
-            <input
-              type="password"
-              id="confirm-password"
-              name="confirm-password"
-              class="auth-input"
-              placeholder="Re-enter password"
-              autocomplete="new-password"
-            />
-            <button type="button" class="auth-eye-btn" id="toggle-confirm" aria-label="Toggle confirm password visibility">
+            <input type="password" id="confirm-password" name="confirm-password" class="auth-input"
+              placeholder="Re-enter password" autocomplete="new-password" />
+            <button type="button" class="auth-eye-btn" id="toggle-confirm"
+              aria-label="Toggle confirm password visibility">
               <i class="fa-regular fa-eye"></i>
             </button>
           </div>
@@ -168,6 +179,12 @@
             <span class="auth-checkbox-text">Remember me</span>
           </label>
           <a href="#" class="auth-forgot-link" id="auth-forgot-link">Forgot Password?</a>
+        </div>
+
+        <!-- Quick Demo Account Helper -->
+        <div class="auth-demo-hint" id="auth-demo-hint">
+          <span><i class="fa-solid fa-circle-info"></i> Demo: <code>sarah.jenkins@example.com</code></span>
+          <button type="button" class="auth-demo-btn" id="btn-demo-fill" title="Autofill demo credentials">Quick Fill</button>
         </div>
 
         <!-- Submit Button -->
