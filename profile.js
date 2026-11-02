@@ -1306,6 +1306,58 @@
       return AuthService.getInstance().isAuthenticated();
     }
     /**
+     * Bind event listeners to the Auth Required Modal (static or dynamic)
+     */
+    static initModalListeners(modal) {
+      if (modal._authModalBound) return;
+      modal._authModalBound = true;
+      modal.addEventListener("click", (e) => {
+        const target = e.target;
+        if (target === modal || target.classList.contains("auth-required-overlay") || target.hasAttribute("data-close-auth-modal") || target.closest("[data-close-auth-modal]")) {
+          e.preventDefault();
+          e.stopPropagation();
+          this.hideAuthRequiredModal();
+        }
+      });
+      modal.querySelectorAll("[data-close-auth-modal]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.hideAuthRequiredModal();
+        });
+      });
+    }
+    /**
+     * Initialize static and global auth modal listeners
+     */
+    static init() {
+      if (typeof document === "undefined") return;
+      const modal = document.getElementById("auth-required-modal");
+      if (modal) {
+        this.initModalListeners(modal);
+      }
+      if (!this.globalBound) {
+        this.globalBound = true;
+        document.addEventListener("click", (e) => {
+          const target = e.target;
+          if (target && (target.hasAttribute("data-close-auth-modal") || target.closest("[data-close-auth-modal]"))) {
+            e.preventDefault();
+            this.hideAuthRequiredModal();
+          }
+        });
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            const authModal = document.getElementById("auth-required-modal");
+            if (authModal && authModal.style.display === "flex") {
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              this.hideAuthRequiredModal();
+            }
+          }
+        }, true);
+      }
+    }
+    /**
      * Enforce authentication before executing an action or viewing a section.
      * If user is not logged in, opens the Auth Required Modal and returns false.
      */
@@ -1329,11 +1381,13 @@
      * Display the Authentication Required Modal
      */
     static showAuthRequiredModal(options = {}) {
+      this.init();
       let modal = document.getElementById("auth-required-modal");
       if (!modal) {
         modal = this.createModalElement();
         document.body.appendChild(modal);
       }
+      this.initModalListeners(modal);
       const titleEl = modal.querySelector("#auth-modal-title");
       const msgEl = modal.querySelector("#auth-modal-msg");
       const loginLink = modal.querySelector("#auth-modal-login-btn");
@@ -1434,20 +1488,11 @@
         </div>
       </div>
     `;
-      modal.addEventListener("click", (e) => {
-        const target = e.target;
-        if (target === modal || target.closest("[data-close-auth-modal]")) {
-          this.hideAuthRequiredModal();
-        }
-      });
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && modal.style.display === "flex") {
-          this.hideAuthRequiredModal();
-        }
-      });
+      this.initModalListeners(modal);
       return modal;
     }
   };
+  __publicField(AuthMiddleware, "globalBound", false);
 
   // src/utils/validation.utils.ts
   function validatePhoneNumber(phone) {

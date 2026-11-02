@@ -162,6 +162,44 @@ export class DestinationModalController {
   }
 
   private bindEvents(): void {
+    // Direct binding for Details Modal close buttons and backdrop
+    if (this.detailsModal) {
+      const closeBtns = this.detailsModal.querySelectorAll<HTMLElement>('[data-close-modal]');
+      closeBtns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.closeAllModals();
+        });
+      });
+
+      const backdrop = this.detailsModal.querySelector<HTMLElement>('.jadoo-modal-backdrop');
+      backdrop?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.closeAllModals();
+      });
+    }
+
+    // Direct binding for Booking Modal close buttons and backdrop
+    if (this.bookingModal) {
+      const closeBtns = this.bookingModal.querySelectorAll<HTMLElement>('[data-close-modal]');
+      closeBtns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.closeAllModals();
+        });
+      });
+
+      const backdrop = this.bookingModal.querySelector<HTMLElement>('.jadoo-modal-backdrop');
+      backdrop?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.closeAllModals();
+      });
+    }
+
     // 1. Global Click delegation for Static and Dynamic Destination Cards
     document.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
@@ -198,14 +236,19 @@ export class DestinationModalController {
 
       // Handle close modal triggers (backdrop and close buttons)
       if (target.hasAttribute('data-close-modal') || target.closest('[data-close-modal]')) {
+        e.preventDefault();
         this.closeAllModals();
         return;
       }
     });
 
-    // 2. Keyboard Escape to close modal
+    // 2. Keyboard Escape to close modal (respecting layered modal priority)
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        const authModal = document.getElementById('auth-required-modal');
+        if (authModal && authModal.style.display === 'flex') {
+          return; // Let topmost Auth modal handle this escape event first
+        }
         this.closeAllModals();
       }
     });

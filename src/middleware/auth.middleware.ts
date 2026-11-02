@@ -41,8 +41,79 @@ export interface AuthGuardOptions {
  * Enforces access control for protected sections like Bookings, Profile, and Reviews.
  */
 export class AuthMiddleware {
+  private static globalBound = false;
+
   public static isAuthenticated(): boolean {
     return AuthService.getInstance().isAuthenticated();
+  }
+
+  /**
+   * Bind event listeners to the Auth Required Modal (static or dynamic)
+   */
+  public static initModalListeners(modal: HTMLElement): void {
+    if ((modal as any)._authModalBound) return;
+    (modal as any)._authModalBound = true;
+
+    // Direct click listener on modal backdrop & close elements
+    modal.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (
+        target === modal ||
+        target.classList.contains('auth-required-overlay') ||
+        target.hasAttribute('data-close-auth-modal') ||
+        target.closest('[data-close-auth-modal]')
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.hideAuthRequiredModal();
+      }
+    });
+
+    // Explicit binding to all close buttons inside this modal
+    modal.querySelectorAll('[data-close-auth-modal]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.hideAuthRequiredModal();
+      });
+    });
+  }
+
+  /**
+   * Initialize static and global auth modal listeners
+   */
+  public static init(): void {
+    if (typeof document === 'undefined') return;
+
+    const modal = document.getElementById('auth-required-modal');
+    if (modal) {
+      this.initModalListeners(modal);
+    }
+
+    if (!this.globalBound) {
+      this.globalBound = true;
+
+      // Global delegation fallback
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target && (target.hasAttribute('data-close-auth-modal') || target.closest('[data-close-auth-modal]'))) {
+          e.preventDefault();
+          this.hideAuthRequiredModal();
+        }
+      });
+
+      // Keyboard ESC
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const authModal = document.getElementById('auth-required-modal');
+          if (authModal && authModal.style.display === 'flex') {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            this.hideAuthRequiredModal();
+          }
+        }
+      }, true);
+    }
   }
 
   /**
@@ -72,12 +143,15 @@ export class AuthMiddleware {
    * Display the Authentication Required Modal
    */
   public static showAuthRequiredModal(options: AuthGuardOptions = {}): void {
+    this.init();
     let modal = document.getElementById('auth-required-modal');
 
     if (!modal) {
       modal = this.createModalElement();
       document.body.appendChild(modal);
     }
+
+    this.initModalListeners(modal);
 
     const titleEl = modal.querySelector<HTMLElement>('#auth-modal-title');
     const msgEl = modal.querySelector<HTMLElement>('#auth-modal-msg');
@@ -201,18 +275,7 @@ export class AuthMiddleware {
     `;
 
     // Bind event listeners
-    modal.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      if (target === modal || target.closest('[data-close-auth-modal]')) {
-        this.hideAuthRequiredModal();
-      }
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.style.display === 'flex') {
-        this.hideAuthRequiredModal();
-      }
-    });
+    this.initModalListeners(modal);
 
     return modal;
   }

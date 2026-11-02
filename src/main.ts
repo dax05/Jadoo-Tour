@@ -9,6 +9,7 @@ import { NewsletterController } from './modules/newsletter/newsletter.controller
 import { themeService } from './services/theme.service';
 import { DestinationService } from './services/destination.service';
 import { testimonialService } from './services/testimonial.service';
+import { AuthMiddleware } from './middleware/auth.middleware';
 
 // Interactive favorites sync for static featured cards
 function initHeartFavorite(): void {
@@ -76,6 +77,9 @@ function initGreeceCardInteraction(): void {
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Theme Service & bind theme toggle buttons
   themeService.bindToggleButtons();
+
+  // Initialize Auth Middleware static listeners
+  AuthMiddleware.init();
 
   // 2. Initialize Navigation Controllers
   new NavbarController();

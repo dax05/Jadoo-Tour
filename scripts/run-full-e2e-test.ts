@@ -1,4 +1,5 @@
 import { pool } from '../server/src/config/db';
+import app from '../server/src/app';
 
 interface TestResult {
   id: string;
@@ -41,6 +42,18 @@ async function startFullE2E() {
   console.log('\n================================================================================');
   console.log('   🚀 JADOO TRAVEL — FULL SYSTEM END-TO-END (E2E) TEST EXECUTION');
   console.log('================================================================================\n');
+
+  let localServer: any = null;
+  try {
+    const ping = await fetch('http://localhost:5000/api/health').catch(() => null);
+    if (!ping || !ping.ok) {
+      localServer = app.listen(5000);
+      await new Promise((r) => setTimeout(r, 600));
+    }
+  } catch {
+    localServer = app.listen(5000);
+    await new Promise((r) => setTimeout(r, 600));
+  }
 
   const timestamp = Date.now();
   const testEmail = `elena.test.${timestamp}@example.com`;
@@ -485,8 +498,12 @@ async function startFullE2E() {
   console.log(`   🏁 FULL SYSTEM E2E TEST SUMMARY: ${passed}/${total} PASSED (${failed} FAILED)`);
   console.log('================================================================================\n');
 
+  if (localServer) {
+    await new Promise((r) => localServer.close(r));
+  }
   await pool.end();
   process.exit(failed > 0 ? 1 : 0);
 }
 
 startFullE2E();
+

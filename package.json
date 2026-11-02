@@ -14,7 +14,7 @@
     "server": "tsx watch server/src/index.ts",
     "db:setup": "tsx server/src/db/init-db.ts",
     "test": "tsx server/tests/test-suite.ts",
-    "test:e2e": "tsx scripts/run-full-e2e-test.ts && node scripts/verify-dom-buttons.cjs",
+    "test:e2e": "tsx scripts/run-full-e2e-test.ts && node scripts/verify-dom-buttons.cjs && node scripts/test-modal-close-buttons.cjs",
     "dev:all": "concurrently \"npm run watch\" \"npm run server\"",
     "db:view": "node scripts/view-db.cjs"
   },
@@ -27,7 +27,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jsdom": "^30.0.0",
     "concurrently": "^10.0.6",
+    "jsdom": "^30.1.3",
     "tsx": "^4.23.15"
   },
   "dependencies": {
