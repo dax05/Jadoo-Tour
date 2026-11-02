@@ -1,6 +1,5 @@
 import { Destination, PackageTier, BookingRequest } from '../../types/destination.types';
 import { DestinationService } from '../../services/destination.service';
-import { AuthMiddleware } from '../../middleware/auth.middleware';
 import { AuthService } from '../../services/auth.service';
 import {
   validatePhoneNumber,
@@ -605,17 +604,7 @@ export class DestinationModalController {
   /**
    * Validate and submit booking with strict phone, email, name, and departure date verification
    */
-  private handleBookingSubmit(): void {
-    if (
-      !AuthMiddleware.requireAuth({
-        actionName: 'confirm this flight reservation and book your vacation',
-        customMessage:
-          'You must be signed in to finalize and record travel bookings to your verified Jadoo profile.',
-      })
-    ) {
-      return;
-    }
-
+  private async handleBookingSubmit(): Promise<void> {
     this.clearFormErrors();
 
     const name = this.inputName?.value.trim() || '';
@@ -708,46 +697,75 @@ export class DestinationModalController {
       promoCode: this.appliedPromoCode || undefined,
     };
 
-    // Save to storage & sync with backend
-    const record = DestinationService.saveBooking(bookingReq);
+    const submitBtn = this.bookingForm?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+    const originalBtnText = submitBtn?.textContent || 'Confirm & Reserve';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Confirming Reservation...';
+    }
 
-    // Present Success Screen Receipt
-    if (this.receiptBookingId) this.receiptBookingId.textContent = `#${record.bookingId}`;
-    if (this.receiptDestName) this.receiptDestName.textContent = record.destinationTitle;
-    if (this.receiptTravelerName) this.receiptTravelerName.textContent = record.fullName;
-    if (this.receiptTravelerPhone) this.receiptTravelerPhone.textContent = formattedPhone;
-    if (this.receiptTravelerEmail) this.receiptTravelerEmail.textContent = email;
-    if (this.receiptTravelDate) {
-      try {
-        const d = new Date(record.departureDate + 'T00:00:00');
-        this.receiptTravelDate.textContent = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-      } catch {
-        this.receiptTravelDate.textContent = record.departureDate;
+    try {
+      // Save to storage & sync with backend in real-time
+      const record = await DestinationService.saveBooking(bookingReq);
+
+      // Present Success Screen Receipt
+      if (this.receiptBookingId) this.receiptBookingId.textContent = `#${record.bookingId}`;
+      if (this.receiptDestName) this.receiptDestName.textContent = record.destinationTitle;
+      if (this.receiptTravelerName) this.receiptTravelerName.textContent = record.fullName;
+      if (this.receiptTravelerPhone) this.receiptTravelerPhone.textContent = formattedPhone;
+      if (this.receiptTravelerEmail) this.receiptTravelerEmail.textContent = email;
+      if (this.receiptTravelDate) {
+        try {
+          const d = new Date(record.departureDate + 'T00:00:00');
+          this.receiptTravelDate.textContent = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+        } catch {
+          this.receiptTravelDate.textContent = record.departureDate;
+        }
+      }
+      if (this.receiptGuests) {
+        const guestText = `${adults} Adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children > 1 ? 'ren' : ''}` : ''}`;
+        this.receiptGuests.textContent = `${guestText} (${tier.toUpperCase()})`;
+      }
+      if (this.receiptDiscountRow && this.receiptDiscountVal) {
+        if (this.appliedDiscountPercent > 0) {
+          this.receiptDiscountRow.style.display = 'flex';
+          this.receiptDiscountVal.textContent = `-${this.appliedDiscountPercent}% (${this.appliedPromoCode})`;
+        } else {
+          this.receiptDiscountRow.style.display = 'none';
+        }
+      }
+      if (this.receiptTotalPrice) {
+        this.receiptTotalPrice.textContent = `${record.totalPrice.toLocaleString()}`;
+      }
+
+      // Update sync status indicator
+      const receiptBadge = document.querySelector('.receipt-status-badge') as HTMLElement | null;
+      if (receiptBadge) {
+        if (record.synced) {
+          receiptBadge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Confirmed & Synced';
+          receiptBadge.style.background = '#ecfdf5';
+          receiptBadge.style.color = '#059669';
+        } else {
+          receiptBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Confirmed';
+        }
+      }
+
+      // Switch view
+      if (this.bookingFormScreen) this.bookingFormScreen.style.display = 'none';
+      if (this.bookingSuccessScreen) {
+        this.bookingSuccessScreen.style.display = 'block';
+      }
+
+      const toastMsg = record.synced
+        ? `🎉 Reservation confirmed & synced to database! Ref #${record.bookingId}`
+        : `🎉 Reservation confirmed for ${record.destinationTitle}!`;
+      this.showToast(toastMsg);
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
       }
     }
-    if (this.receiptGuests) {
-      const guestText = `${adults} Adult${adults > 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children > 1 ? 'ren' : ''}` : ''}`;
-      this.receiptGuests.textContent = `${guestText} (${tier.toUpperCase()})`;
-    }
-    if (this.receiptDiscountRow && this.receiptDiscountVal) {
-      if (this.appliedDiscountPercent > 0) {
-        this.receiptDiscountRow.style.display = 'flex';
-        this.receiptDiscountVal.textContent = `-${this.appliedDiscountPercent}% (${this.appliedPromoCode})`;
-      } else {
-        this.receiptDiscountRow.style.display = 'none';
-      }
-    }
-    if (this.receiptTotalPrice) {
-      this.receiptTotalPrice.textContent = `$${record.totalPrice.toLocaleString()}`;
-    }
-
-    // Switch view
-    if (this.bookingFormScreen) this.bookingFormScreen.style.display = 'none';
-    if (this.bookingSuccessScreen) {
-      this.bookingSuccessScreen.style.display = 'block';
-    }
-
-    this.showToast(`ðŸŽ‰ Reservation confirmed for ${record.destinationTitle}!`);
   }
 
   private showToast(message: string, _type?: 'success' | 'error'): void {

@@ -7,17 +7,25 @@ function generateBookingRef(): string {
   return `BK-${num}`;
 }
 
+const DESTINATION_ID_MAP: Record<string, string> = {
+  'static-rome': 'rome-italy',
+  'static-london': 'london-uk',
+  'static-europe': 'full-europe',
+  'static-greece': 'santorini-greece',
+  'rome': 'rome-italy',
+  'london': 'london-uk',
+  'europe': 'full-europe',
+  'greece': 'santorini-greece',
+  'bali': 'bali-indonesia',
+  'tokyo': 'tokyo-japan',
+};
+
 export const BookingController = {
   /**
-   * Create a new trip reservation
+   * Create a new trip reservation (supports both authenticated travelers and guests)
    */
   async create(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      if (!req.user) {
-        res.status(401).json({ success: false, message: 'Authentication required to make a booking.' });
-        return;
-      }
-
       const {
         destinationId,
         departureDate,
@@ -72,19 +80,37 @@ export const BookingController = {
         return;
       }
 
-      // Fetch destination to get price and title or fallback to provided details
+      // 4. Resolve user ID: check JWT token first, then email match, else guest (null)
+      const cleanEmail = email.trim().toLowerCase();
+      let userId: number | null = req.user ? req.user.id : null;
+      if (!userId) {
+        const userCheck = await pool.query('SELECT id FROM users WHERE email = $1', [cleanEmail]);
+        if (userCheck.rows.length > 0) {
+          userId = userCheck.rows[0].id;
+        }
+      }
+
+      // 5. Fetch destination to get price and title or fallback to provided details
       let destTitle = req.body.destinationTitle || 'Selected Destination';
       let basePrice = 2200;
+      let validDestId: string | null = null;
 
-      const destRes = await pool.query('SELECT title, price_usd FROM destinations WHERE id = $1', [destinationId]);
+      const resolvedDestId = DESTINATION_ID_MAP[destinationId] || destinationId;
+      const titlePrefix = destTitle.split(',')[0].trim();
+
+      const destRes = await pool.query(
+        'SELECT id, title, price_usd FROM destinations WHERE id = $1 OR title ILIKE $2 LIMIT 1',
+        [resolvedDestId, `%${titlePrefix}%`]
+      );
+
       if (destRes.rows.length > 0) {
+        validDestId = destRes.rows[0].id;
         destTitle = destRes.rows[0].title;
         basePrice = Number(destRes.rows[0].price_usd);
       } else if (req.body.totalPrice) {
         basePrice = Number(req.body.totalPrice);
       }
 
-      const validDestId = destRes.rows.length > 0 ? destinationId : null;
       const adultCount = Number(adults) || 1;
       const childCount = Number(children) || 0;
 
@@ -113,11 +139,11 @@ export const BookingController = {
         RETURNING *`,
         [
           bookingId,
-          req.user.id,
+          userId,
           validDestId,
           destTitle,
           fullName.trim(),
-          email.trim().toLowerCase(),
+          cleanEmail,
           phone.trim(),
           departureDate,
           adultCount,
@@ -129,8 +155,10 @@ export const BookingController = {
         ]
       );
 
-      // Award 250 loyalty points to user
-      await pool.query('UPDATE users SET points = points + 250 WHERE id = $1', [req.user.id]);
+      // Award 250 loyalty points to registered user if identified
+      if (userId) {
+        await pool.query('UPDATE users SET points = points + 250 WHERE id = $1', [userId]);
+      }
 
       const record = result.rows[0];
 
@@ -153,11 +181,13 @@ export const BookingController = {
           promoCode: record.promo_code,
           status: record.status,
           createdAt: record.created_at,
+          synced: true,
         },
       });
     } catch (err: unknown) {
       console.error('[BookingController.create] Error:', err);
-      res.status(500).json({ success: false, message: 'Failed to create booking reservation.' });
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(500).json({ success: false, message: `Failed to create booking reservation: ${msg}` });
     }
   },
 
@@ -175,9 +205,9 @@ export const BookingController = {
         `SELECT b.*, d.image_url, d.country, d.duration_days
          FROM bookings b
          LEFT JOIN destinations d ON b.destination_id = d.id
-         WHERE b.user_id = $1
+         WHERE b.user_id = $1 OR b.email = $2
          ORDER BY b.created_at DESC`,
-        [req.user.id]
+        [req.user.id, req.user.email]
       );
 
       res.status(200).json({
@@ -222,13 +252,15 @@ export const BookingController = {
 
       const { id } = req.params;
 
-      const checkRes = await pool.query('SELECT user_id, status FROM bookings WHERE id = $1', [id]);
+      const checkRes = await pool.query('SELECT user_id, email, status FROM bookings WHERE id = $1', [id]);
       if (checkRes.rows.length === 0) {
         res.status(404).json({ success: false, message: 'Booking reservation not found.' });
         return;
       }
 
-      if (checkRes.rows[0].user_id !== req.user.id && req.user.role !== 'admin') {
+      const booking = checkRes.rows[0];
+      const isOwner = booking.user_id === req.user.id || booking.email === req.user.email;
+      if (!isOwner && req.user.role !== 'admin') {
         res.status(403).json({ success: false, message: 'You do not have permission to cancel this booking.' });
         return;
       }

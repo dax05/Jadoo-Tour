@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import { BookingController } from '../controllers/booking.controller';
-import { requireAuth } from '../middleware/auth.middleware';
+import { optionalAuth, requireAuth } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.use(requireAuth);
+// Guest or Authenticated travelers can create bookings
+router.post('/', optionalAuth, BookingController.create);
 
-router.post('/', BookingController.create);
-router.get('/', BookingController.getUserBookings);
-router.get('/my-bookings', BookingController.getUserBookings);
-router.patch('/:id/cancel', BookingController.cancel);
+// Authenticated users can access their bookings and cancel
+router.get('/', requireAuth, BookingController.getUserBookings);
+router.get('/my-bookings', requireAuth, BookingController.getUserBookings);
+router.patch('/:id/cancel', requireAuth, BookingController.cancel);
 
 export default router;

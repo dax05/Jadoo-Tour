@@ -707,22 +707,40 @@ export class DestinationService {
   /**
    * Save a completed trip booking
    */
-  public static saveBooking(req: BookingRequest): BookingRecord {
+  public static async saveBooking(req: BookingRequest): Promise<BookingRecord> {
     const bookings = StorageService.getItem<BookingRecord[]>(STORAGE_KEYS.BOOKINGS, []);
     const randomCode = Math.floor(10000 + Math.random() * 90000);
+    const tempId = `JAD-${randomCode}`;
     const bookingRecord: BookingRecord = {
       ...req,
-      bookingId: `JAD-${randomCode}`,
+      bookingId: tempId,
       createdAt: new Date().toISOString(),
       status: 'confirmed',
+      synced: false,
     };
 
+    // Save optimistic local booking
     bookings.unshift(bookingRecord);
     StorageService.setItem(STORAGE_KEYS.BOOKINGS, bookings);
     this.notifyBookingsChange();
 
-    // Async sync with PostgreSQL backend if authenticated
-    this.syncBookingToBackend(req);
+    // Sync with PostgreSQL backend in real-time (logged-in or guest users)
+    const syncRes = await this.syncBookingToBackend(req);
+    if (syncRes && syncRes.synced && syncRes.bookingId) {
+      bookingRecord.bookingId = syncRes.bookingId;
+      bookingRecord.synced = true;
+      bookingRecord.dbId = syncRes.bookingId;
+
+      const currentBookings = StorageService.getItem<BookingRecord[]>(STORAGE_KEYS.BOOKINGS, []);
+      const matchIdx = currentBookings.findIndex((b) => b.bookingId === tempId || b.bookingId === syncRes.bookingId);
+      if (matchIdx !== -1) {
+        currentBookings[matchIdx] = { ...bookingRecord };
+      } else {
+        currentBookings.unshift(bookingRecord);
+      }
+      StorageService.setItem(STORAGE_KEYS.BOOKINGS, currentBookings);
+      this.notifyBookingsChange();
+    }
 
     return bookingRecord;
   }
@@ -763,19 +781,38 @@ export class DestinationService {
   /**
    * Backend Sync Helpers (Gracefully degrade to offline LocalStorage)
    */
-  public static async syncBookingToBackend(req: BookingRequest): Promise<void> {
+  public static async syncBookingToBackend(
+    req: BookingRequest
+  ): Promise<{ synced: boolean; bookingId?: string; error?: string }> {
     try {
       const token = authService.getToken();
-      if (!token) return;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-      await fetch(`${API_CONFIG.BASE_URL}/bookings`, {
+      const DEST_MAP: Record<string, string> = {
+        'static-rome': 'rome-italy',
+        'static-london': 'london-uk',
+        'static-europe': 'full-europe',
+        'static-greece': 'santorini-greece',
+        'rome': 'rome-italy',
+        'london': 'london-uk',
+        'europe': 'full-europe',
+        'greece': 'santorini-greece',
+        'bali': 'bali-indonesia',
+        'tokyo': 'tokyo-japan',
+      };
+
+      const resolvedDestId = DEST_MAP[req.destinationId] || req.destinationId;
+
+      const response = await fetch(`${API_CONFIG.BASE_URL}/bookings`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
         body: JSON.stringify({
-          destinationId: req.destinationId,
+          destinationId: resolvedDestId,
           destinationTitle: req.destinationTitle,
           departureDate: req.departureDate,
           adults: req.adults,
@@ -784,13 +821,33 @@ export class DestinationService {
           fullName: req.fullName,
           email: req.email,
           phone: req.phone,
-          specialRequests: req.specialRequests,
+          specialRequests: req.specialRequests || req.notes,
           promoCode: req.promoCode,
           totalPrice: req.totalPrice,
         }),
       });
-    } catch {
-      // Backend offline or unreachable
+
+      const data = await response.json().catch(() => null);
+
+      if (response.ok && data?.success && data?.booking) {
+        console.log('[DestinationService] Real-time booking synced with PostgreSQL:', data.booking.id);
+        return {
+          synced: true,
+          bookingId: data.booking.id || data.booking.bookingId,
+        };
+      }
+
+      console.warn('[DestinationService] Booking backend sync rejected:', data?.message || response.statusText);
+      return {
+        synced: false,
+        error: data?.message || `Server error (${response.status})`,
+      };
+    } catch (err) {
+      console.warn('[DestinationService] Booking backend network unreachable:', err);
+      return {
+        synced: false,
+        error: 'Network unreachable',
+      };
     }
   }
 
@@ -815,13 +872,21 @@ export class DestinationService {
       const token = authService.getToken();
       if (!token) return;
 
+      const DEST_MAP: Record<string, string> = {
+        'static-rome': 'rome-italy',
+        'static-london': 'london-uk',
+        'static-europe': 'full-europe',
+        'static-greece': 'santorini-greece',
+      };
+      const resolvedDestId = DEST_MAP[destinationId] || destinationId;
+
       await fetch(`${API_CONFIG.BASE_URL}/wishlist/toggle`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ destinationId }),
+        body: JSON.stringify({ destinationId: resolvedDestId }),
       });
     } catch {
       // Backend offline or unreachable
@@ -838,24 +903,28 @@ export class DestinationService {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (bookingsRes.ok) {
-        const data = await bookingsRes.json();
-        if (data.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
+        const data = await bookingsRes.json().catch(() => null);
+        if (data?.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
           const remoteRecords: BookingRecord[] = data.bookings.map((b: any) => ({
-            bookingId: b.id,
-            destinationId: b.destination_id || 'dest-custom',
-            destinationTitle: b.destination_title,
-            departureDate: b.departure_date,
-            adults: b.adults,
-            children: b.children,
-            packageTier: b.package_tier,
-            fullName: b.full_name,
+            bookingId: b.id || b.bookingId,
+            destinationId: b.destinationId || b.destination_id || 'dest-custom',
+            destinationTitle: b.destinationTitle || b.destination_title,
+            destinationImage: b.imageUrl || b.image_url || 'assets/Images/destination-section/dest-1-rome.jpg',
+            departureDate: b.departureDate || b.departure_date,
+            adults: Number(b.adults) || 1,
+            children: Number(b.children) || 0,
+            packageTier: b.packageTier || b.package_tier || 'standard',
+            fullName: b.fullName || b.full_name,
             email: b.email,
             phone: b.phone,
-            specialRequests: b.special_requests,
-            promoCode: b.promo_code,
-            totalPrice: Number(b.total_price),
-            createdAt: b.created_at,
-            status: b.status,
+            specialRequests: b.specialRequests || b.special_requests,
+            promoCode: b.promoCode || b.promo_code,
+            basePricePerPerson: Math.round(Number(b.totalPrice || b.total_price || 2200) / Math.max(1, Number(b.adults) || 1)),
+            totalPrice: Number(b.totalPrice || b.total_price),
+            createdAt: b.createdAt || b.created_at,
+            status: b.status || 'confirmed',
+            synced: true,
+            dbId: b.id || b.bookingId,
           }));
 
           StorageService.setItem(STORAGE_KEYS.BOOKINGS, remoteRecords);
@@ -868,8 +937,8 @@ export class DestinationService {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (wishRes.ok) {
-        const wishData = await wishRes.json();
-        if (wishData.success && Array.isArray(wishData.wishlist) && wishData.wishlist.length > 0) {
+        const wishData = await wishRes.json().catch(() => null);
+        if (wishData?.success && Array.isArray(wishData.wishlist) && wishData.wishlist.length > 0) {
           const ids = wishData.wishlist.map((w: any) => w.id || w.destination_id);
           StorageService.setItem(STORAGE_KEYS.FAVORITES, ids);
           this.notifyWishlistChange();

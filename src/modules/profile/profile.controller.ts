@@ -84,6 +84,7 @@ export class ProfileController {
     this.renderProfile();
     this.renderBookings();
     this.renderWishlist();
+    DestinationService.syncWithBackend();
 
     // Check URL parameters & hash for initial tab (e.g. profile.html?tab=bookings)
     const urlParams = new URLSearchParams(window.location.search);

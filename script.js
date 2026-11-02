@@ -144,8 +144,8 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name: cleanName, email: cleanEmail, password })
         });
-        const data = await response.json();
-        if (response.ok && data.success) {
+        const data = await response.json().catch(() => null);
+        if (response.ok && data?.success) {
           if (data.token) {
             StorageService.setItem(STORAGE_KEYS.AUTH_TOKEN, data.token);
           }
@@ -159,8 +159,8 @@
           };
           this.setSession(session2);
           return { success: true, user: session2 };
-        } else if (!response.ok && data.message) {
-          return { success: false, error: data.message };
+        } else if (!response.ok) {
+          return { success: false, error: data?.message || `Registration failed (${response.status})` };
         }
       } catch {
       }
@@ -211,8 +211,8 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: cleanEmail, password })
         });
-        const data = await response.json();
-        if (response.ok && data.success) {
+        const data = await response.json().catch(() => null);
+        if (response.ok && data?.success) {
           if (data.token) {
             StorageService.setItem(STORAGE_KEYS.AUTH_TOKEN, data.token);
           }
@@ -230,8 +230,8 @@
           };
           this.setSession(session2);
           return { success: true, user: session2 };
-        } else if (!response.ok && data.message) {
-          return { success: false, error: data.message };
+        } else if (!response.ok) {
+          return { success: false, error: data?.message || `Authentication failed (${response.status})` };
         }
       } catch {
       }
@@ -1463,19 +1463,35 @@
     /**
      * Save a completed trip booking
      */
-    static saveBooking(req) {
+    static async saveBooking(req) {
       const bookings = StorageService.getItem(STORAGE_KEYS.BOOKINGS, []);
       const randomCode = Math.floor(1e4 + Math.random() * 9e4);
+      const tempId = `JAD-${randomCode}`;
       const bookingRecord = {
         ...req,
-        bookingId: `JAD-${randomCode}`,
+        bookingId: tempId,
         createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-        status: "confirmed"
+        status: "confirmed",
+        synced: false
       };
       bookings.unshift(bookingRecord);
       StorageService.setItem(STORAGE_KEYS.BOOKINGS, bookings);
       this.notifyBookingsChange();
-      this.syncBookingToBackend(req);
+      const syncRes = await this.syncBookingToBackend(req);
+      if (syncRes && syncRes.synced && syncRes.bookingId) {
+        bookingRecord.bookingId = syncRes.bookingId;
+        bookingRecord.synced = true;
+        bookingRecord.dbId = syncRes.bookingId;
+        const currentBookings = StorageService.getItem(STORAGE_KEYS.BOOKINGS, []);
+        const matchIdx = currentBookings.findIndex((b) => b.bookingId === tempId || b.bookingId === syncRes.bookingId);
+        if (matchIdx !== -1) {
+          currentBookings[matchIdx] = { ...bookingRecord };
+        } else {
+          currentBookings.unshift(bookingRecord);
+        }
+        StorageService.setItem(STORAGE_KEYS.BOOKINGS, currentBookings);
+        this.notifyBookingsChange();
+      }
       return bookingRecord;
     }
     /**
@@ -1514,15 +1530,30 @@
     static async syncBookingToBackend(req) {
       try {
         const token = authService.getToken();
-        if (!token) return;
-        await fetch(`${API_CONFIG.BASE_URL}/bookings`, {
+        const headers = {
+          "Content-Type": "application/json"
+        };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+        const DEST_MAP = {
+          "static-rome": "rome-italy",
+          "static-london": "london-uk",
+          "static-europe": "full-europe",
+          "static-greece": "santorini-greece",
+          "rome": "rome-italy",
+          "london": "london-uk",
+          "europe": "full-europe",
+          "greece": "santorini-greece",
+          "bali": "bali-indonesia",
+          "tokyo": "tokyo-japan"
+        };
+        const resolvedDestId = DEST_MAP[req.destinationId] || req.destinationId;
+        const response = await fetch(`${API_CONFIG.BASE_URL}/bookings`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
+          headers,
           body: JSON.stringify({
-            destinationId: req.destinationId,
+            destinationId: resolvedDestId,
             destinationTitle: req.destinationTitle,
             departureDate: req.departureDate,
             adults: req.adults,
@@ -1531,12 +1562,30 @@
             fullName: req.fullName,
             email: req.email,
             phone: req.phone,
-            specialRequests: req.specialRequests,
+            specialRequests: req.specialRequests || req.notes,
             promoCode: req.promoCode,
             totalPrice: req.totalPrice
           })
         });
-      } catch {
+        const data = await response.json().catch(() => null);
+        if (response.ok && data?.success && data?.booking) {
+          console.log("[DestinationService] Real-time booking synced with PostgreSQL:", data.booking.id);
+          return {
+            synced: true,
+            bookingId: data.booking.id || data.booking.bookingId
+          };
+        }
+        console.warn("[DestinationService] Booking backend sync rejected:", data?.message || response.statusText);
+        return {
+          synced: false,
+          error: data?.message || `Server error (${response.status})`
+        };
+      } catch (err) {
+        console.warn("[DestinationService] Booking backend network unreachable:", err);
+        return {
+          synced: false,
+          error: "Network unreachable"
+        };
       }
     }
     static async syncCancelToBackend(bookingId) {
@@ -1556,13 +1605,20 @@
       try {
         const token = authService.getToken();
         if (!token) return;
+        const DEST_MAP = {
+          "static-rome": "rome-italy",
+          "static-london": "london-uk",
+          "static-europe": "full-europe",
+          "static-greece": "santorini-greece"
+        };
+        const resolvedDestId = DEST_MAP[destinationId] || destinationId;
         await fetch(`${API_CONFIG.BASE_URL}/wishlist/toggle`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify({ destinationId })
+          body: JSON.stringify({ destinationId: resolvedDestId })
         });
       } catch {
       }
@@ -1575,24 +1631,28 @@
           headers: { Authorization: `Bearer ${token}` }
         });
         if (bookingsRes.ok) {
-          const data = await bookingsRes.json();
-          if (data.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
+          const data = await bookingsRes.json().catch(() => null);
+          if (data?.success && Array.isArray(data.bookings) && data.bookings.length > 0) {
             const remoteRecords = data.bookings.map((b) => ({
-              bookingId: b.id,
-              destinationId: b.destination_id || "dest-custom",
-              destinationTitle: b.destination_title,
-              departureDate: b.departure_date,
-              adults: b.adults,
-              children: b.children,
-              packageTier: b.package_tier,
-              fullName: b.full_name,
+              bookingId: b.id || b.bookingId,
+              destinationId: b.destinationId || b.destination_id || "dest-custom",
+              destinationTitle: b.destinationTitle || b.destination_title,
+              destinationImage: b.imageUrl || b.image_url || "assets/Images/destination-section/dest-1-rome.jpg",
+              departureDate: b.departureDate || b.departure_date,
+              adults: Number(b.adults) || 1,
+              children: Number(b.children) || 0,
+              packageTier: b.packageTier || b.package_tier || "standard",
+              fullName: b.fullName || b.full_name,
               email: b.email,
               phone: b.phone,
-              specialRequests: b.special_requests,
-              promoCode: b.promo_code,
-              totalPrice: Number(b.total_price),
-              createdAt: b.created_at,
-              status: b.status
+              specialRequests: b.specialRequests || b.special_requests,
+              promoCode: b.promoCode || b.promo_code,
+              basePricePerPerson: Math.round(Number(b.totalPrice || b.total_price || 2200) / Math.max(1, Number(b.adults) || 1)),
+              totalPrice: Number(b.totalPrice || b.total_price),
+              createdAt: b.createdAt || b.created_at,
+              status: b.status || "confirmed",
+              synced: true,
+              dbId: b.id || b.bookingId
             }));
             StorageService.setItem(STORAGE_KEYS.BOOKINGS, remoteRecords);
             this.notifyBookingsChange();
@@ -1602,8 +1662,8 @@
           headers: { Authorization: `Bearer ${token}` }
         });
         if (wishRes.ok) {
-          const wishData = await wishRes.json();
-          if (wishData.success && Array.isArray(wishData.wishlist) && wishData.wishlist.length > 0) {
+          const wishData = await wishRes.json().catch(() => null);
+          if (wishData?.success && Array.isArray(wishData.wishlist) && wishData.wishlist.length > 0) {
             const ids = wishData.wishlist.map((w) => w.id || w.destination_id);
             StorageService.setItem(STORAGE_KEYS.FAVORITES, ids);
             this.notifyWishlistChange();
@@ -1808,155 +1868,6 @@
       coordinates: { lat: 37.9838, lon: 23.7275 }
     }
   });
-
-  // src/middleware/auth.middleware.ts
-  var AuthMiddleware = class {
-    static isAuthenticated() {
-      return AuthService.getInstance().isAuthenticated();
-    }
-    /**
-     * Enforce authentication before executing an action or viewing a section.
-     * If user is not logged in, opens the Auth Required Modal and returns false.
-     */
-    static requireAuth(options = {}) {
-      if (this.isAuthenticated()) {
-        return true;
-      }
-      this.showAuthRequiredModal(options);
-      return false;
-    }
-    /**
-     * Wrap an action function with authentication check
-     */
-    static guardAction(actionFn, options = {}) {
-      if (!this.requireAuth(options)) {
-        return null;
-      }
-      return actionFn();
-    }
-    /**
-     * Display the Authentication Required Modal
-     */
-    static showAuthRequiredModal(options = {}) {
-      let modal = document.getElementById("auth-required-modal");
-      if (!modal) {
-        modal = this.createModalElement();
-        document.body.appendChild(modal);
-      }
-      const titleEl = modal.querySelector("#auth-modal-title");
-      const msgEl = modal.querySelector("#auth-modal-msg");
-      const loginLink = modal.querySelector("#auth-modal-login-btn");
-      const signupLink = modal.querySelector("#auth-modal-signup-btn");
-      const defaultTitle = options.customTitle || "Authentication Required";
-      const actionDesc = options.actionName || "access this protected travel portal section";
-      const defaultMsg = options.customMessage || `You need to be signed in to ${actionDesc}. Log in with your verified account or sign up in seconds!`;
-      if (titleEl) titleEl.textContent = defaultTitle;
-      if (msgEl) msgEl.textContent = defaultMsg;
-      const returnUrl = options.redirectUrl || window.location.pathname.split("/").pop() || "index.html";
-      const returnParam = encodeURIComponent(returnUrl + (options.returnToTab ? `?tab=${options.returnToTab}` : ""));
-      if (loginLink) loginLink.href = `auth.html?mode=login&returnUrl=${returnParam}`;
-      if (signupLink) signupLink.href = `auth.html?mode=signup&returnUrl=${returnParam}`;
-      modal.style.display = "flex";
-      document.body.style.overflow = "hidden";
-      setTimeout(() => loginLink?.focus(), 50);
-    }
-    /**
-     * Hide the Authentication Required Modal
-     */
-    static hideAuthRequiredModal() {
-      const modal = document.getElementById("auth-required-modal");
-      if (modal) {
-        modal.style.display = "none";
-        document.body.style.overflow = "";
-      }
-    }
-    /**
-     * Render an inline Locked Access card for container elements (e.g. My Bookings tab)
-     */
-    static renderLockedState(container, options = {}) {
-      const title = options.title || "Sign In to Access Your Bookings";
-      const message = options.message || "Your flight bookings, reservations, and electronic boarding passes are protected under your private Jadoo account.";
-      const currentFile = options.redirectUrl || window.location.pathname.split("/").pop() || "index.html";
-      const returnTarget = encodeURIComponent(currentFile + (options.tabName ? `?tab=${options.tabName}` : ""));
-      container.innerHTML = `
-      <div class="auth-locked-state">
-        <div class="auth-locked-icon">
-          <i class="fa-solid fa-lock"></i>
-        </div>
-        <h3 class="auth-locked-title">${title}</h3>
-        <p class="auth-locked-desc">${message}</p>
-        <div class="auth-locked-actions">
-          <a href="auth.html?mode=login&returnUrl=${returnTarget}" class="profile-btn-primary auth-locked-btn">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i>
-            <span>Log In to View Bookings</span>
-          </a>
-          <a href="auth.html?mode=signup&returnUrl=${returnTarget}" class="profile-btn-outline auth-locked-btn">
-            <i class="fa-solid fa-user-plus"></i>
-            <span>Create Free Account</span>
-          </a>
-        </div>
-      </div>
-    `;
-    }
-    /**
-     * Create the DOM structure for the Auth Required Modal if not present
-     */
-    static createModalElement() {
-      const modal = document.createElement("div");
-      modal.id = "auth-required-modal";
-      modal.className = "profile-modal-overlay auth-required-overlay";
-      modal.setAttribute("role", "dialog");
-      modal.setAttribute("aria-modal", "true");
-      modal.setAttribute("aria-labelledby", "auth-modal-title");
-      modal.style.display = "none";
-      modal.innerHTML = `
-      <div class="profile-modal-card auth-required-card">
-        <button type="button" class="auth-required-close" data-close-auth-modal aria-label="Close dialog">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-
-        <div class="auth-required-body">
-          <div class="auth-lock-badge">
-            <div class="lock-glow"></div>
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-
-          <h3 class="auth-required-title" id="auth-modal-title">Authentication Required</h3>
-          <p class="auth-required-text" id="auth-modal-msg">
-            You must be logged in to access your booked trips and flight reservations. Please log in or sign up for a free Jadoo account.
-          </p>
-
-          <div class="auth-required-options">
-            <a href="auth.html?mode=login" class="auth-modal-btn btn-signin" id="auth-modal-login-btn">
-              <i class="fa-solid fa-arrow-right-to-bracket"></i>
-              <span>Log In to Continue</span>
-            </a>
-            <a href="auth.html?mode=signup" class="auth-modal-btn btn-signup" id="auth-modal-signup-btn">
-              <i class="fa-solid fa-user-plus"></i>
-              <span>Create Free Account</span>
-            </a>
-          </div>
-
-          <button type="button" class="auth-required-cancel" data-close-auth-modal>
-            <span>Cancel and return to browsing</span>
-          </button>
-        </div>
-      </div>
-    `;
-      modal.addEventListener("click", (e) => {
-        const target = e.target;
-        if (target === modal || target.closest("[data-close-auth-modal]")) {
-          this.hideAuthRequiredModal();
-        }
-      });
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && modal.style.display === "flex") {
-          this.hideAuthRequiredModal();
-        }
-      });
-      return modal;
-    }
-  };
 
   // src/utils/validation.utils.ts
   function validatePhoneNumber(phone) {
@@ -2575,13 +2486,7 @@
     /**
      * Validate and submit booking with strict phone, email, name, and departure date verification
      */
-    handleBookingSubmit() {
-      if (!AuthMiddleware.requireAuth({
-        actionName: "confirm this flight reservation and book your vacation",
-        customMessage: "You must be signed in to finalize and record travel bookings to your verified Jadoo profile."
-      })) {
-        return;
-      }
+    async handleBookingSubmit() {
       this.clearFormErrors();
       const name = this.inputName?.value.trim() || "";
       const email = this.inputEmail?.value.trim() || "";
@@ -2657,40 +2562,64 @@
         totalPrice: total,
         promoCode: this.appliedPromoCode || void 0
       };
-      const record = DestinationService.saveBooking(bookingReq);
-      if (this.receiptBookingId) this.receiptBookingId.textContent = `#${record.bookingId}`;
-      if (this.receiptDestName) this.receiptDestName.textContent = record.destinationTitle;
-      if (this.receiptTravelerName) this.receiptTravelerName.textContent = record.fullName;
-      if (this.receiptTravelerPhone) this.receiptTravelerPhone.textContent = formattedPhone;
-      if (this.receiptTravelerEmail) this.receiptTravelerEmail.textContent = email;
-      if (this.receiptTravelDate) {
-        try {
-          const d = /* @__PURE__ */ new Date(record.departureDate + "T00:00:00");
-          this.receiptTravelDate.textContent = d.toLocaleDateString(void 0, { month: "short", day: "numeric", year: "numeric" });
-        } catch {
-          this.receiptTravelDate.textContent = record.departureDate;
+      const submitBtn = this.bookingForm?.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn?.textContent || "Confirm & Reserve";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Confirming Reservation...";
+      }
+      try {
+        const record = await DestinationService.saveBooking(bookingReq);
+        if (this.receiptBookingId) this.receiptBookingId.textContent = `#${record.bookingId}`;
+        if (this.receiptDestName) this.receiptDestName.textContent = record.destinationTitle;
+        if (this.receiptTravelerName) this.receiptTravelerName.textContent = record.fullName;
+        if (this.receiptTravelerPhone) this.receiptTravelerPhone.textContent = formattedPhone;
+        if (this.receiptTravelerEmail) this.receiptTravelerEmail.textContent = email;
+        if (this.receiptTravelDate) {
+          try {
+            const d = /* @__PURE__ */ new Date(record.departureDate + "T00:00:00");
+            this.receiptTravelDate.textContent = d.toLocaleDateString(void 0, { month: "short", day: "numeric", year: "numeric" });
+          } catch {
+            this.receiptTravelDate.textContent = record.departureDate;
+          }
+        }
+        if (this.receiptGuests) {
+          const guestText = `${adults} Adult${adults > 1 ? "s" : ""}${children > 0 ? `, ${children} Child${children > 1 ? "ren" : ""}` : ""}`;
+          this.receiptGuests.textContent = `${guestText} (${tier.toUpperCase()})`;
+        }
+        if (this.receiptDiscountRow && this.receiptDiscountVal) {
+          if (this.appliedDiscountPercent > 0) {
+            this.receiptDiscountRow.style.display = "flex";
+            this.receiptDiscountVal.textContent = `-${this.appliedDiscountPercent}% (${this.appliedPromoCode})`;
+          } else {
+            this.receiptDiscountRow.style.display = "none";
+          }
+        }
+        if (this.receiptTotalPrice) {
+          this.receiptTotalPrice.textContent = `${record.totalPrice.toLocaleString()}`;
+        }
+        const receiptBadge = document.querySelector(".receipt-status-badge");
+        if (receiptBadge) {
+          if (record.synced) {
+            receiptBadge.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Confirmed & Synced';
+            receiptBadge.style.background = "#ecfdf5";
+            receiptBadge.style.color = "#059669";
+          } else {
+            receiptBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Confirmed';
+          }
+        }
+        if (this.bookingFormScreen) this.bookingFormScreen.style.display = "none";
+        if (this.bookingSuccessScreen) {
+          this.bookingSuccessScreen.style.display = "block";
+        }
+        const toastMsg = record.synced ? `\u{1F389} Reservation confirmed & synced to database! Ref #${record.bookingId}` : `\u{1F389} Reservation confirmed for ${record.destinationTitle}!`;
+        this.showToast(toastMsg);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
         }
       }
-      if (this.receiptGuests) {
-        const guestText = `${adults} Adult${adults > 1 ? "s" : ""}${children > 0 ? `, ${children} Child${children > 1 ? "ren" : ""}` : ""}`;
-        this.receiptGuests.textContent = `${guestText} (${tier.toUpperCase()})`;
-      }
-      if (this.receiptDiscountRow && this.receiptDiscountVal) {
-        if (this.appliedDiscountPercent > 0) {
-          this.receiptDiscountRow.style.display = "flex";
-          this.receiptDiscountVal.textContent = `-${this.appliedDiscountPercent}% (${this.appliedPromoCode})`;
-        } else {
-          this.receiptDiscountRow.style.display = "none";
-        }
-      }
-      if (this.receiptTotalPrice) {
-        this.receiptTotalPrice.textContent = `$${record.totalPrice.toLocaleString()}`;
-      }
-      if (this.bookingFormScreen) this.bookingFormScreen.style.display = "none";
-      if (this.bookingSuccessScreen) {
-        this.bookingSuccessScreen.style.display = "block";
-      }
-      this.showToast(`\xF0\u0178\u017D\u2030 Reservation confirmed for ${record.destinationTitle}!`);
     }
     showToast(message, _type) {
       let toast = document.getElementById("jadoo-toast");
