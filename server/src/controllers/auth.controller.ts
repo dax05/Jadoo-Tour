@@ -69,7 +69,8 @@ export const AuthController = {
       });
     } catch (err: unknown) {
       console.error('[AuthController.register] Error:', err);
-      res.status(500).json({ success: false, message: 'Registration failed due to a server error.' });
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(500).json({ success: false, message: `Registration failed: ${msg}` });
     }
   },
 
@@ -132,7 +133,8 @@ export const AuthController = {
       });
     } catch (err: unknown) {
       console.error('[AuthController.login] Error:', err);
-      res.status(500).json({ success: false, message: 'Login failed due to a server error.' });
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(500).json({ success: false, message: `Login failed: ${msg}` });
     }
   },
 

@@ -1,12 +1,16 @@
 import { Pool, PoolConfig } from 'pg';
 import { ENV } from './env';
 
+// Render External URL (*.render.com) requires SSL.
+// Render Internal URL (dpg-...) is within Render private network and does NOT use SSL.
+const isRenderInternal =
+  ENV.DATABASE_URL.includes('dpg-') && !ENV.DATABASE_URL.includes('.render.com');
+
 const isSslRequired =
-  ENV.DATABASE_URL.includes('sslmode=require') ||
-  ENV.DATABASE_URL.includes('render.com') ||
-  ENV.DATABASE_URL.includes('dpg-') ||
-  ENV.DB_SSL ||
-  ENV.NODE_ENV === 'production';
+  !isRenderInternal &&
+  (ENV.DATABASE_URL.includes('sslmode=require') ||
+   ENV.DATABASE_URL.includes('.render.com') ||
+   ENV.DB_SSL);
 
 const poolConfig: PoolConfig = ENV.DATABASE_URL
   ? {
@@ -19,15 +23,17 @@ const poolConfig: PoolConfig = ENV.DATABASE_URL
       user: ENV.DB_USER,
       password: ENV.DB_PASSWORD,
       database: ENV.DB_NAME,
-      ssl: isSslRequired ? { rejectUnauthorized: false } : false,
+      ssl: ENV.DB_SSL ? { rejectUnauthorized: false } : false,
     };
 
 export const pool = new Pool(poolConfig);
 
 let isDbConnected = false;
+let lastDbError: string | null = null;
 
 pool.on('error', (err) => {
   console.error('[PostgreSQL] Unexpected pool client error:', err.message);
+  lastDbError = err.message;
 });
 
 /**
@@ -39,6 +45,7 @@ export async function checkDatabaseConnection(): Promise<boolean> {
     const res = await client.query('SELECT NOW() as current_time, current_database() as db_name');
     client.release();
     isDbConnected = true;
+    lastDbError = null;
     console.log(
       `[PostgreSQL] Connected to database "${res.rows[0].db_name}" at ${res.rows[0].current_time}`
     );
@@ -46,10 +53,11 @@ export async function checkDatabaseConnection(): Promise<boolean> {
   } catch (err: unknown) {
     isDbConnected = false;
     const msg = err instanceof Error ? err.message : String(err);
+    lastDbError = msg;
     console.warn(`[PostgreSQL] Connection warning: Could not connect to database.`);
     console.warn(`[PostgreSQL] Error details: ${msg}`);
     console.warn(
-      `[PostgreSQL] Tip: Check credentials in REQUIRED_INPUTS.txt or server/.env, then run 'npm run db:setup'.`
+      `[PostgreSQL] Tip: Check DATABASE_URL in Render environment variables or REQUIRED_INPUTS.txt.`
     );
     return false;
   }
@@ -57,4 +65,8 @@ export async function checkDatabaseConnection(): Promise<boolean> {
 
 export function getDbConnectionStatus(): boolean {
   return isDbConnected;
+}
+
+export function getLastDbError(): string | null {
+  return lastDbError;
 }
