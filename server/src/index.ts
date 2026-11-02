@@ -10,7 +10,7 @@ async function startServer() {
   // Verify PostgreSQL connectivity
   await checkDatabaseConnection();
 
-  app.listen(ENV.PORT, () => {
+  app.listen(ENV.PORT, '0.0.0.0', () => {
     console.log(`[Express] Server running on: http://localhost:${ENV.PORT}`);
     console.log(`[Express] Health Check URL : http://localhost:${ENV.PORT}/api/health`);
     console.log(`[Express] API Documentation:`);

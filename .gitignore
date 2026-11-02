@@ -8,3 +8,4 @@ REQUIRED_INPUTS.txt
 scratch/
 .DS_Store
 Thumbs.db
+render-pg.md

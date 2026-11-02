@@ -5,6 +5,9 @@
   "main": "script.js",
   "scripts": {
     "build": "tsc --noEmit && node build.js",
+    "build:server": "tsc --project server/tsconfig.json",
+    "build:all": "npm run build && npm run build:server",
+    "start": "node server/dist/index.js",
     "bundle": "node build.js",
     "type-check": "tsc --noEmit",
     "watch": "node build.js --watch",

@@ -24,7 +24,7 @@
     LOGO_DARK: "assets/Images/navigation-section/Logo-dark.svg"
   };
   var API_CONFIG = {
-    BASE_URL: "http://localhost:5000/api",
+    BASE_URL: typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" && window.location.protocol !== "file:" ? `${window.location.origin}/api` : "http://localhost:5000/api",
     TIMEOUT_MS: 5e3
   };
 

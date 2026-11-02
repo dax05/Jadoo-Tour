@@ -1,12 +1,17 @@
 import { Pool, PoolConfig } from 'pg';
 import { ENV } from './env';
 
+const isSslRequired =
+  ENV.DATABASE_URL.includes('sslmode=require') ||
+  ENV.DATABASE_URL.includes('render.com') ||
+  ENV.DATABASE_URL.includes('dpg-') ||
+  ENV.DB_SSL ||
+  ENV.NODE_ENV === 'production';
+
 const poolConfig: PoolConfig = ENV.DATABASE_URL
   ? {
       connectionString: ENV.DATABASE_URL,
-      ssl: ENV.DATABASE_URL.includes('sslmode=require') || ENV.DB_SSL
-        ? { rejectUnauthorized: false }
-        : false,
+      ssl: isSslRequired ? { rejectUnauthorized: false } : false,
     }
   : {
       host: ENV.DB_HOST,
@@ -14,7 +19,7 @@ const poolConfig: PoolConfig = ENV.DATABASE_URL
       user: ENV.DB_USER,
       password: ENV.DB_PASSWORD,
       database: ENV.DB_NAME,
-      ssl: ENV.DB_SSL ? { rejectUnauthorized: false } : false,
+      ssl: isSslRequired ? { rejectUnauthorized: false } : false,
     };
 
 export const pool = new Pool(poolConfig);
