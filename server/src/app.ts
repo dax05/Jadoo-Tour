@@ -1,7 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
-import { getDbConnectionStatus } from './config/db';
+import { getDbConnectionStatus, checkDatabaseConnection, getLastDbError } from './config/db';
 import { errorHandler } from './middleware/error.middleware';
 
 // Routes
@@ -27,11 +27,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health Check Endpoint
-app.get('/api/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'online',
+app.get('/api/health', async (_req: Request, res: Response) => {
+  const isConnected = await checkDatabaseConnection();
+  res.status(isConnected ? 200 : 503).json({
+    status: isConnected ? 'online' : 'database_disconnected',
     service: 'Jadoo Travel API',
-    databaseConnected: getDbConnectionStatus(),
+    databaseConnected: isConnected,
+    databaseError: isConnected ? null : getLastDbError(),
     timestamp: new Date().toISOString(),
     version: '1.0.0',
   });
