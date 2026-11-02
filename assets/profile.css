@@ -1846,37 +1846,219 @@
 }
 
 @media screen and (max-width: 650px) {
+  .profile-main-container {
+    padding: 0 1rem;
+    margin: 1.25rem auto 3rem;
+  }
+
+  .profile-header {
+    padding: 0.75rem 1rem;
+  }
+
   .profile-header-container {
     flex-wrap: wrap;
     gap: 0.75rem;
   }
+
   .profile-hero-card {
-    padding: 1.5rem;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
     flex-direction: column;
     align-items: flex-start;
   }
+
   .profile-identity-col {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.25rem;
-  }
-  .profile-stats-grid {
+    gap: 1rem;
+    min-width: 0 !important;
     width: 100%;
-    justify-content: space-between;
   }
+
+  .profile-name-heading {
+    font-size: 1.5rem;
+  }
+
+  .profile-stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
   .profile-stat-box {
-    flex: 1;
-    min-width: 100px;
-    padding: 0.85rem;
+    min-width: 0 !important;
+    padding: 0.75rem 0.4rem !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 0.35rem !important;
   }
+
+  .profile-stat-box .stat-icon {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 1rem !important;
+  }
+
+  .stat-val {
+    font-size: 1.15rem !important;
+  }
+
+  .stat-label {
+    font-size: 0.68rem !important;
+  }
+
+  /* Horizontal Scrollable Tabs Bar */
+  .profile-tabs-wrapper {
+    margin-bottom: 1.25rem;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .profile-tabs-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .profile-tabs-list {
+    display: inline-flex !important;
+    flex-wrap: nowrap !important;
+    width: auto !important;
+    min-width: 100%;
+    padding: 0.35rem !important;
+    box-sizing: border-box;
+  }
+
+  .profile-nav-tab {
+    padding: 0.6rem 0.9rem !important;
+    font-size: 0.85rem !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-card {
+    padding: 1.25rem;
+  }
+
+  .panel-heading {
+    font-size: 1.25rem;
+  }
+
+  .profile-wishlist-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+
+  .avatar-choices-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+    padding: 1rem !important;
+  }
+
+  .avatar-choice-card {
+    padding: 0.75rem !important;
+  }
+
+  .profile-modal-card {
+    max-height: 94vh !important;
+    margin: 0.5rem !important;
+    border-radius: 18px !important;
+  }
+
+  .profile-modal-overlay {
+    padding: 0.5rem !important;
+  }
+
   .pb-grid {
     grid-template-columns: 1fr;
   }
-  .bp-info-grid {
-    grid-template-columns: 1fr 1fr;
+
+  .pb-footer button {
+    flex: 1;
+    justify-content: center;
   }
-  .profile-card {
-    padding: 1.5rem;
+
+  /* Boarding Pass Modal Mobile Layout in Profile */
+  .bp-header {
+    padding: 1.25rem 1rem !important;
+    flex-wrap: wrap !important;
+    gap: 0.75rem !important;
+  }
+
+  .bp-brand {
+    order: 1;
+  }
+
+  .bp-modal-close {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .bp-status-badge {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bp-body {
+    padding: 1.25rem 1rem !important;
+  }
+
+  .bp-flight-route {
+    padding: 0.85rem !important;
+    gap: 0.4rem !important;
+  }
+
+  .bp-point-value {
+    font-size: 0.95rem !important;
+  }
+
+  .bp-route-flight {
+    min-width: 90px !important;
+  }
+
+  .bp-flight-tier {
+    font-size: 0.65rem !important;
+  }
+
+  .bp-info-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .bp-barcode-container {
+    padding-top: 1rem !important;
+    overflow: hidden !important;
+  }
+
+  .bp-barcode-text {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.4px !important;
+    text-align: center !important;
+    word-break: break-all !important;
+  }
+
+  .bp-footer {
+    padding: 1rem !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .bp-footer button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  .profile-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .profile-stat-box {
+    flex-direction: row !important;
+    text-align: left !important;
+    padding: 0.75rem 1rem !important;
   }
 }
 

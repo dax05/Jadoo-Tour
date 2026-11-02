@@ -21,6 +21,8 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
@@ -31,6 +33,7 @@ body {
   font-family: var(--font-primary);
   background-color: var(--bgwhite);
   color: var(--color-text);
+  overflow-x: hidden;
 }
 
 a,
@@ -2285,11 +2288,11 @@ body.overflow-hidden {
 }
 
 .subsection {
-  margin-top: 10%;
+  margin-top: clamp(40px, 8vw, 90px);
   display: flex;
   width: 100%;
-  height: 50vh;
-  max-height: 500px;
+  min-height: 280px;
+  height: auto;
 }
 
 .subbg {
@@ -2298,29 +2301,34 @@ body.overflow-hidden {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
   background-color: rgba(223, 215, 249, 1);
-  gap: 5rem;
-  border-top-right-radius: clamp(5px, 1.25vw, 20px);
-  border-top-left-radius: clamp(41px, 1.25vw, 129px);
-  border-bottom-left-radius: clamp(5px, 1.25vw, 20px);
-  border-bottom-right-radius: clamp(5px, 1.25vw, 20px);
+  padding: clamp(2.25rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 3.5rem);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  border-top-right-radius: clamp(12px, 2vw, 20px);
+  border-top-left-radius: clamp(35px, 8vw, 129px);
+  border-bottom-left-radius: clamp(12px, 2vw, 20px);
+  border-bottom-right-radius: clamp(12px, 2vw, 20px);
+  position: relative;
+  overflow: hidden;
 }
 
 .subcon {
-  height: 100%;
+  width: 100%;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .subcon p {
   font-family: var(--font-primary);
   font-weight: 600;
-  font-size: clamp(18px, 2.29vw, 33px);
-  line-height: 1.6;
+  font-size: clamp(1.15rem, 2.5vw, 2.05rem);
+  line-height: 1.45;
   text-align: center;
   color: var(--color-text);
+  margin: 0;
 }
 
 .subinfo {
@@ -2328,24 +2336,27 @@ body.overflow-hidden {
   justify-content: center;
   align-items: center;
   width: 100%;
-  gap: 2%;
-  height: 12%;
+  max-width: 520px;
+  gap: 12px;
+  height: auto;
 }
 
 .subinfo button {
-  padding: 12px 28px;
+  padding: 14px 28px;
   background: linear-gradient(180deg, #FF946D 0%, #FF7D68 100%);
-  border-radius: 10px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-  font-size: clamp(0.75rem, 1.15vw, 1.125rem);
+  font-size: 0.95rem;
   line-height: 100%;
   text-align: center;
   color: #ffffff;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .subinfo button:hover {
@@ -2354,12 +2365,31 @@ body.overflow-hidden {
 }
 
 .subinfo input {
-  padding: 12px 20px;
-  border: 1px solid transparent;
-  border-radius: 8px;
+  flex: 1;
+  min-width: 0;
+  padding: 14px 20px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  background: #ffffff;
   font-family: var(--font-primary);
-  font-size: 1rem;
+  font-size: 0.95rem;
   outline: none;
+}
+
+@media (max-width: 600px) {
+  .subinfo {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .subinfo input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .subinfo button {
+    width: 100%;
+    padding: 14px 20px;
+  }
 }
 
 .newsletter-status {
@@ -2874,8 +2904,21 @@ body.overflow-hidden {
     margin-inline: auto;
   }
 
+  .testleft {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .test-action-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
   .test-nav-arrows {
-    right: -35px;
+    right: -10px;
   }
 
   /* 9. Footer section */
@@ -3029,8 +3072,17 @@ body.overflow-hidden {
   }
 
   .test-card-back {
-    top: 30px;
-    left: 20px;
+    top: 20px !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: calc(100% - 20px) !important;
+  }
+
+  .test-avatar {
+    top: -24px !important;
+    left: 12px !important;
+    width: 50px;
+    height: 50px;
   }
 
   .test-nav-arrows {
@@ -3040,7 +3092,7 @@ body.overflow-hidden {
     transform: none;
     flex-direction: row;
     justify-content: center;
-    margin-top: 55px;
+    margin-top: 45px;
     gap: 24px;
   }
 }
@@ -4842,7 +4894,24 @@ body.overflow-hidden {
   }
 
   .boarding-pass-card {
-    flex-direction: column;
+    flex-direction: column !important;
+  }
+
+  .bookcard-float {
+    right: 0 !important;
+    bottom: -15px !important;
+    width: clamp(200px, 80%, 245px) !important;
+  }
+
+  .step-shadow {
+    width: 260px !important;
+    height: 260px !important;
+    right: 0 !important;
+    top: -5% !important;
+  }
+
+  .test-nav-arrows {
+    right: 0 !important;
   }
 
   .bp-perforation {
@@ -6026,3 +6095,168 @@ body.overflow-hidden {
 
 
 
+
+
+/* ==========================================================================
+   Comprehensive Mobile Responsiveness Overhaul (Small Devices <= 650px)
+   ========================================================================== */
+@media (max-width: 650px) {
+  .dest-filter-bar {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .filter-pills-list {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  .filter-pills-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dest-filter-pill {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .dest-status-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .dest-view-switcher {
+    width: 100%;
+    display: flex;
+  }
+
+  .view-switch-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Modals on small devices */
+  .jadoo-modal-overlay,
+  .profile-modal-overlay {
+    padding: 0.5rem !important;
+  }
+
+  .dest-details-dialog,
+  .dest-booking-dialog,
+  .profile-modal-card,
+  .testimonial-modal-card {
+    max-height: 94vh !important;
+    border-radius: 18px !important;
+  }
+
+  .modal-hero-cover {
+    height: 190px !important;
+  }
+
+  .modal-hero-badges {
+    left: 14px !important;
+    bottom: 12px !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .modal-body-content {
+    padding: 1.25rem 1rem !important;
+    gap: 16px !important;
+  }
+
+  .modal-price-box {
+    align-items: flex-start !important;
+    width: 100%;
+  }
+
+  .test-form-body {
+    padding: 1.25rem 1rem !important;
+  }
+
+  .test-form-footer {
+    padding: 1rem !important;
+    flex-direction: column !important;
+  }
+
+  .test-form-footer button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Boarding Pass Modal Mobile Layout */
+  .bp-header {
+    padding: 1.25rem 1rem !important;
+    flex-wrap: wrap !important;
+    gap: 0.75rem !important;
+  }
+
+  .bp-brand {
+    order: 1;
+  }
+
+  .bp-modal-close {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .bp-status-badge {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bp-body {
+    padding: 1.25rem 1rem !important;
+  }
+
+  .bp-flight-route {
+    padding: 0.85rem !important;
+    gap: 0.4rem !important;
+  }
+
+  .bp-point-value {
+    font-size: 0.95rem !important;
+  }
+
+  .bp-route-flight {
+    min-width: 90px !important;
+  }
+
+  .bp-flight-tier {
+    font-size: 0.65rem !important;
+  }
+
+  .bp-info-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+  }
+
+  .bp-barcode-container {
+    padding-top: 1rem !important;
+    overflow: hidden !important;
+  }
+
+  .bp-barcode-text {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.4px !important;
+    text-align: center !important;
+    word-break: break-all !important;
+  }
+
+  .bp-footer {
+    padding: 1rem !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+
+  .bp-footer button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
