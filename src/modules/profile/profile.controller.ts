@@ -18,7 +18,7 @@ import { AuthService } from '../../services/auth.service';
 import { DestinationService } from '../../services/destination.service';
 import { BookingRecord } from '../../types/destination.types';
 import { UserSession } from '../../types/auth.types';
-import { AuthMiddleware } from '../../middleware/auth.middleware';
+import { AuthMiddleware, ModalScrollManager } from '../../middleware/auth.middleware';
 import { validatePhoneNumber, sanitizePhoneInput, formatPhoneNumber } from '../../utils/validation.utils';
 
 export class ProfileController {
@@ -300,13 +300,19 @@ export class ProfileController {
 
     // 6. Avatar picker modal triggers
     this.openAvatarBtn?.addEventListener('click', () => {
-      if (this.avatarModal) this.avatarModal.style.display = 'flex';
+      if (this.avatarModal) {
+        this.avatarModal.style.display = 'flex';
+        ModalScrollManager.lock();
+      }
     });
 
     this.avatarModal?.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       if (target === this.avatarModal || target.closest('[data-close-avatar]')) {
-        if (this.avatarModal) this.avatarModal.style.display = 'none';
+        if (this.avatarModal) {
+          this.avatarModal.style.display = 'none';
+          ModalScrollManager.unlock();
+        }
       }
 
       const avatarOption = target.closest<HTMLElement>('.avatar-choice-card');
@@ -326,7 +332,10 @@ export class ProfileController {
     this.boardingPassModal?.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       if (target === this.boardingPassModal || target.closest('[data-close-bp]')) {
-        if (this.boardingPassModal) this.boardingPassModal.style.display = 'none';
+        if (this.boardingPassModal) {
+          this.boardingPassModal.style.display = 'none';
+          ModalScrollManager.unlock();
+        }
       }
     });
 
@@ -335,6 +344,7 @@ export class ProfileController {
       if (e.key === 'Escape') {
         if (this.avatarModal) this.avatarModal.style.display = 'none';
         if (this.boardingPassModal) this.boardingPassModal.style.display = 'none';
+        ModalScrollManager.forceUnlockAll();
       }
     });
 
@@ -428,7 +438,11 @@ export class ProfileController {
    * Update Quick Travel Stats
    */
   private updateStats(): void {
-    const bookings = DestinationService.getBookings();
+    const session = this.authService.getCurrentSession();
+    const allBookings = DestinationService.getBookings();
+    const bookings = session
+      ? allBookings.filter((b) => b.email?.toLowerCase() === session.email.toLowerCase())
+      : [];
     const wishlist = DestinationService.getWishlistDestinations();
     const confirmedCount = bookings.filter((b) => b.status === 'confirmed').length;
 
@@ -802,6 +816,7 @@ export class ProfileController {
     }
 
     this.boardingPassModal.style.display = 'flex';
+    ModalScrollManager.lock();
   }
 
   /**

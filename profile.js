@@ -1281,6 +1281,26 @@
   });
 
   // src/middleware/auth.middleware.ts
+  var ModalScrollManager = class {
+    static lock() {
+      this.lockCount++;
+      document.body.classList.add("overflow-hidden");
+      document.body.style.overflow = "hidden";
+    }
+    static unlock() {
+      this.lockCount = Math.max(0, this.lockCount - 1);
+      if (this.lockCount === 0) {
+        document.body.classList.remove("overflow-hidden");
+        document.body.style.overflow = "";
+      }
+    }
+    static forceUnlockAll() {
+      this.lockCount = 0;
+      document.body.classList.remove("overflow-hidden");
+      document.body.style.overflow = "";
+    }
+  };
+  __publicField(ModalScrollManager, "lockCount", 0);
   var AuthMiddleware = class {
     static isAuthenticated() {
       return AuthService.getInstance().isAuthenticated();
@@ -1328,7 +1348,7 @@
       if (loginLink) loginLink.href = `auth.html?mode=login&returnUrl=${returnParam}`;
       if (signupLink) signupLink.href = `auth.html?mode=signup&returnUrl=${returnParam}`;
       modal.style.display = "flex";
-      document.body.style.overflow = "hidden";
+      ModalScrollManager.lock();
       setTimeout(() => loginLink?.focus(), 50);
     }
     /**
@@ -1338,7 +1358,7 @@
       const modal = document.getElementById("auth-required-modal");
       if (modal) {
         modal.style.display = "none";
-        document.body.style.overflow = "";
+        ModalScrollManager.unlock();
       }
     }
     /**
@@ -1739,12 +1759,18 @@
         });
       });
       this.openAvatarBtn?.addEventListener("click", () => {
-        if (this.avatarModal) this.avatarModal.style.display = "flex";
+        if (this.avatarModal) {
+          this.avatarModal.style.display = "flex";
+          ModalScrollManager.lock();
+        }
       });
       this.avatarModal?.addEventListener("click", (e) => {
         const target = e.target;
         if (target === this.avatarModal || target.closest("[data-close-avatar]")) {
-          if (this.avatarModal) this.avatarModal.style.display = "none";
+          if (this.avatarModal) {
+            this.avatarModal.style.display = "none";
+            ModalScrollManager.unlock();
+          }
         }
         const avatarOption = target.closest(".avatar-choice-card");
         if (avatarOption) {
@@ -1760,13 +1786,17 @@
       this.boardingPassModal?.addEventListener("click", (e) => {
         const target = e.target;
         if (target === this.boardingPassModal || target.closest("[data-close-bp]")) {
-          if (this.boardingPassModal) this.boardingPassModal.style.display = "none";
+          if (this.boardingPassModal) {
+            this.boardingPassModal.style.display = "none";
+            ModalScrollManager.unlock();
+          }
         }
       });
       window.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if (this.avatarModal) this.avatarModal.style.display = "none";
           if (this.boardingPassModal) this.boardingPassModal.style.display = "none";
+          ModalScrollManager.forceUnlockAll();
         }
       });
       DestinationService.onWishlistChange(() => {
@@ -1840,7 +1870,9 @@
      * Update Quick Travel Stats
      */
     updateStats() {
-      const bookings = DestinationService.getBookings();
+      const session = this.authService.getCurrentSession();
+      const allBookings = DestinationService.getBookings();
+      const bookings = session ? allBookings.filter((b) => b.email?.toLowerCase() === session.email.toLowerCase()) : [];
       const wishlist = DestinationService.getWishlistDestinations();
       const confirmedCount = bookings.filter((b) => b.status === "confirmed").length;
       if (this.statTripsCount) this.statTripsCount.textContent = String(confirmedCount);
@@ -2158,6 +2190,7 @@
         this.bpStatusBadge.innerHTML = `<i class="fa-solid ${isConfirmed ? "fa-circle-check" : "fa-circle-xmark"}"></i> ${isConfirmed ? "OFFICIALLY CONFIRMED" : "CANCELLED"}`;
       }
       this.boardingPassModal.style.display = "flex";
+      ModalScrollManager.lock();
     }
     /**
      * Toast notification

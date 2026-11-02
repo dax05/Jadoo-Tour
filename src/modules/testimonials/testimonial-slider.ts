@@ -63,6 +63,10 @@ export class TestimonialSlider {
     // Reactive subscription to new reviews added
     this.testimonialService.subscribe((updated) => {
       this.testimonials = updated;
+      const total = this.testimonials.length;
+      if (total > 0 && this.currentIndex >= total) {
+        this.currentIndex = 0;
+      }
       this.renderDots();
       this.render(this.currentIndex);
     });
@@ -126,8 +130,14 @@ export class TestimonialSlider {
 
     // Populate Foreground Card
     if (this.mainAvatar) {
-      this.mainAvatar.src = current.avatar;
-      this.mainAvatar.alt = current.name;
+      this.mainAvatar.onerror = () => {
+        if (this.mainAvatar) {
+          this.mainAvatar.onerror = null;
+          this.mainAvatar.src = 'assets/Images/testimonial-section/author-sarah.jpg';
+        }
+      };
+      this.mainAvatar.src = current.avatar || 'assets/Images/testimonial-section/author-sarah.jpg';
+      this.mainAvatar.alt = current.name || 'Traveler';
     }
     if (this.mainQuote) this.mainQuote.textContent = current.quote;
     if (this.mainName) this.mainName.textContent = current.name;

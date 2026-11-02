@@ -1017,8 +1017,10 @@
           </div>
 
           <div class="test-field-group">
-            <label for="test-input-dest" class="test-field-label">Destination Traveled To (Optional)</label>
-            <input type="text" id="test-input-dest" class="profile-input" placeholder="e.g. Trip to Greece, Rome, or London">
+            <label for="test-input-dest" class="test-field-label">Your Booked Vacation Destination <span style="color: #df6951;">*</span></label>
+            <select id="test-input-dest" class="profile-input" required>
+              <option value="" disabled selected>Select your booked destination...</option>
+            </select>
           </div>
 
           <!-- Avatar Choice -->

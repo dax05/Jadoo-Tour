@@ -1,4 +1,5 @@
 import { Destination, PackageTier, BookingRequest } from '../../types/destination.types';
+import { AuthMiddleware, ModalScrollManager } from '../../middleware/auth.middleware';
 import { DestinationService } from '../../services/destination.service';
 import { AuthService } from '../../services/auth.service';
 import {
@@ -424,13 +425,22 @@ export class DestinationModalController {
     this.updateDetailsFavBtn(isFav);
 
     this.detailsModal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    ModalScrollManager.lock();
   }
 
   /**
    * Open Booking Form Popup Modal for a destination
    */
   public openBookingModal(dest: Destination): void {
+    if (!AuthMiddleware.requireAuth({
+      actionName: 'reserve and confirm flight bookings',
+      customTitle: 'Traveler Login Required',
+      customMessage: 'Please log in or sign up for a free Jadoo account to customize your travel package, reserve seats, and access your digital boarding pass.',
+      redirectUrl: 'index.html',
+    })) {
+      return;
+    }
+
     this.currentDestination = dest;
     this.closeAllModals();
 
@@ -481,7 +491,7 @@ export class DestinationModalController {
     }
 
     this.bookingModal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    ModalScrollManager.lock();
 
     // Focus on full name input for immediate accessibility
     setTimeout(() => {
@@ -495,7 +505,7 @@ export class DestinationModalController {
   public closeAllModals(): void {
     if (this.detailsModal) this.detailsModal.style.display = 'none';
     if (this.bookingModal) this.bookingModal.style.display = 'none';
-    document.body.style.overflow = '';
+    ModalScrollManager.forceUnlockAll();
   }
 
   private updateDetailsFavBtn(isFav: boolean): void {

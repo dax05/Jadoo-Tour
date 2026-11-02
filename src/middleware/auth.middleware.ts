@@ -1,3 +1,31 @@
+/**
+ * Stack-aware modal scroll lock manager
+ * Prevents nested modals from releasing page scroll prematurely
+ */
+export class ModalScrollManager {
+  private static lockCount = 0;
+
+  public static lock(): void {
+    this.lockCount++;
+    document.body.classList.add('overflow-hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  public static unlock(): void {
+    this.lockCount = Math.max(0, this.lockCount - 1);
+    if (this.lockCount === 0) {
+      document.body.classList.remove('overflow-hidden');
+      document.body.style.overflow = '';
+    }
+  }
+
+  public static forceUnlockAll(): void {
+    this.lockCount = 0;
+    document.body.classList.remove('overflow-hidden');
+    document.body.style.overflow = '';
+  }
+}
+
 import { AuthService } from '../services/auth.service';
 
 export interface AuthGuardOptions {
@@ -72,7 +100,7 @@ export class AuthMiddleware {
     if (signupLink) signupLink.href = `auth.html?mode=signup&returnUrl=${returnParam}`;
 
     modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    ModalScrollManager.lock();
 
     // Auto-focus the login button
     setTimeout(() => loginLink?.focus(), 50);
@@ -85,7 +113,7 @@ export class AuthMiddleware {
     const modal = document.getElementById('auth-required-modal');
     if (modal) {
       modal.style.display = 'none';
-      document.body.style.overflow = '';
+      ModalScrollManager.unlock();
     }
   }
 

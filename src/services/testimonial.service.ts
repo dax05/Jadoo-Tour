@@ -76,11 +76,15 @@ export class TestimonialService {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({
+        authorName: newTestimonial.name,
         name: newTestimonial.name,
         role: newTestimonial.destinationVisited || 'Traveler',
+        destinationTitle: newTestimonial.destinationVisited || '',
         location: newTestimonial.location,
         quote: newTestimonial.quote,
         rating: newTestimonial.rating,
+        avatarUrl: newTestimonial.avatar,
+        avatar: newTestimonial.avatar,
       }),
     }).catch(() => {});
 
@@ -95,13 +99,17 @@ export class TestimonialService {
         if (data.success && Array.isArray(data.testimonials)) {
           const userSubmitted = data.testimonials.map((t: any) => ({
             id: `test-pg-${t.id}`,
-            name: t.name,
-            destinationVisited: t.role || 'Traveler',
-            location: t.location,
-            avatar: t.avatar_url || 'assets/Images/testimonials-section/author-image.png',
+            name: t.authorName || t.name || 'Verified Traveler',
+            destinationVisited: t.destinationTitle || t.role || 'Traveler',
+            location: t.location || 'Verified Traveler',
+            avatar:
+              t.avatarUrl ||
+              t.avatar_url ||
+              t.avatar ||
+              'assets/Images/testimonial-section/author-sarah.jpg',
             quote: t.quote,
             rating: Number(t.rating) || 5,
-            createdAt: t.created_at,
+            createdAt: t.createdAt || t.created_at,
             isUserSubmitted: true,
           }));
           StorageService.setItem(STORAGE_KEYS.TESTIMONIALS, userSubmitted);

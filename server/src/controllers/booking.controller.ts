@@ -80,15 +80,13 @@ export const BookingController = {
         return;
       }
 
-      // 4. Resolve user ID: check JWT token first, then email match, else guest (null)
-      const cleanEmail = email.trim().toLowerCase();
-      let userId: number | null = req.user ? req.user.id : null;
-      if (!userId) {
-        const userCheck = await pool.query('SELECT id FROM users WHERE email = $1', [cleanEmail]);
-        if (userCheck.rows.length > 0) {
-          userId = userCheck.rows[0].id;
-        }
+      // 4. Resolve user ID: require active authenticated user
+      if (!req.user) {
+        res.status(401).json({ success: false, message: 'Authentication required. Please log in to complete your reservation.' });
+        return;
       }
+      const cleanEmail = email.trim().toLowerCase();
+      const userId: number = req.user.id;
 
       // 5. Fetch destination to get price and title or fallback to provided details
       let destTitle = req.body.destinationTitle || 'Selected Destination';

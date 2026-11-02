@@ -1,5 +1,7 @@
 import { testimonialService, TestimonialService } from '../../services/testimonial.service';
 import { AuthService } from '../../services/auth.service';
+import { AuthMiddleware, ModalScrollManager } from '../../middleware/auth.middleware';
+import { DestinationService } from '../../services/destination.service';
 import { TestimonialSlider } from './testimonial-slider';
 
 /**
@@ -16,7 +18,7 @@ export class TestimonialFormController {
   private form: HTMLFormElement | null = null;
   private inputName: HTMLInputElement | null = null;
   private inputLocation: HTMLInputElement | null = null;
-  private inputDest: HTMLInputElement | null = null;
+  private inputDest: HTMLSelectElement | HTMLInputElement | null = null;
   private inputQuote: HTMLTextAreaElement | null = null;
   private quoteCounter: HTMLElement | null = null;
   private starContainer: HTMLElement | null = null;
@@ -118,27 +120,68 @@ export class TestimonialFormController {
   public openModal(): void {
     if (!this.modal) return;
 
-    // Pre-fill user data if authenticated
+    // 1. Gate: Require Active Authentication
+    if (!AuthMiddleware.requireAuth({
+      actionName: 'share your verified travel review',
+      customTitle: 'Verified Traveler Login Required',
+      customMessage: 'Only verified travelers with a confirmed Jadoo vacation booking can submit testimonials and reviews.',
+      redirectUrl: 'index.html',
+    })) {
+      return;
+    }
+
     const session = this.authService.getCurrentSession();
+
+    // 2. Gate: Verified Reviews Only - Check confirmed bookings
+    const allBookings = DestinationService.getBookings();
+    const confirmedBookings = allBookings.filter(
+      (b) => b.email?.toLowerCase() === session?.email?.toLowerCase() && b.status === 'confirmed'
+    );
+
+    if (confirmedBookings.length === 0) {
+      this.showToast(
+        'Verified Reviews Only: You do not have any confirmed bookings with Jadoo yet. Book a destination first to leave a review!',
+        'error'
+      );
+      const destSection = document.getElementById('destinations');
+      destSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    // 3. Pre-fill traveler data
     if (session) {
-      if (this.inputName && !this.inputName.value) {
+      if (this.inputName) {
         this.inputName.value = session.name;
       }
-      if (this.inputLocation && !this.inputLocation.value) {
-        this.inputLocation.value = session.country ? `Traveler from ${session.country}` : 'Verified Traveler';
+      if (this.inputLocation) {
+        const country = session.country || (session as any).homeCity;
+        this.inputLocation.value = country ? `Verified Traveler from ${country}` : 'Verified Traveler';
+      }
+    }
+
+    // 4. Populate destination select dropdown with confirmed booked destinations
+    if (this.inputDest) {
+      this.inputDest.innerHTML =
+        '<option value="" disabled selected>Select your booked destination...</option>' +
+        confirmedBookings
+          .map((b) => `<option value="${b.destinationTitle}">${b.destinationTitle} (${b.bookingId})</option>`)
+          .join('');
+
+      if (confirmedBookings.length === 1) {
+        (this.inputDest as HTMLSelectElement).selectedIndex = 1;
       }
     }
 
     this.modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    ModalScrollManager.lock();
     this.highlightStars(this.selectedRating);
-    setTimeout(() => this.inputName?.focus(), 80);
+    setTimeout(() => this.inputDest?.focus(), 80);
   }
 
   public closeModal(): void {
     if (this.modal) {
       this.modal.style.display = 'none';
-      document.body.style.overflow = '';
+      ModalScrollManager.unlock();
     }
   }
 
@@ -162,6 +205,12 @@ export class TestimonialFormController {
     const quote = this.inputQuote?.value.trim() || '';
 
     // Validation
+    if (!destination) {
+      this.showToast('Please select your booked destination to review.', 'error');
+      this.inputDest?.focus();
+      return;
+    }
+
     if (!name || name.length < 2) {
       this.showToast('Please enter your name (at least 2 characters).', 'error');
       this.inputName?.focus();

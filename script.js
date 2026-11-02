@@ -590,11 +590,15 @@
           ...token ? { Authorization: `Bearer ${token}` } : {}
         },
         body: JSON.stringify({
+          authorName: newTestimonial.name,
           name: newTestimonial.name,
           role: newTestimonial.destinationVisited || "Traveler",
+          destinationTitle: newTestimonial.destinationVisited || "",
           location: newTestimonial.location,
           quote: newTestimonial.quote,
-          rating: newTestimonial.rating
+          rating: newTestimonial.rating,
+          avatarUrl: newTestimonial.avatar,
+          avatar: newTestimonial.avatar
         })
       }).catch(() => {
       });
@@ -608,13 +612,13 @@
           if (data.success && Array.isArray(data.testimonials)) {
             const userSubmitted = data.testimonials.map((t) => ({
               id: `test-pg-${t.id}`,
-              name: t.name,
-              destinationVisited: t.role || "Traveler",
-              location: t.location,
-              avatar: t.avatar_url || "assets/Images/testimonials-section/author-image.png",
+              name: t.authorName || t.name || "Verified Traveler",
+              destinationVisited: t.destinationTitle || t.role || "Traveler",
+              location: t.location || "Verified Traveler",
+              avatar: t.avatarUrl || t.avatar_url || t.avatar || "assets/Images/testimonial-section/author-sarah.jpg",
               quote: t.quote,
               rating: Number(t.rating) || 5,
-              createdAt: t.created_at,
+              createdAt: t.createdAt || t.created_at,
               isUserSubmitted: true
             }));
             StorageService.setItem(STORAGE_KEYS.TESTIMONIALS, userSubmitted);
@@ -706,6 +710,10 @@
       this.render(this.currentIndex);
       this.testimonialService.subscribe((updated) => {
         this.testimonials = updated;
+        const total = this.testimonials.length;
+        if (total > 0 && this.currentIndex >= total) {
+          this.currentIndex = 0;
+        }
         this.renderDots();
         this.render(this.currentIndex);
       });
@@ -751,8 +759,14 @@
         });
       }
       if (this.mainAvatar) {
-        this.mainAvatar.src = current.avatar;
-        this.mainAvatar.alt = current.name;
+        this.mainAvatar.onerror = () => {
+          if (this.mainAvatar) {
+            this.mainAvatar.onerror = null;
+            this.mainAvatar.src = "assets/Images/testimonial-section/author-sarah.jpg";
+          }
+        };
+        this.mainAvatar.src = current.avatar || "assets/Images/testimonial-section/author-sarah.jpg";
+        this.mainAvatar.alt = current.name || "Traveler";
       }
       if (this.mainQuote) this.mainQuote.textContent = current.quote;
       if (this.mainName) this.mainName.textContent = current.name;
@@ -777,185 +791,172 @@
   __publicField(_TestimonialSlider, "instance", null);
   var TestimonialSlider = _TestimonialSlider;
 
-  // src/modules/testimonials/testimonial-form.controller.ts
-  var TestimonialFormController = class {
-    constructor() {
-      __publicField(this, "testimonialService");
-      __publicField(this, "authService");
-      // DOM Elements
-      __publicField(this, "openBtn", null);
-      __publicField(this, "modal", null);
-      __publicField(this, "form", null);
-      __publicField(this, "inputName", null);
-      __publicField(this, "inputLocation", null);
-      __publicField(this, "inputDest", null);
-      __publicField(this, "inputQuote", null);
-      __publicField(this, "quoteCounter", null);
-      __publicField(this, "starContainer", null);
-      __publicField(this, "avatarOptions", null);
-      // State
-      __publicField(this, "selectedRating", 5);
-      __publicField(this, "selectedAvatar", "assets/Images/testimonial-section/author-sarah.jpg");
-      this.testimonialService = testimonialService;
-      this.authService = AuthService.getInstance();
-      this.initElements();
-      this.bindEvents();
-    }
-    initElements() {
-      this.openBtn = document.getElementById("btn-open-testimonial-modal");
-      this.modal = document.getElementById("testimonial-modal");
-      this.form = document.getElementById("form-add-testimonial");
-      this.inputName = document.getElementById("test-input-name");
-      this.inputLocation = document.getElementById("test-input-location");
-      this.inputDest = document.getElementById("test-input-dest");
-      this.inputQuote = document.getElementById("test-input-quote");
-      this.quoteCounter = document.getElementById("test-quote-counter");
-      this.starContainer = document.getElementById("test-star-picker");
-      this.avatarOptions = document.querySelectorAll(".test-avatar-choice");
-    }
-    bindEvents() {
-      this.openBtn?.addEventListener("click", () => {
-        this.openModal();
-      });
-      this.modal?.addEventListener("click", (e) => {
-        const target = e.target;
-        if (target === this.modal || target.closest("[data-close-testimonial-modal]")) {
-          this.closeModal();
-        }
-      });
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && this.modal?.style.display === "flex") {
-          this.closeModal();
-        }
-      });
-      if (this.starContainer) {
-        const stars = this.starContainer.querySelectorAll(".test-star-item");
-        stars.forEach((star) => {
-          star.addEventListener("mouseenter", () => {
-            const val = Number(star.getAttribute("data-value") || "5");
-            this.highlightStars(val);
-          });
-          star.addEventListener("mouseleave", () => {
-            this.highlightStars(this.selectedRating);
-          });
-          star.addEventListener("click", () => {
-            const val = Number(star.getAttribute("data-value") || "5");
-            this.selectedRating = val;
-            this.highlightStars(val);
-          });
-        });
-      }
-      this.avatarOptions?.forEach((opt) => {
-        opt.addEventListener("click", () => {
-          this.avatarOptions?.forEach((o) => o.classList.remove("selected"));
-          opt.classList.add("selected");
-          const avatarSrc = opt.getAttribute("data-avatar-src");
-          if (avatarSrc) {
-            this.selectedAvatar = avatarSrc;
-          }
-        });
-      });
-      this.inputQuote?.addEventListener("input", () => {
-        const len = this.inputQuote?.value.length || 0;
-        if (this.quoteCounter) {
-          this.quoteCounter.textContent = `${len}/280`;
-        }
-      });
-      this.form?.addEventListener("submit", (e) => {
-        e.preventDefault();
-        this.handleSubmit();
-      });
-    }
-    openModal() {
-      if (!this.modal) return;
-      const session = this.authService.getCurrentSession();
-      if (session) {
-        if (this.inputName && !this.inputName.value) {
-          this.inputName.value = session.name;
-        }
-        if (this.inputLocation && !this.inputLocation.value) {
-          this.inputLocation.value = session.country ? `Traveler from ${session.country}` : "Verified Traveler";
-        }
-      }
-      this.modal.style.display = "flex";
+  // src/middleware/auth.middleware.ts
+  var ModalScrollManager = class {
+    static lock() {
+      this.lockCount++;
+      document.body.classList.add("overflow-hidden");
       document.body.style.overflow = "hidden";
-      this.highlightStars(this.selectedRating);
-      setTimeout(() => this.inputName?.focus(), 80);
     }
-    closeModal() {
-      if (this.modal) {
-        this.modal.style.display = "none";
+    static unlock() {
+      this.lockCount = Math.max(0, this.lockCount - 1);
+      if (this.lockCount === 0) {
+        document.body.classList.remove("overflow-hidden");
         document.body.style.overflow = "";
       }
     }
-    highlightStars(rating) {
-      if (!this.starContainer) return;
-      const stars = this.starContainer.querySelectorAll(".test-star-item");
-      stars.forEach((s) => {
-        const val = Number(s.getAttribute("data-value") || "1");
-        s.classList.toggle("active", val <= rating);
-        const icon = s.querySelector("i");
-        if (icon) {
-          icon.className = val <= rating ? "fa-solid fa-star" : "fa-regular fa-star";
+    static forceUnlockAll() {
+      this.lockCount = 0;
+      document.body.classList.remove("overflow-hidden");
+      document.body.style.overflow = "";
+    }
+  };
+  __publicField(ModalScrollManager, "lockCount", 0);
+  var AuthMiddleware = class {
+    static isAuthenticated() {
+      return AuthService.getInstance().isAuthenticated();
+    }
+    /**
+     * Enforce authentication before executing an action or viewing a section.
+     * If user is not logged in, opens the Auth Required Modal and returns false.
+     */
+    static requireAuth(options = {}) {
+      if (this.isAuthenticated()) {
+        return true;
+      }
+      this.showAuthRequiredModal(options);
+      return false;
+    }
+    /**
+     * Wrap an action function with authentication check
+     */
+    static guardAction(actionFn, options = {}) {
+      if (!this.requireAuth(options)) {
+        return null;
+      }
+      return actionFn();
+    }
+    /**
+     * Display the Authentication Required Modal
+     */
+    static showAuthRequiredModal(options = {}) {
+      let modal = document.getElementById("auth-required-modal");
+      if (!modal) {
+        modal = this.createModalElement();
+        document.body.appendChild(modal);
+      }
+      const titleEl = modal.querySelector("#auth-modal-title");
+      const msgEl = modal.querySelector("#auth-modal-msg");
+      const loginLink = modal.querySelector("#auth-modal-login-btn");
+      const signupLink = modal.querySelector("#auth-modal-signup-btn");
+      const defaultTitle = options.customTitle || "Authentication Required";
+      const actionDesc = options.actionName || "access this protected travel portal section";
+      const defaultMsg = options.customMessage || `You need to be signed in to ${actionDesc}. Log in with your verified account or sign up in seconds!`;
+      if (titleEl) titleEl.textContent = defaultTitle;
+      if (msgEl) msgEl.textContent = defaultMsg;
+      const returnUrl = options.redirectUrl || window.location.pathname.split("/").pop() || "index.html";
+      const returnParam = encodeURIComponent(returnUrl + (options.returnToTab ? `?tab=${options.returnToTab}` : ""));
+      if (loginLink) loginLink.href = `auth.html?mode=login&returnUrl=${returnParam}`;
+      if (signupLink) signupLink.href = `auth.html?mode=signup&returnUrl=${returnParam}`;
+      modal.style.display = "flex";
+      ModalScrollManager.lock();
+      setTimeout(() => loginLink?.focus(), 50);
+    }
+    /**
+     * Hide the Authentication Required Modal
+     */
+    static hideAuthRequiredModal() {
+      const modal = document.getElementById("auth-required-modal");
+      if (modal) {
+        modal.style.display = "none";
+        ModalScrollManager.unlock();
+      }
+    }
+    /**
+     * Render an inline Locked Access card for container elements (e.g. My Bookings tab)
+     */
+    static renderLockedState(container, options = {}) {
+      const title = options.title || "Sign In to Access Your Bookings";
+      const message = options.message || "Your flight bookings, reservations, and electronic boarding passes are protected under your private Jadoo account.";
+      const currentFile = options.redirectUrl || window.location.pathname.split("/").pop() || "index.html";
+      const returnTarget = encodeURIComponent(currentFile + (options.tabName ? `?tab=${options.tabName}` : ""));
+      container.innerHTML = `
+      <div class="auth-locked-state">
+        <div class="auth-locked-icon">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 class="auth-locked-title">${title}</h3>
+        <p class="auth-locked-desc">${message}</p>
+        <div class="auth-locked-actions">
+          <a href="auth.html?mode=login&returnUrl=${returnTarget}" class="profile-btn-primary auth-locked-btn">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            <span>Log In to View Bookings</span>
+          </a>
+          <a href="auth.html?mode=signup&returnUrl=${returnTarget}" class="profile-btn-outline auth-locked-btn">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>Create Free Account</span>
+          </a>
+        </div>
+      </div>
+    `;
+    }
+    /**
+     * Create the DOM structure for the Auth Required Modal if not present
+     */
+    static createModalElement() {
+      const modal = document.createElement("div");
+      modal.id = "auth-required-modal";
+      modal.className = "profile-modal-overlay auth-required-overlay";
+      modal.setAttribute("role", "dialog");
+      modal.setAttribute("aria-modal", "true");
+      modal.setAttribute("aria-labelledby", "auth-modal-title");
+      modal.style.display = "none";
+      modal.innerHTML = `
+      <div class="profile-modal-card auth-required-card">
+        <button type="button" class="auth-required-close" data-close-auth-modal aria-label="Close dialog">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="auth-required-body">
+          <div class="auth-lock-badge">
+            <div class="lock-glow"></div>
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+
+          <h3 class="auth-required-title" id="auth-modal-title">Authentication Required</h3>
+          <p class="auth-required-text" id="auth-modal-msg">
+            You must be logged in to access your booked trips and flight reservations. Please log in or sign up for a free Jadoo account.
+          </p>
+
+          <div class="auth-required-options">
+            <a href="auth.html?mode=login" class="auth-modal-btn btn-signin" id="auth-modal-login-btn">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i>
+              <span>Log In to Continue</span>
+            </a>
+            <a href="auth.html?mode=signup" class="auth-modal-btn btn-signup" id="auth-modal-signup-btn">
+              <i class="fa-solid fa-user-plus"></i>
+              <span>Create Free Account</span>
+            </a>
+          </div>
+
+          <button type="button" class="auth-required-cancel" data-close-auth-modal>
+            <span>Cancel and return to browsing</span>
+          </button>
+        </div>
+      </div>
+    `;
+      modal.addEventListener("click", (e) => {
+        const target = e.target;
+        if (target === modal || target.closest("[data-close-auth-modal]")) {
+          this.hideAuthRequiredModal();
         }
       });
-    }
-    handleSubmit() {
-      const name = this.inputName?.value.trim() || "";
-      const location = this.inputLocation?.value.trim() || "";
-      const destination = this.inputDest?.value.trim() || "";
-      const quote = this.inputQuote?.value.trim() || "";
-      if (!name || name.length < 2) {
-        this.showToast("Please enter your name (at least 2 characters).", "error");
-        this.inputName?.focus();
-        return;
-      }
-      if (!location || location.length < 2) {
-        this.showToast("Please specify your location or traveler title.", "error");
-        this.inputLocation?.focus();
-        return;
-      }
-      if (!quote || quote.length < 10) {
-        this.showToast("Please share at least a short sentence of feedback (10+ characters).", "error");
-        this.inputQuote?.focus();
-        return;
-      }
-      const formattedQuote = quote.startsWith("\u201C") || quote.startsWith('"') ? quote : `\u201C${quote}\u201D`;
-      const fullLocation = destination ? `${location} \u2022 Visited ${destination}` : location;
-      this.testimonialService.addTestimonial({
-        name,
-        location: fullLocation,
-        quote: formattedQuote,
-        avatar: this.selectedAvatar,
-        rating: this.selectedRating,
-        destinationVisited: destination
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.style.display === "flex") {
+          this.hideAuthRequiredModal();
+        }
       });
-      if (this.form) this.form.reset();
-      if (this.quoteCounter) this.quoteCounter.textContent = "0/280";
-      this.selectedRating = 5;
-      this.closeModal();
-      this.showToast(`\u{1F389} Thank you, ${name}! Your review has been published!`);
-      setTimeout(() => {
-        TestimonialSlider.instance?.goTo(0);
-        const testSection = document.getElementById("testimonials");
-        testSection?.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 200);
-    }
-    showToast(message, type = "success") {
-      const existing = document.querySelector(".dest-toast, .profile-toast");
-      existing?.remove();
-      const toast = document.createElement("div");
-      toast.className = `dest-toast ${type === "error" ? "toast-error" : "toast-success"}`;
-      toast.innerHTML = `
-      <i class="fa-solid ${type === "error" ? "fa-circle-xmark" : "fa-circle-check"}"></i>
-      <span>${message}</span>
-    `;
-      document.body.appendChild(toast);
-      setTimeout(() => toast.classList.add("visible"), 10);
-      setTimeout(() => {
-        toast.classList.remove("visible");
-        setTimeout(() => toast.remove(), 300);
-      }, 4e3);
+      return modal;
     }
   };
 
@@ -1869,6 +1870,221 @@
     }
   });
 
+  // src/modules/testimonials/testimonial-form.controller.ts
+  var TestimonialFormController = class {
+    constructor() {
+      __publicField(this, "testimonialService");
+      __publicField(this, "authService");
+      // DOM Elements
+      __publicField(this, "openBtn", null);
+      __publicField(this, "modal", null);
+      __publicField(this, "form", null);
+      __publicField(this, "inputName", null);
+      __publicField(this, "inputLocation", null);
+      __publicField(this, "inputDest", null);
+      __publicField(this, "inputQuote", null);
+      __publicField(this, "quoteCounter", null);
+      __publicField(this, "starContainer", null);
+      __publicField(this, "avatarOptions", null);
+      // State
+      __publicField(this, "selectedRating", 5);
+      __publicField(this, "selectedAvatar", "assets/Images/testimonial-section/author-sarah.jpg");
+      this.testimonialService = testimonialService;
+      this.authService = AuthService.getInstance();
+      this.initElements();
+      this.bindEvents();
+    }
+    initElements() {
+      this.openBtn = document.getElementById("btn-open-testimonial-modal");
+      this.modal = document.getElementById("testimonial-modal");
+      this.form = document.getElementById("form-add-testimonial");
+      this.inputName = document.getElementById("test-input-name");
+      this.inputLocation = document.getElementById("test-input-location");
+      this.inputDest = document.getElementById("test-input-dest");
+      this.inputQuote = document.getElementById("test-input-quote");
+      this.quoteCounter = document.getElementById("test-quote-counter");
+      this.starContainer = document.getElementById("test-star-picker");
+      this.avatarOptions = document.querySelectorAll(".test-avatar-choice");
+    }
+    bindEvents() {
+      this.openBtn?.addEventListener("click", () => {
+        this.openModal();
+      });
+      this.modal?.addEventListener("click", (e) => {
+        const target = e.target;
+        if (target === this.modal || target.closest("[data-close-testimonial-modal]")) {
+          this.closeModal();
+        }
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && this.modal?.style.display === "flex") {
+          this.closeModal();
+        }
+      });
+      if (this.starContainer) {
+        const stars = this.starContainer.querySelectorAll(".test-star-item");
+        stars.forEach((star) => {
+          star.addEventListener("mouseenter", () => {
+            const val = Number(star.getAttribute("data-value") || "5");
+            this.highlightStars(val);
+          });
+          star.addEventListener("mouseleave", () => {
+            this.highlightStars(this.selectedRating);
+          });
+          star.addEventListener("click", () => {
+            const val = Number(star.getAttribute("data-value") || "5");
+            this.selectedRating = val;
+            this.highlightStars(val);
+          });
+        });
+      }
+      this.avatarOptions?.forEach((opt) => {
+        opt.addEventListener("click", () => {
+          this.avatarOptions?.forEach((o) => o.classList.remove("selected"));
+          opt.classList.add("selected");
+          const avatarSrc = opt.getAttribute("data-avatar-src");
+          if (avatarSrc) {
+            this.selectedAvatar = avatarSrc;
+          }
+        });
+      });
+      this.inputQuote?.addEventListener("input", () => {
+        const len = this.inputQuote?.value.length || 0;
+        if (this.quoteCounter) {
+          this.quoteCounter.textContent = `${len}/280`;
+        }
+      });
+      this.form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleSubmit();
+      });
+    }
+    openModal() {
+      if (!this.modal) return;
+      if (!AuthMiddleware.requireAuth({
+        actionName: "share your verified travel review",
+        customTitle: "Verified Traveler Login Required",
+        customMessage: "Only verified travelers with a confirmed Jadoo vacation booking can submit testimonials and reviews.",
+        redirectUrl: "index.html"
+      })) {
+        return;
+      }
+      const session = this.authService.getCurrentSession();
+      const allBookings = DestinationService.getBookings();
+      const confirmedBookings = allBookings.filter(
+        (b) => b.email?.toLowerCase() === session?.email?.toLowerCase() && b.status === "confirmed"
+      );
+      if (confirmedBookings.length === 0) {
+        this.showToast(
+          "Verified Reviews Only: You do not have any confirmed bookings with Jadoo yet. Book a destination first to leave a review!",
+          "error"
+        );
+        const destSection = document.getElementById("destinations");
+        destSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      if (session) {
+        if (this.inputName) {
+          this.inputName.value = session.name;
+        }
+        if (this.inputLocation) {
+          const country = session.country || session.homeCity;
+          this.inputLocation.value = country ? `Verified Traveler from ${country}` : "Verified Traveler";
+        }
+      }
+      if (this.inputDest) {
+        this.inputDest.innerHTML = '<option value="" disabled selected>Select your booked destination...</option>' + confirmedBookings.map((b) => `<option value="${b.destinationTitle}">${b.destinationTitle} (${b.bookingId})</option>`).join("");
+        if (confirmedBookings.length === 1) {
+          this.inputDest.selectedIndex = 1;
+        }
+      }
+      this.modal.style.display = "flex";
+      ModalScrollManager.lock();
+      this.highlightStars(this.selectedRating);
+      setTimeout(() => this.inputDest?.focus(), 80);
+    }
+    closeModal() {
+      if (this.modal) {
+        this.modal.style.display = "none";
+        ModalScrollManager.unlock();
+      }
+    }
+    highlightStars(rating) {
+      if (!this.starContainer) return;
+      const stars = this.starContainer.querySelectorAll(".test-star-item");
+      stars.forEach((s) => {
+        const val = Number(s.getAttribute("data-value") || "1");
+        s.classList.toggle("active", val <= rating);
+        const icon = s.querySelector("i");
+        if (icon) {
+          icon.className = val <= rating ? "fa-solid fa-star" : "fa-regular fa-star";
+        }
+      });
+    }
+    handleSubmit() {
+      const name = this.inputName?.value.trim() || "";
+      const location = this.inputLocation?.value.trim() || "";
+      const destination = this.inputDest?.value.trim() || "";
+      const quote = this.inputQuote?.value.trim() || "";
+      if (!destination) {
+        this.showToast("Please select your booked destination to review.", "error");
+        this.inputDest?.focus();
+        return;
+      }
+      if (!name || name.length < 2) {
+        this.showToast("Please enter your name (at least 2 characters).", "error");
+        this.inputName?.focus();
+        return;
+      }
+      if (!location || location.length < 2) {
+        this.showToast("Please specify your location or traveler title.", "error");
+        this.inputLocation?.focus();
+        return;
+      }
+      if (!quote || quote.length < 10) {
+        this.showToast("Please share at least a short sentence of feedback (10+ characters).", "error");
+        this.inputQuote?.focus();
+        return;
+      }
+      const formattedQuote = quote.startsWith("\u201C") || quote.startsWith('"') ? quote : `\u201C${quote}\u201D`;
+      const fullLocation = destination ? `${location} \u2022 Visited ${destination}` : location;
+      this.testimonialService.addTestimonial({
+        name,
+        location: fullLocation,
+        quote: formattedQuote,
+        avatar: this.selectedAvatar,
+        rating: this.selectedRating,
+        destinationVisited: destination
+      });
+      if (this.form) this.form.reset();
+      if (this.quoteCounter) this.quoteCounter.textContent = "0/280";
+      this.selectedRating = 5;
+      this.closeModal();
+      this.showToast(`\u{1F389} Thank you, ${name}! Your review has been published!`);
+      setTimeout(() => {
+        TestimonialSlider.instance?.goTo(0);
+        const testSection = document.getElementById("testimonials");
+        testSection?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 200);
+    }
+    showToast(message, type = "success") {
+      const existing = document.querySelector(".dest-toast, .profile-toast");
+      existing?.remove();
+      const toast = document.createElement("div");
+      toast.className = `dest-toast ${type === "error" ? "toast-error" : "toast-success"}`;
+      toast.innerHTML = `
+      <i class="fa-solid ${type === "error" ? "fa-circle-xmark" : "fa-circle-check"}"></i>
+      <span>${message}</span>
+    `;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.classList.add("visible"), 10);
+      setTimeout(() => {
+        toast.classList.remove("visible");
+        setTimeout(() => toast.remove(), 300);
+      }, 4e3);
+    }
+  };
+
   // src/utils/validation.utils.ts
   function validatePhoneNumber(phone) {
     if (!phone || !phone.trim()) {
@@ -2341,12 +2557,20 @@
       const isFav = DestinationService.getFavoriteIds().includes(dest.id);
       this.updateDetailsFavBtn(isFav);
       this.detailsModal.style.display = "flex";
-      document.body.style.overflow = "hidden";
+      ModalScrollManager.lock();
     }
     /**
      * Open Booking Form Popup Modal for a destination
      */
     openBookingModal(dest) {
+      if (!AuthMiddleware.requireAuth({
+        actionName: "reserve and confirm flight bookings",
+        customTitle: "Traveler Login Required",
+        customMessage: "Please log in or sign up for a free Jadoo account to customize your travel package, reserve seats, and access your digital boarding pass.",
+        redirectUrl: "index.html"
+      })) {
+        return;
+      }
       this.currentDestination = dest;
       this.closeAllModals();
       if (!this.bookingModal) return;
@@ -2383,7 +2607,7 @@
         }
       }
       this.bookingModal.style.display = "flex";
-      document.body.style.overflow = "hidden";
+      ModalScrollManager.lock();
       setTimeout(() => {
         this.inputName?.focus();
       }, 100);
@@ -2394,7 +2618,7 @@
     closeAllModals() {
       if (this.detailsModal) this.detailsModal.style.display = "none";
       if (this.bookingModal) this.bookingModal.style.display = "none";
-      document.body.style.overflow = "";
+      ModalScrollManager.forceUnlockAll();
     }
     updateDetailsFavBtn(isFav) {
       if (!this.modalFavBtn) return;
