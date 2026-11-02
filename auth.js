@@ -142,8 +142,8 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name: cleanName, email: cleanEmail, password })
         });
-        const data = await response.json();
-        if (response.ok && data.success) {
+        const data = await response.json().catch(() => null);
+        if (response.ok && data?.success) {
           if (data.token) {
             StorageService.setItem(STORAGE_KEYS.AUTH_TOKEN, data.token);
           }
@@ -157,8 +157,8 @@
           };
           this.setSession(session2);
           return { success: true, user: session2 };
-        } else if (!response.ok && data.message) {
-          return { success: false, error: data.message };
+        } else if (!response.ok) {
+          return { success: false, error: data?.message || `Registration failed (${response.status})` };
         }
       } catch {
       }
@@ -209,8 +209,8 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: cleanEmail, password })
         });
-        const data = await response.json();
-        if (response.ok && data.success) {
+        const data = await response.json().catch(() => null);
+        if (response.ok && data?.success) {
           if (data.token) {
             StorageService.setItem(STORAGE_KEYS.AUTH_TOKEN, data.token);
           }
@@ -228,8 +228,8 @@
           };
           this.setSession(session2);
           return { success: true, user: session2 };
-        } else if (!response.ok && data.message) {
-          return { success: false, error: data.message };
+        } else if (!response.ok) {
+          return { success: false, error: data?.message || `Authentication failed (${response.status})` };
         }
       } catch {
       }

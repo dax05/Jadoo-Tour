@@ -94,5 +94,6 @@ export interface BookingRecord extends BookingRequest {
   bookingId: string;
   createdAt: string;
   status: 'confirmed' | 'pending' | 'cancelled';
+  synced?: boolean;
+  dbId?: string;
 }
-
