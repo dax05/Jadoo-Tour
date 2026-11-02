@@ -14,8 +14,12 @@ async function initDatabase() {
     process.exit(1);
   }
 
-  const schemaPath = path.resolve(__dirname, 'schema.sql');
-  const seedPath = path.resolve(__dirname, 'seed.sql');
+  const schemaPath = fs.existsSync(path.resolve(__dirname, 'schema.sql'))
+    ? path.resolve(__dirname, 'schema.sql')
+    : path.resolve(__dirname, '../../src/db/schema.sql');
+  const seedPath = fs.existsSync(path.resolve(__dirname, 'seed.sql'))
+    ? path.resolve(__dirname, 'seed.sql')
+    : path.resolve(__dirname, '../../src/db/seed.sql');
 
   const client = await pool.connect();
 
