@@ -19,6 +19,7 @@
 }
 
 /* Base Body Layout */
+html,
 .profile-body {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: #fafbfc;
@@ -28,6 +29,8 @@
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
 }
 
 /* Ambient Decorative Blobs & Flying Planes */
@@ -253,7 +256,7 @@
   align-items: center;
   gap: 1.75rem;
   flex: 1;
-  min-width: 300px;
+  min-width: 0;
 }
 
 /* Avatar Wrapper */
@@ -1167,7 +1170,7 @@
    ========================================================================== */
 .profile-wishlist-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 1.5rem;
 }
 
@@ -2125,3 +2128,96 @@
   font-size: 0.92rem;
 }
 
+
+
+/* Mobile Responsive Boarding Pass & Modal Enhancements */
+@media screen and (max-width: 480px) {
+  .boarding-pass-card {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .bp-header {
+    padding: 1rem 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .bp-body {
+    padding: 1.25rem;
+  }
+
+  .bp-flight-route {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .bp-route-point.right {
+    text-align: center;
+  }
+
+  .bp-info-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem;
+  }
+
+  .bp-barcode-text {
+    letter-spacing: 0.5px;
+    font-size: 0.62rem;
+    text-align: center;
+    word-break: break-all;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+
+  .profile-stat-box {
+    min-width: 0;
+    padding: 0.75rem 0.85rem;
+  }
+}
+
+
+@media screen and (max-width: 650px) {
+  .profile-bg-decor-1,
+  .profile-bg-decor-2,
+  .profile-bg-plane-left,
+  .profile-bg-plane-right {
+    display: none !important;
+  }
+}
+
+
+@media screen and (max-width: 480px) {
+  .profile-header {
+    padding: 0.75rem 1rem !important;
+  }
+  .profile-header-nav {
+    gap: 0.65rem !important;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .profile-main-container {
+    padding: 0 1rem !important;
+    margin: 1.25rem auto 3rem !important;
+  }
+  .profile-hero-card {
+    padding: 1.25rem 1rem !important;
+  }
+  .profile-card {
+    padding: 1.25rem 1rem !important;
+  }
+  .profile-name-heading {
+    font-size: 1.45rem !important;
+  }
+  .profile-tabs-wrapper {
+    margin-bottom: 1.25rem !important;
+  }
+  .profile-nav-tab {
+    padding: 0.65rem 1rem !important;
+    font-size: 0.88rem !important;
+  }
+}
