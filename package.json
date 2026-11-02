@@ -14,7 +14,8 @@
     "server": "tsx watch server/src/index.ts",
     "db:setup": "tsx server/src/db/init-db.ts",
     "test": "tsx server/tests/test-suite.ts",
-    "dev:all": "concurrently \"npm run watch\" \"npm run server\""
+    "dev:all": "concurrently \"npm run watch\" \"npm run server\"",
+    "db:view": "node scripts/view-db.cjs"
   },
   "keywords": [
     "travel",
