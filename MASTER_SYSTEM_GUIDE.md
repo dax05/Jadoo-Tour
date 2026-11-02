@@ -176,7 +176,6 @@ Jadoo Travel follows a **modern decoupled full-stack architecture** optimized fo
   - Initializes `ThemeService.bindToggleButtons()`.
   - Instantiates `NavbarController`, `AuthNavController`.
   - Instantiates `DestinationModalController`, `DestinationMapController`, `DestinationExplorerController`.
-  - Instantiates `UserPanelController` (slide-over drawer).
   - Instantiates `TestimonialSlider`, `TestimonialFormController`.
   - Instantiates `NewsletterController`.
   - Invokes `DestinationService.syncWithBackend()` and `testimonialService.syncWithBackend()` to pull latest PostgreSQL records.

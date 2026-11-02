@@ -38,7 +38,7 @@ Jadoo Travel is engineered with a **Modular Controller-Service Pattern** in Type
 │   • NavbarController          • DestinationExplorerController          │
 │   • AuthNavController         • DestinationModalController             │
 │   • DestinationMapController  • TestimonialSlider & FormController    │
-│   • NewsletterController      • ProfileController & UserPanelController│
+│   • NewsletterController      • ProfileController                    │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │ Calls Business Methods
                                     ▼
@@ -216,7 +216,7 @@ Jadoo Travel is engineered with a **Modular Controller-Service Pattern** in Type
 ## 5. TypeScript Core System (`src/`)
 
 ### Application Entry Points
-* [src/main.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/main.ts): Orchestrates `index.html`. Initializes `ThemeService`, `NavbarController`, `AuthNavController`, `DestinationModalController`, `DestinationMapController`, `DestinationExplorerController`, `UserPanelController`, `TestimonialSlider`, `TestimonialFormController`, and `NewsletterController`.
+* [src/main.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/main.ts): Orchestrates index.html. Initializes ThemeService, NavbarController, AuthNavController, DestinationModalController, DestinationMapController, DestinationExplorerController, TestimonialSlider, TestimonialFormController, and NewsletterController.
 * [src/auth.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/auth.ts): Orchestrates `auth.html`. Binds theme buttons and initializes `AuthFormController`.
 * [src/profile.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/profile.ts): Orchestrates `profile.html`. Binds theme buttons and initializes `ProfileController`.
 
@@ -319,7 +319,6 @@ Jadoo Travel is engineered with a **Modular Controller-Service Pattern** in Type
 | **`TestimonialSlider`** | [testimonial-slider.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/modules/testimonials/testimonial-slider.ts) | Controls review transitions, next/prev arrow buttons, and auto-rotation timer. |
 | **`TestimonialFormController`** | [testimonial-form.controller.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/modules/testimonials/testimonial-form.controller.ts) | Handles "Add Testimonial" modal, star rating selection, auth validation, and persistence. |
 | **`NewsletterController`** | [newsletter.controller.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/modules/newsletter/newsletter.controller.ts) | Form submit, loading spinner, Welcome modal popup, voucher copy-to-clipboard, live API test button. |
-| **`UserPanelController`** | [user-panel.controller.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/modules/user/user-panel.controller.ts) | Slide-over travel drawer on `index.html` for quick wishlist viewing and boarding pass inspection. |
 | **`ProfileController`** | [profile.controller.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/modules/profile/profile.controller.ts) | Full dashboard on `profile.html`. Tab switching, profile editing, booking cancellation, wishlist management, password change. |
 | **`AuthFormController`** | [auth-form.controller.ts](file:///d:/Waavex/Jadoo-Travel-UI/dax-jadoo/src/modules/auth/auth-form.controller.ts) | Login / Signup tab switching, real-time password strength meter, demo account quick-fill, form submission. |
 

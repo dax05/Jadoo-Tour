@@ -204,7 +204,7 @@ Through in-depth static analysis of the source code, 14 actual, logically cohere
 | **Backend Routes** | `server/src/routes/auth.routes.ts`, `server/src/routes/destination.routes.ts`, `server/src/routes/booking.routes.ts`, `server/src/routes/wishlist.routes.ts`, `server/src/routes/testimonial.routes.ts`, `server/src/routes/newsletter.routes.ts` |
 | **Automated Tests** | `server/tests/test-suite.ts` |
 | **Project Tooling & Config** | `package.json`, `package-lock.json`, `tsconfig.json`, `build.js`, `.gitignore`, `REQUIRED_INPUTS.txt` (template) |
-| **Documentation & Guides** | `README.md`, `MASTER_SYSTEM_GUIDE.md`, `CODEBASE_GUIDE.md`, `commitGuide.md`, `study-guides/PHASE_1_STUDY_GUIDE.md` to `PHASE_7_STUDY_GUIDE.md`, `study-guides/bugsPhase1` |
+| **Documentation & Guides** | `README.md`, `MASTER_SYSTEM_GUIDE.md`, `CODEBASE_GUIDE.md`, `commitGuide.md`, `study-guides/PHASE_1_STUDY_GUIDE.md` to `PHASE_7_STUDY_GUIDE.md`, `study-guides/BUGS_PHASE_1.md` |
 | **Scratch & Legacy Deletions** | `scratch/test-phone-validation.ts`, deleted `auth.ts` (root), deleted `script.ts` (root) |
 
 ---
@@ -562,7 +562,7 @@ All proposed branches adhere strictly to lowercase hyphenated naming, isolate a 
    * **Purpose:** Detailed end-to-end architecture documentation and component catalog.
    * **Independent:** Yes.
 3. `docs(study-guides): add 7-phase educational study guides`
-   * **Files:** `study-guides/PHASE_1_STUDY_GUIDE.md` through `study-guides/PHASE_7_STUDY_GUIDE.md`, `study-guides/bugsPhase1`
+   * **Files:** `study-guides/PHASE_1_STUDY_GUIDE.md` through `study-guides/PHASE_7_STUDY_GUIDE.md`, `study-guides/BUGS_PHASE_1.md`
    * **Purpose:** Provide step-by-step educational breakdown for every architectural layer.
    * **Independent:** Yes.
 

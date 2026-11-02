@@ -5,7 +5,6 @@ import { TestimonialFormController } from './modules/testimonials/testimonial-fo
 import { DestinationExplorerController } from './modules/destinations/destination-explorer.controller';
 import { DestinationModalController } from './modules/destinations/destination-modal.controller';
 import { DestinationMapController } from './modules/destinations/destination-map.controller';
-import { UserPanelController } from './modules/user/user-panel.controller';
 import { NewsletterController } from './modules/newsletter/newsletter.controller';
 import { themeService } from './services/theme.service';
 import { DestinationService } from './services/destination.service';
@@ -87,8 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
   new DestinationMapController();
   new DestinationExplorerController();
 
-  // 4. Initialize User Travel Portal (Wishlist & My Bookings Panel)
-  new UserPanelController();
 
   // 5. Initialize Testimonials Slider & Review Submission Controller
   new TestimonialSlider();
