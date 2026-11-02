@@ -1293,3 +1293,49 @@ body.dark-mode .welcome-delivery-alert .alert-tips strong {
 
 
 
+
+/* Real-time Profile Booking & Wishlist Cards (Dark Mode) */
+body.dark-mode .profile-wish-card {
+  background: #111726;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .profile-wish-card .pw-title,
+body.dark-mode .pb-title,
+body.dark-mode .pb-ref-code {
+  color: #f8fafc;
+}
+
+body.dark-mode .profile-wish-card .pw-sub,
+body.dark-mode .pb-meta {
+  color: #94a3b8;
+}
+
+body.dark-mode .pb-meta strong {
+  color: #f8fafc;
+}
+
+body.dark-mode .pb-footer {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .profile-modal-card {
+  background: #171e31;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+}
+
+body.dark-mode .profile-modal-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .profile-modal-title {
+  color: #f8fafc;
+}
+
+body.dark-mode .profile-input,
+body.dark-mode .profile-textarea {
+  background: #0f1422;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+}

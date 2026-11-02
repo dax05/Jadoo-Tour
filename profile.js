@@ -1492,6 +1492,20 @@
   }
 
   // src/modules/profile/profile.controller.ts
+  function formatDepartureDate(dateStr) {
+    if (!dateStr) return "Scheduled Flight";
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const d = new Date(year, month, day);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      }
+    }
+    return dateStr;
+  }
   var ProfileController = class {
     constructor() {
       __publicField(this, "authService");
@@ -2026,7 +2040,7 @@
               <div class="pb-info">
                 <h4 class="pb-title">${b.destinationTitle}</h4>
                 <div class="pb-meta">
-                  <span><i class="fa-solid fa-calendar-days"></i> Departs: <strong>${b.departureDate}</strong></span>
+                  <span><i class="fa-solid fa-calendar-days"></i> Departs: <strong>${formatDepartureDate(b.departureDate)}</strong></span>
                   <span><i class="fa-solid fa-user-group"></i> ${b.adults} Adults${b.children > 0 ? `, ${b.children} Children` : ""}</span>
                   <span><i class="fa-solid fa-gem"></i> ${b.packageTier.toUpperCase()} Package</span>
                   <span><i class="fa-solid fa-wallet"></i> Total: <strong>$${b.totalPrice.toLocaleString()}</strong></span>
@@ -2131,7 +2145,7 @@
       if (this.bpPassengerPhone) this.bpPassengerPhone.textContent = record.phone ? formatPhoneNumber(record.phone) : "Verified Contact";
       if (this.bpBookingRef) this.bpBookingRef.textContent = record.bookingId;
       if (this.bpDestTitle) this.bpDestTitle.textContent = record.destinationTitle;
-      if (this.bpDepartureDate) this.bpDepartureDate.textContent = record.departureDate;
+      if (this.bpDepartureDate) this.bpDepartureDate.textContent = formatDepartureDate(record.departureDate);
       if (this.bpDuration) this.bpDuration.textContent = "Scheduled Flight & Resort";
       if (this.bpPackageTier) this.bpPackageTier.textContent = `${record.packageTier.toUpperCase()} PACKAGE`;
       if (this.bpGuests) {

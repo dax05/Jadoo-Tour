@@ -830,6 +830,193 @@
   color: #dc2626;
 }
 
+
+/* ==========================================================================
+   Real-Time Rendered Booking Cards Styles (.pb-*)
+   ========================================================================== */
+.pb-body {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.pb-thumb {
+  width: 140px;
+  height: 95px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.pb-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pb-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--profile-navy);
+  margin: 0;
+}
+
+.pb-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--profile-navy-light);
+}
+
+.pb-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pb-meta i {
+  color: var(--profile-primary);
+}
+
+.pb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--profile-border);
+  flex-wrap: wrap;
+}
+
+/* Wishlist Card Aliases & Enhancements */
+.profile-wish-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--profile-border);
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: var(--profile-transition);
+}
+
+.profile-wish-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.pw-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.pw-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.profile-wish-card:hover .pw-thumb {
+  transform: scale(1.05);
+}
+
+.pw-remove-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #ef4444;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: var(--profile-transition);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+
+.pw-remove-btn:hover {
+  transform: scale(1.15);
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.pw-rating {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(20, 24, 62, 0.85);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pw-rating i {
+  color: #f59e0b;
+}
+
+.pw-sub {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: var(--profile-navy-light);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pw-book-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, #f1a501 0%, #df6951 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: var(--profile-transition);
+  text-decoration: none;
+  margin-top: auto;
+}
+
+.pw-book-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(223, 105, 81, 0.35);
+  color: #ffffff;
+}
+
+@media screen and (max-width: 650px) {
+  .pb-body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pb-thumb {
+    width: 100%;
+    height: 160px;
+  }
+}
+
 .pb-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -1342,6 +1529,8 @@
    Boarding Pass E-Ticket Modal Design
    ========================================================================== */
 .boarding-pass-card {
+  display: flex !important;
+  flex-direction: column !important;
   max-width: 640px;
   border-radius: 20px;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -1450,10 +1639,35 @@
 }
 
 .bp-flight-line {
+  width: 100%;
+  height: auto;
+  background: transparent;
   display: flex;
   align-items: center;
-  color: var(--profile-primary);
-  font-size: 1.25rem;
+  justify-content: center;
+  position: relative;
+  min-height: 24px;
+}
+
+.bp-flight-line::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, #df6951 0, #df6951 6px, transparent 6px, transparent 12px);
+  z-index: 1;
+}
+
+.bp-flight-line i {
+  position: relative;
+  z-index: 2;
+  background: #ffffff;
+  padding: 0 8px;
+  color: #df6951;
+  font-size: 1.15rem;
+  transform: rotate(45deg);
 }
 
 .bp-flight-tier {
@@ -1563,7 +1777,7 @@
   opacity: 0;
   pointer-events: none;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-  z-index: 2000;
+  z-index: 100001;
 }
 
 .profile-toast.visible {
@@ -1580,8 +1794,19 @@
    Print Stylesheet for Boarding Pass
    ========================================================================== */
 @media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   body * {
     visibility: hidden;
+  }
+  .boarding-pass-card {
+    box-shadow: none !important;
+    border: 2px solid #0f172a !important;
+    margin: 0 auto;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   #boarding-pass-modal,
   #boarding-pass-modal .boarding-pass-card,
