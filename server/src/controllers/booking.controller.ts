@@ -125,12 +125,27 @@ export const BookingController = {
         }
       }
 
-      const adultCount = Number(adults) || 1;
-      const childCount = Number(children) || 0;
+      const cleanTier = String(packageTier || 'standard').toLowerCase();
+      const allowedTiers = ['standard', 'deluxe', 'luxury'];
+      if (!allowedTiers.includes(cleanTier)) {
+        res.status(400).json({ success: false, message: 'Invalid package tier. Must be standard, deluxe, or luxury.' });
+        return;
+      }
+
+      const adultCount = Number(adults);
+      if (!Number.isInteger(adultCount) || adultCount < 1) {
+        res.status(400).json({ success: false, message: 'Adult passenger count must be at least 1.' });
+        return;
+      }
+
+      const childCount = children !== undefined ? Number(children) : 0;
+      if (!Number.isInteger(childCount) || childCount < 0) {
+        res.status(400).json({ success: false, message: 'Child passenger count cannot be negative.' });
+        return;
+      }
 
       // Tier multiplier
       let tierMultiplier = 1;
-      const cleanTier = String(packageTier || 'standard').toLowerCase();
       if (cleanTier === 'deluxe') tierMultiplier = 1.35;
       if (cleanTier === 'luxury') tierMultiplier = 1.85;
 
@@ -144,37 +159,48 @@ export const BookingController = {
       const totalPrice = Math.round(subtotal);
       const bookingId = generateBookingRef();
 
-      const result = await pool.query(
-        `INSERT INTO bookings (
-          id, user_id, destination_id, destination_title, full_name, email, phone,
-          departure_date, adults, children, package_tier, total_price, promo_code,
-          status, special_requests
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'confirmed', $14)
-        RETURNING *`,
-        [
-          bookingId,
-          userId,
-          validDestId,
-          destTitle,
-          fullName.trim(),
-          cleanEmail,
-          phone.trim(),
-          departureDate,
-          adultCount,
-          childCount,
-          cleanTier,
-          totalPrice,
-          promoCode ? String(promoCode).toUpperCase().trim() : null,
-          specialRequests || null,
-        ]
-      );
+      // Execute booking reservation and loyalty point accrual atomically in a transaction
+      const client = await pool.connect();
+      let record;
+      try {
+        await client.query('BEGIN');
+        const result = await client.query(
+          `INSERT INTO bookings (
+            id, user_id, destination_id, destination_title, full_name, email, phone,
+            departure_date, adults, children, package_tier, total_price, promo_code,
+            status, special_requests
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'confirmed', $14)
+          RETURNING *`,
+          [
+            bookingId,
+            userId,
+            validDestId,
+            destTitle,
+            fullName.trim(),
+            cleanEmail,
+            phone.trim(),
+            departureDate,
+            adultCount,
+            childCount,
+            cleanTier,
+            totalPrice,
+            promoCode ? String(promoCode).toUpperCase().trim() : null,
+            specialRequests || null,
+          ]
+        );
+        record = result.rows[0];
 
-      // Award 250 loyalty points to registered user if identified
-      if (userId) {
-        await pool.query('UPDATE users SET points = points + 250 WHERE id = $1', [userId]);
+        // Award 250 loyalty points to registered user atomically
+        if (userId) {
+          await client.query('UPDATE users SET points = points + 250 WHERE id = $1', [userId]);
+        }
+        await client.query('COMMIT');
+      } catch (txErr) {
+        await client.query('ROLLBACK');
+        throw txErr;
+      } finally {
+        client.release();
       }
-
-      const record = result.rows[0];
 
       res.status(201).json({
         success: true,

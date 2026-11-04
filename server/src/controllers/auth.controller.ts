@@ -9,7 +9,7 @@ function generateToken(user: { id: number; email: string; name: string; role: st
   return jwt.sign(
     { id: user.id, email: user.email, name: user.name, role: user.role },
     ENV.JWT_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: (ENV.JWT_EXPIRES_IN || '7d') as any }
   );
 }
 
@@ -43,13 +43,22 @@ export const AuthController = {
       // Hash password
       const passwordHash = await bcrypt.hash(password, 10);
 
-      // Insert new user
-      const result = await pool.query(
-        `INSERT INTO users (name, email, password_hash, points)
-         VALUES ($1, $2, $3, 1250)
-         RETURNING id, name, email, role, avatar_url, bio, phone, home_city, points, created_at`,
-        [name.trim(), cleanEmail, passwordHash]
-      );
+      // Insert new user with race-condition protection on unique email
+      let result;
+      try {
+        result = await pool.query(
+          `INSERT INTO users (name, email, password_hash, points)
+           VALUES ($1, $2, $3, 1250)
+           RETURNING id, name, email, role, avatar_url, bio, phone, home_city, points, created_at`,
+          [name.trim(), cleanEmail, passwordHash]
+        );
+      } catch (insertErr: any) {
+        if (insertErr.code === '23505') {
+          res.status(409).json({ success: false, message: 'An account with this email address already exists.' });
+          return;
+        }
+        throw insertErr;
+      }
 
       const user = result.rows[0];
       const token = generateToken(user);
@@ -161,22 +170,24 @@ export const AuthController = {
 
       const user = userResult.rows[0];
 
-      // Compute dynamic stats from PostgreSQL
-      const bookingsCountResult = await pool.query(
-        `SELECT COUNT(*) as count FROM bookings WHERE user_id = $1 AND status != 'cancelled'`,
-        [req.user.id]
-      );
-      const wishlistCountResult = await pool.query(
-        `SELECT COUNT(*) as count FROM wishlists WHERE user_id = $1`,
-        [req.user.id]
-      );
-      const countriesResult = await pool.query(
-        `SELECT COUNT(DISTINCT d.country) as count 
-         FROM bookings b
-         JOIN destinations d ON b.destination_id = d.id
-         WHERE b.user_id = $1 AND b.status != 'cancelled'`,
-        [req.user.id]
-      );
+      // Compute dynamic stats concurrently from PostgreSQL
+      const [bookingsCountResult, wishlistCountResult, countriesResult] = await Promise.all([
+        pool.query(
+          `SELECT COUNT(*) as count FROM bookings WHERE user_id = $1 AND status != 'cancelled'`,
+          [req.user.id]
+        ),
+        pool.query(
+          `SELECT COUNT(*) as count FROM wishlists WHERE user_id = $1`,
+          [req.user.id]
+        ),
+        pool.query(
+          `SELECT COUNT(DISTINCT d.country) as count 
+           FROM bookings b
+           JOIN destinations d ON b.destination_id = d.id
+           WHERE b.user_id = $1 AND b.status != 'cancelled'`,
+          [req.user.id]
+        ),
+      ]);
 
       const tripsBooked = parseInt(bookingsCountResult.rows[0]?.count || '0', 10);
       const wishlistCount = parseInt(wishlistCountResult.rows[0]?.count || '0', 10);

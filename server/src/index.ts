@@ -1,6 +1,6 @@
 import app from './app';
 import { ENV } from './config/env';
-import { checkDatabaseConnection } from './config/db';
+import { checkDatabaseConnection, pool } from './config/db';
 
 async function startServer() {
   console.log('----------------------------------------------------');
@@ -10,7 +10,7 @@ async function startServer() {
   // Verify PostgreSQL connectivity
   await checkDatabaseConnection();
 
-  app.listen(ENV.PORT, '0.0.0.0', () => {
+  const server = app.listen(ENV.PORT, '0.0.0.0', () => {
     console.log(`[Express] Server running on: http://localhost:${ENV.PORT}`);
     console.log(`[Express] Health Check URL : http://localhost:${ENV.PORT}/api/health`);
     console.log(`[Express] API Documentation:`);
@@ -22,6 +22,31 @@ async function startServer() {
     console.log(`  • Newsletter  : POST /api/newsletter/subscribe`);
     console.log('----------------------------------------------------');
   });
+
+  // Graceful shutdown handlers
+  const gracefulShutdown = (signal: string) => {
+    console.log(`\n[Server] Received ${signal}. Shutting down gracefully...`);
+    server.close(async () => {
+      console.log('[Server] HTTP listener closed. Draining database connection pool...');
+      try {
+        await pool.end();
+        console.log('[PostgreSQL] Connection pool cleanly closed.');
+        process.exit(0);
+      } catch (err) {
+        console.error('[PostgreSQL] Error closing pool:', err);
+        process.exit(1);
+      }
+    });
+
+    // Force exit after 10 seconds if hanging
+    setTimeout(() => {
+      console.error('[Server] Forced shutdown timeout exceeded. Exiting.');
+      process.exit(1);
+    }, 10000).unref();
+  };
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 
 startServer();

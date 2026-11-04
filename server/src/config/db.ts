@@ -16,6 +16,9 @@ const poolConfig: PoolConfig = ENV.DATABASE_URL
   ? {
       connectionString: ENV.DATABASE_URL,
       ssl: isSslRequired ? { rejectUnauthorized: false } : false,
+      max: 15,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
     }
   : {
       host: ENV.DB_HOST,
@@ -24,6 +27,9 @@ const poolConfig: PoolConfig = ENV.DATABASE_URL
       password: ENV.DB_PASSWORD,
       database: ENV.DB_NAME,
       ssl: ENV.DB_SSL ? { rejectUnauthorized: false } : false,
+      max: 15,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
     };
 
 export const pool = new Pool(poolConfig);
@@ -38,12 +44,13 @@ pool.on('error', (err) => {
 
 /**
  * Test PostgreSQL connectivity and log friendly status
+ * Guaranteed to release client back to pool on both success and failure
  */
 export async function checkDatabaseConnection(): Promise<boolean> {
+  let client;
   try {
-    const client = await pool.connect();
+    client = await pool.connect();
     const res = await client.query('SELECT NOW() as current_time, current_database() as db_name');
-    client.release();
     isDbConnected = true;
     lastDbError = null;
     console.log(
@@ -60,6 +67,10 @@ export async function checkDatabaseConnection(): Promise<boolean> {
       `[PostgreSQL] Tip: Check DATABASE_URL in Render environment variables or REQUIRED_INPUTS.txt.`
     );
     return false;
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 }
 

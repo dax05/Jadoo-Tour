@@ -14,12 +14,12 @@ export interface AuthenticatedRequest extends Request {
 }
 
 /**
- * Express middleware to verify JWT in Authorization header
+ * Express middleware to verify JWT in Authorization header with algorithm restriction and payload validation
  */
 export function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader) {
     res.status(401).json({
       success: false,
       message: 'Access denied. Authentication token missing or invalid.',
@@ -27,11 +27,28 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
     return;
   }
 
-  const token = authHeader.split(' ')[1];
+  const parts = authHeader.trim().split(/\s+/);
+  if (parts.length !== 2 || parts[0] !== 'Bearer' || !parts[1]) {
+    res.status(401).json({
+      success: false,
+      message: 'Access denied. Malformed authorization header.',
+    });
+    return;
+  }
+
+  const token = parts[1];
 
   try {
-    const decoded = jwt.verify(token, ENV.JWT_SECRET) as AuthenticatedUser;
-    req.user = decoded;
+    const decoded = jwt.verify(token, ENV.JWT_SECRET, { algorithms: ['HS256'] }) as any;
+    if (!decoded || typeof decoded !== 'object' || !decoded.id || !decoded.email) {
+      throw new Error('Invalid token payload');
+    }
+    req.user = {
+      id: Number(decoded.id),
+      email: String(decoded.email),
+      name: String(decoded.name || 'Traveler'),
+      role: String(decoded.role || 'traveler'),
+    };
     next();
   } catch (err: unknown) {
     res.status(401).json({
@@ -46,14 +63,37 @@ export function requireAuth(req: AuthenticatedRequest, res: Response, next: Next
  */
 export function optionalAuth(req: AuthenticatedRequest, _res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.split(' ')[1];
-    try {
-      const decoded = jwt.verify(token, ENV.JWT_SECRET) as AuthenticatedUser;
-      req.user = decoded;
-    } catch {
-      // Ignore invalid token for optional auth
+  if (authHeader) {
+    const parts = authHeader.trim().split(/\s+/);
+    if (parts.length === 2 && parts[0] === 'Bearer' && parts[1]) {
+      try {
+        const decoded = jwt.verify(parts[1], ENV.JWT_SECRET, { algorithms: ['HS256'] }) as any;
+        if (decoded && typeof decoded === 'object' && decoded.id && decoded.email) {
+          req.user = {
+            id: Number(decoded.id),
+            email: String(decoded.email),
+            name: String(decoded.name || 'Traveler'),
+            role: String(decoded.role || 'traveler'),
+          };
+        }
+      } catch {
+        // Ignore invalid token for optional auth
+      }
     }
+  }
+  next();
+}
+
+/**
+ * RBAC authorization middleware: requires authenticated administrator
+ */
+export function requireAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+  if (!req.user || req.user.role !== 'admin') {
+    res.status(403).json({
+      success: false,
+      message: 'Access forbidden. Administrator privileges required.',
+    });
+    return;
   }
   next();
 }

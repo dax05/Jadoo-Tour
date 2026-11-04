@@ -70,23 +70,26 @@ export const WishlistController = {
       // Ensure destination exists in destinations table so FK constraint passes
       const destCheck = await pool.query('SELECT id FROM destinations WHERE id = $1', [destinationId]);
       if (destCheck.rows.length === 0) {
-        await pool.query(
-          `INSERT INTO destinations (id, title, country, price_usd, duration_days, rating, image_url, description, latitude, longitude)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-           ON CONFLICT (id) DO NOTHING`,
-          [
-            destinationId,
-            req.body.title || destinationId.replace(/^(dest-|static-)/, '').replace(/-/g, ' ').toUpperCase(),
-            req.body.country || 'Global',
-            Number(req.body.price) || 2200,
-            Number(req.body.durationDays) || 7,
-            4.9,
-            req.body.imageUrl || 'assets/Images/destination-section/dest-1-rome.jpg',
-            'Curated global destination',
-            0,
-            0,
-          ]
-        );
+        const knownDestinations: Record<string, { title: string; country: string; price: number; duration: number; image: string }> = {
+          'rome-italy': { title: 'Rome, Italy', country: 'Italy', price: 5420, duration: 10, image: 'assets/Images/destination-section/dest-1-rome.jpg' },
+          'london-uk': { title: 'London, UK', country: 'United Kingdom', price: 4200, duration: 12, image: 'assets/Images/destination-section/dest-2-london.jpg' },
+          'full-europe': { title: 'Full Europe Grand Tour', country: 'Multi-Country', price: 15000, duration: 28, image: 'assets/Images/destination-section/dest-3-europe.jpg' },
+          'santorini-greece': { title: 'Santorini, Greece', country: 'Greece', price: 3800, duration: 7, image: 'assets/Images/destination-section/dest-1-rome.jpg' },
+          'bali-indonesia': { title: 'Bali, Indonesia', country: 'Indonesia', price: 2900, duration: 14, image: 'assets/Images/destination-section/dest-2-london.jpg' },
+          'tokyo-japan': { title: 'Tokyo, Japan', country: 'Japan', price: 6100, duration: 10, image: 'assets/Images/destination-section/dest-3-europe.jpg' },
+        };
+        const fallback = knownDestinations[destinationId];
+        if (fallback) {
+          await pool.query(
+            `INSERT INTO destinations (id, title, country, price_usd, duration_days, rating, image_url, description, latitude, longitude)
+             VALUES ($1, $2, $3, $4, $5, 4.9, $6, 'Curated destination', 41.9028, 12.4964)
+             ON CONFLICT (id) DO NOTHING`,
+            [destinationId, fallback.title, fallback.country, fallback.price, fallback.duration, fallback.image]
+          );
+        } else {
+          res.status(404).json({ success: false, message: 'Destination not found in catalog.' });
+          return;
+        }
       }
 
       // Check if already in wishlist
@@ -96,8 +99,8 @@ export const WishlistController = {
       );
 
       if (checkRes.rows.length > 0) {
-        // Remove from wishlist
-        await pool.query('DELETE FROM wishlists WHERE id = $1', [checkRes.rows[0].id]);
+        // Remove from wishlist with explicit user ownership enforcement
+        await pool.query('DELETE FROM wishlists WHERE id = $1 AND user_id = $2', [checkRes.rows[0].id, req.user.id]);
         res.status(200).json({
           success: true,
           action: 'removed',
@@ -106,11 +109,11 @@ export const WishlistController = {
           message: 'Destination removed from your saved wishlist.',
         });
       } else {
-        // Add to wishlist
-        await pool.query('INSERT INTO wishlists (user_id, destination_id) VALUES ($1, $2)', [
-          req.user.id,
-          destinationId,
-        ]);
+        // Add to wishlist with atomic conflict handling
+        await pool.query(
+          'INSERT INTO wishlists (user_id, destination_id) VALUES ($1, $2) ON CONFLICT (user_id, destination_id) DO NOTHING',
+          [req.user.id, destinationId]
+        );
         res.status(200).json({
           success: true,
           action: 'added',

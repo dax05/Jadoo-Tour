@@ -14,7 +14,7 @@
     "server": "tsx watch server/src/index.ts",
     "db:setup": "tsx server/src/db/init-db.ts",
     "test": "tsx server/tests/test-suite.ts",
-    "test:e2e": "tsx scripts/run-full-e2e-test.ts && node scripts/verify-dom-buttons.cjs && node scripts/test-modal-close-buttons.cjs && node scripts/test-phase1-fixes.cjs && tsx scripts/test-phase2-fixes.ts",
+    "test:e2e": "tsx scripts/run-full-e2e-test.ts && node scripts/verify-dom-buttons.cjs && node scripts/test-modal-close-buttons.cjs && node scripts/test-phase1-fixes.cjs && tsx scripts/test-phase2-fixes.ts && tsx scripts/test-phase3-fixes.ts",
     "dev:all": "concurrently \"npm run watch\" \"npm run server\"",
     "db:view": "node scripts/view-db.cjs"
   },
