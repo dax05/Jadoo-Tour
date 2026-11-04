@@ -28,7 +28,7 @@ export const VALIDATION_RULES = {
   NAME_MIN_LENGTH: 2,
   PASSWORD_MIN_LENGTH: 8,
   PASSWORD_LOGIN_MIN_LENGTH: 6,
-  NAME_REGEX: /^[a-zA-Z\s'-]+$/,
+  NAME_REGEX: /^[\p{L}\s'-]+$/u,
   EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 } as const;
 

@@ -17,6 +17,10 @@ export class FormValidator {
     if (!VALIDATION_RULES.NAME_REGEX.test(value)) {
       return { isValid: false, message: 'Name can only contain letters, spaces, hyphens, and apostrophes' };
     }
+    const letterCount = (value.match(/\p{L}/gu) || []).length;
+    if (letterCount < VALIDATION_RULES.NAME_MIN_LENGTH) {
+      return { isValid: false, message: `Name must contain at least ${VALIDATION_RULES.NAME_MIN_LENGTH} letters` };
+    }
     return { isValid: true };
   }
 

@@ -47,7 +47,7 @@ export class AuthService {
   private static DEFAULT_USER: UserAccount = {
     name: 'Sarah Jenkins',
     email: 'sarah.jenkins@example.com',
-    password: 'Password123!',
+    passwordHash: 'hash_1e7b75da422813', // Salted hash for 'Password123!'
     registeredAt: '2024-01-15T08:00:00.000Z',
     phone: '+1 (555) 749-2810',
     avatar: 'avatar-1',
@@ -65,6 +65,36 @@ export class AuthService {
       smsAlerts: true,
     },
   };
+
+  /**
+   * One-way salted hash for offline/client fallback storage
+   * Protects user credentials against plaintext inspection in localStorage
+   */
+  public static hashPassword(password: string): string {
+    const salt = 'jadoo_curated_escapes_2026_salt';
+    let h1 = 0xdeadbeef ^ salt.length;
+    let h2 = 0x41c6ce57 ^ salt.length;
+    const str = `${salt}:${password}`;
+    for (let i = 0; i < str.length; i++) {
+      const ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    const hash = 4294967296 * (2097151 & h2) + (h1 >>> 0);
+    return `hash_${hash.toString(16)}`;
+  }
+
+  public static verifyPassword(provided: string, account: UserAccount): boolean {
+    if (account.passwordHash) {
+      return this.hashPassword(provided) === account.passwordHash;
+    }
+    if (account.password) {
+      return account.password === provided;
+    }
+    return false;
+  }
 
   public getUsers(): UserAccount[] {
     const users = StorageService.getItem<UserAccount[]>(STORAGE_KEYS.USERS_DB, []);
@@ -122,7 +152,7 @@ export class AuthService {
     const newUser: UserAccount = {
       name: cleanName,
       email: cleanEmail,
-      password,
+      passwordHash: AuthService.hashPassword(password),
       registeredAt: new Date().toISOString(),
       loyaltyTier: 'Gold Adventurer',
       loyaltyPoints: 1250,
@@ -200,11 +230,18 @@ export class AuthService {
       };
     }
 
-    if (account.password !== password) {
+    if (!AuthService.verifyPassword(password, account)) {
       return {
         success: false,
         error: 'Incorrect password. Please verify your credentials and try again.',
       };
+    }
+
+    // Auto-migrate legacy unhashed entry if found
+    if (account.password && !account.passwordHash) {
+      account.passwordHash = AuthService.hashPassword(password);
+      delete account.password;
+      StorageService.setItem(STORAGE_KEYS.USERS_DB, users);
     }
 
     const session: UserSession = {
@@ -298,11 +335,12 @@ export class AuthService {
       return { success: false, error: 'User account not found.' };
     }
 
-    if (users[index].password !== oldPassword) {
+    if (!AuthService.verifyPassword(oldPassword, users[index])) {
       return { success: false, error: 'Current password is incorrect.' };
     }
 
-    users[index].password = newPassword;
+    users[index].passwordHash = AuthService.hashPassword(newPassword);
+    delete users[index].password;
     StorageService.setItem(STORAGE_KEYS.USERS_DB, users);
     return { success: true };
   }

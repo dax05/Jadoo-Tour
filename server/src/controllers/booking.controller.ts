@@ -105,8 +105,24 @@ export const BookingController = {
         validDestId = destRes.rows[0].id;
         destTitle = destRes.rows[0].title;
         basePrice = Number(destRes.rows[0].price_usd);
-      } else if (req.body.totalPrice) {
-        basePrice = Number(req.body.totalPrice);
+      } else {
+        // Fallback to verified catalog rates (never trust client-supplied price)
+        const FALLBACK_CATALOG: Record<string, { title: string; price: number }> = {
+          'rome-italy': { title: 'Rome, Italy', price: 5420 },
+          'london-uk': { title: 'London, UK', price: 4200 },
+          'full-europe': { title: 'Full Europe', price: 15000 },
+          'santorini-greece': { title: 'Trip To Greece', price: 3200 },
+          'bali-indonesia': { title: 'Bali, Indonesia', price: 1800 },
+          'tokyo-japan': { title: 'Tokyo, Japan', price: 3800 },
+        };
+        const known = FALLBACK_CATALOG[resolvedDestId];
+        if (known) {
+          validDestId = resolvedDestId;
+          destTitle = known.title;
+          basePrice = known.price;
+        } else {
+          basePrice = 2200; // Standard package base rate
+        }
       }
 
       const adultCount = Number(adults) || 1;

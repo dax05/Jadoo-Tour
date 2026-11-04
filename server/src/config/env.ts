@@ -34,17 +34,29 @@ if (fs.existsSync(requiredInputsPath)) {
   }
 }
 
+const rawPort = parseInt(process.env.PORT || '5000', 10);
+const validPort = isNaN(rawPort) || rawPort < 1 || rawPort > 65535 ? 5000 : rawPort;
+
+const rawDbPort = parseInt(process.env.DB_PORT || '5432', 10);
+const validDbPort = isNaN(rawDbPort) || rawDbPort < 1 || rawDbPort > 65535 ? 5432 : rawDbPort;
+
 export const ENV = {
-  PORT: parseInt(process.env.PORT || '5000', 10),
+  PORT: validPort,
   NODE_ENV: process.env.NODE_ENV || 'development',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:8080',
   JWT_SECRET: process.env.JWT_SECRET || 'jadoo_super_secret_jwt_key_2026_curated_escapes',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   DATABASE_URL: process.env.DATABASE_URL || '',
   DB_HOST: process.env.DB_HOST || 'localhost',
-  DB_PORT: parseInt(process.env.DB_PORT || '5432', 10),
+  DB_PORT: validDbPort,
   DB_USER: process.env.DB_USER || 'postgres',
   DB_PASSWORD: process.env.DB_PASSWORD || 'postgres',
   DB_NAME: process.env.DB_NAME || 'jadoo_travel_db',
   DB_SSL: process.env.DB_SSL === 'true',
 };
+
+// Security boundary check: warn immediately if default secret is used in production
+if (ENV.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'jadoo_super_secret_jwt_key_2026_curated_escapes')) {
+  console.warn('⚠️ [SECURITY WARNING] Insecure default JWT_SECRET detected in production!');
+  console.warn('⚠️ Please generate a strong 256-bit secret and set JWT_SECRET in your server environment.');
+}

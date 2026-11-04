@@ -16,6 +16,7 @@ export interface UserAccount {
   name: string;
   email: string;
   password?: string;
+  passwordHash?: string;
   registeredAt: string;
   phone?: string;
   avatar?: string;

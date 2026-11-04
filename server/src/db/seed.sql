@@ -121,10 +121,11 @@ ON CONFLICT (id) DO UPDATE SET
     latitude = EXCLUDED.latitude,
     longitude = EXCLUDED.longitude;
 
--- 3. Insert Initial Testimonials
-INSERT INTO testimonials (author_name, location, quote, rating, avatar_url, is_approved)
+-- 3. Insert Initial Testimonials (Idempotent seed with conflict resolution)
+INSERT INTO testimonials (id, author_name, location, quote, rating, avatar_url, is_approved)
 VALUES 
 (
+    1,
     'Mike Taylor',
     'Lahore, Pakistan',
     'On the Windows talking painted pasture yet its express parties use. Sure last upon he same as knew next. Of believed or diverted no.',
@@ -133,6 +134,7 @@ VALUES
     TRUE
 ),
 (
+    2,
     'Chris Thomas',
     'CEO of Red Button',
     'Jadoo curated our corporate leadership summit in Europe with surgical precision. Every transfer, villa, and private excursion was extraordinary.',
@@ -141,13 +143,24 @@ VALUES
     TRUE
 ),
 (
+    3,
     'Elena Rostova',
     'Milan, Italy',
     'The 10-day Rome & Amalfi itinerary exceeded all our dreams. Outstanding 24/7 VIP concierge support and unbeatable hotel perks!',
     5,
     'assets/Images/testimonial-section/author-mike.jpg',
     TRUE
-);
+)
+ON CONFLICT (id) DO UPDATE SET
+    author_name = EXCLUDED.author_name,
+    location = EXCLUDED.location,
+    quote = EXCLUDED.quote,
+    rating = EXCLUDED.rating,
+    avatar_url = EXCLUDED.avatar_url,
+    is_approved = EXCLUDED.is_approved;
+
+-- Reset sequence so auto-generated review IDs begin past the seeded entries
+SELECT setval(pg_get_serial_sequence('testimonials', 'id'), COALESCE(MAX(id), 1)) FROM testimonials;
 
 -- 4. Initial Booking for Demo User
 INSERT INTO bookings (id, user_id, destination_id, destination_title, full_name, email, phone, departure_date, adults, children, package_tier, total_price, promo_code, status, special_requests)

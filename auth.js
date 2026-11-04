@@ -22,7 +22,7 @@
     NAME_MIN_LENGTH: 2,
     PASSWORD_MIN_LENGTH: 8,
     PASSWORD_LOGIN_MIN_LENGTH: 6,
-    NAME_REGEX: /^[a-zA-Z\s'-]+$/,
+    NAME_REGEX: /^[\p{L}\s'-]+$/u,
     EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   };
 
@@ -124,6 +124,34 @@
     isAuthenticated() {
       return this.currentSession !== null;
     }
+    /**
+     * One-way salted hash for offline/client fallback storage
+     * Protects user credentials against plaintext inspection in localStorage
+     */
+    static hashPassword(password) {
+      const salt = "jadoo_curated_escapes_2026_salt";
+      let h1 = 3735928559 ^ salt.length;
+      let h2 = 1103547991 ^ salt.length;
+      const str = `${salt}:${password}`;
+      for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ h1 >>> 16, 2246822507) ^ Math.imul(h2 ^ h2 >>> 13, 3266489909);
+      h2 = Math.imul(h2 ^ h2 >>> 16, 2246822507) ^ Math.imul(h1 ^ h1 >>> 13, 3266489909);
+      const hash = 4294967296 * (2097151 & h2) + (h1 >>> 0);
+      return `hash_${hash.toString(16)}`;
+    }
+    static verifyPassword(provided, account) {
+      if (account.passwordHash) {
+        return this.hashPassword(provided) === account.passwordHash;
+      }
+      if (account.password) {
+        return account.password === provided;
+      }
+      return false;
+    }
     getUsers() {
       const users = StorageService.getItem(STORAGE_KEYS.USERS_DB, []);
       if (users.length === 0) {
@@ -173,7 +201,7 @@
       const newUser = {
         name: cleanName,
         email: cleanEmail,
-        password,
+        passwordHash: _AuthService.hashPassword(password),
         registeredAt: (/* @__PURE__ */ new Date()).toISOString(),
         loyaltyTier: "Gold Adventurer",
         loyaltyPoints: 1250,
@@ -241,11 +269,16 @@
           error: "No account found with this email. Please check your email or sign up."
         };
       }
-      if (account.password !== password) {
+      if (!_AuthService.verifyPassword(password, account)) {
         return {
           success: false,
           error: "Incorrect password. Please verify your credentials and try again."
         };
+      }
+      if (account.password && !account.passwordHash) {
+        account.passwordHash = _AuthService.hashPassword(password);
+        delete account.password;
+        StorageService.setItem(STORAGE_KEYS.USERS_DB, users);
       }
       const session = {
         name: account.name,
@@ -325,10 +358,11 @@
       if (index === -1) {
         return { success: false, error: "User account not found." };
       }
-      if (users[index].password !== oldPassword) {
+      if (!_AuthService.verifyPassword(oldPassword, users[index])) {
         return { success: false, error: "Current password is incorrect." };
       }
-      users[index].password = newPassword;
+      users[index].passwordHash = _AuthService.hashPassword(newPassword);
+      delete users[index].password;
       StorageService.setItem(STORAGE_KEYS.USERS_DB, users);
       return { success: true };
     }
@@ -361,7 +395,8 @@
   __publicField(_AuthService, "DEFAULT_USER", {
     name: "Sarah Jenkins",
     email: "sarah.jenkins@example.com",
-    password: "Password123!",
+    passwordHash: "hash_1e7b75da422813",
+    // Salted hash for 'Password123!'
     registeredAt: "2024-01-15T08:00:00.000Z",
     phone: "+1 (555) 749-2810",
     avatar: "avatar-1",
@@ -442,6 +477,10 @@
       }
       if (!VALIDATION_RULES.NAME_REGEX.test(value)) {
         return { isValid: false, message: "Name can only contain letters, spaces, hyphens, and apostrophes" };
+      }
+      const letterCount = (value.match(/\p{L}/gu) || []).length;
+      if (letterCount < VALIDATION_RULES.NAME_MIN_LENGTH) {
+        return { isValid: false, message: `Name must contain at least ${VALIDATION_RULES.NAME_MIN_LENGTH} letters` };
       }
       return { isValid: true };
     }
