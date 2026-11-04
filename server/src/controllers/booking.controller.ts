@@ -279,6 +279,15 @@ export const BookingController = {
         return;
       }
 
+      if (booking.status === 'cancelled') {
+        res.status(400).json({ success: false, message: 'Reservation has already been cancelled.' });
+        return;
+      }
+      if (booking.status === 'completed') {
+        res.status(400).json({ success: false, message: 'Completed reservations cannot be cancelled.' });
+        return;
+      }
+
       await pool.query("UPDATE bookings SET status = 'cancelled' WHERE id = $1", [id]);
 
       res.status(200).json({

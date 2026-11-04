@@ -7,7 +7,7 @@ export const DestinationController = {
    */
   async getAll(req: Request, res: Response): Promise<void> {
     try {
-      const { category, maxPrice, search, sortBy } = req.query;
+      const { category, maxPrice, search, sortBy, limit, page } = req.query;
 
       let query = `
         SELECT id, title, country, price_usd, duration_days, rating, reviews_count, image_url, category, description, highlights, latitude, longitude, is_featured
@@ -57,6 +57,20 @@ export const DestinationController = {
         default:
           query += ` ORDER BY is_featured DESC, rating DESC`;
           break;
+      }
+
+      // Optional pagination
+      if (limit && !isNaN(Number(limit))) {
+        const parsedLimit = Math.max(1, Math.min(100, Number(limit)));
+        query += ` LIMIT $${paramIndex++}`;
+        params.push(parsedLimit);
+
+        if (page && !isNaN(Number(page))) {
+          const parsedPage = Math.max(1, Number(page));
+          const offset = (parsedPage - 1) * parsedLimit;
+          query += ` OFFSET $${paramIndex++}`;
+          params.push(offset);
+        }
       }
 
       const result = await pool.query(query, params);

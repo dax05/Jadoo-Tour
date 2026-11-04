@@ -15,6 +15,11 @@ export const NewsletterController = {
       }
 
       const cleanEmail = String(email).trim().toLowerCase();
+      const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!EMAIL_REGEX.test(cleanEmail)) {
+        res.status(400).json({ success: false, message: 'Please provide a valid email address.' });
+        return;
+      }
       const cleanName = name ? String(name).trim() : cleanEmail.split('@')[0];
       const code = promoCode || 'EXPLORE15';
 

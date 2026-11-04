@@ -3,18 +3,25 @@
 -- ============================================================================
 
 -- 1. Insert Default Demo User (Password: Traveler123!)
--- Hash generated using bcrypt with salt rounds 10
+-- Hash generated using bcrypt with salt rounds 10 (verified for Traveler123!)
 INSERT INTO users (name, email, password_hash, avatar_url, role, bio, home_city, points)
 VALUES (
     'Sarah Jenkins',
     'sarah.jenkins@example.com',
-    '$2b$10$t6SaKL7xbBarhGsgmfKfEejoyTXNt1D.JBGncuFfFRTrc8DqRxlDa',
-    'assets/Images/testimonial-section/author-mike.jpg',
+    '$2b$10$wHGtGCDUc8xo8m1rmGAoyOprfaDkSHqbondDQHbtN9LzcN0KDJlKq',
+    'assets/Images/testimonial-section/author-sarah.jpg',
     'traveler',
     'Passionate explorer, architectural photographer and globetrotter.',
     'San Francisco, CA',
     1850
-) ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
+) ON CONFLICT (email) DO UPDATE SET
+    name = EXCLUDED.name,
+    password_hash = EXCLUDED.password_hash,
+    avatar_url = EXCLUDED.avatar_url,
+    role = EXCLUDED.role,
+    bio = EXCLUDED.bio,
+    home_city = EXCLUDED.home_city,
+    points = EXCLUDED.points;
 
 -- 2. Insert Standard Destinations
 INSERT INTO destinations (id, title, country, price_usd, duration_days, rating, reviews_count, image_url, category, description, highlights, latitude, longitude, is_featured)
@@ -117,9 +124,18 @@ VALUES
 )
 ON CONFLICT (id) DO UPDATE SET
     title = EXCLUDED.title,
+    country = EXCLUDED.country,
     price_usd = EXCLUDED.price_usd,
+    duration_days = EXCLUDED.duration_days,
+    rating = EXCLUDED.rating,
+    reviews_count = EXCLUDED.reviews_count,
+    image_url = EXCLUDED.image_url,
+    category = EXCLUDED.category,
+    description = EXCLUDED.description,
+    highlights = EXCLUDED.highlights,
     latitude = EXCLUDED.latitude,
-    longitude = EXCLUDED.longitude;
+    longitude = EXCLUDED.longitude,
+    is_featured = EXCLUDED.is_featured;
 
 -- 3. Insert Initial Testimonials (Idempotent seed with conflict resolution)
 INSERT INTO testimonials (id, author_name, location, quote, rating, avatar_url, is_approved)
@@ -181,4 +197,17 @@ SELECT
     'confirmed',
     'Caldera view room preferred. Late check-in requested.'
 FROM users u WHERE u.email = 'sarah.jenkins@example.com'
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+    destination_id = EXCLUDED.destination_id,
+    destination_title = EXCLUDED.destination_title,
+    full_name = EXCLUDED.full_name,
+    email = EXCLUDED.email,
+    phone = EXCLUDED.phone,
+    departure_date = EXCLUDED.departure_date,
+    adults = EXCLUDED.adults,
+    children = EXCLUDED.children,
+    package_tier = EXCLUDED.package_tier,
+    total_price = EXCLUDED.total_price,
+    promo_code = EXCLUDED.promo_code,
+    status = EXCLUDED.status,
+    special_requests = EXCLUDED.special_requests;
